@@ -10,10 +10,7 @@ from datetime import datetime
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-USUARIOS = {
-    "CGU": "1234",
-    "user": "senha"
-}
+USUARIOS = {"admin": "1234", "user": "senha"}
 
 def autenticar(usuario, senha):
     return USUARIOS.get(usuario) == senha
@@ -22,28 +19,17 @@ if not st.session_state.logado:
     st.title("Login")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
-    if st.button("Entrar"):
+    login = st.button("Entrar")
+    if login:
         if autenticar(usuario, senha):
             st.session_state.logado = True
+            st.success("Login bem-sucedido! Aguarde...")
+            # Apenas atualizar o app, sem erro
             st.experimental_rerun()
         else:
             st.error("Usuário ou senha incorretos")
-    st.stop()  # <--- interrompe a execução do restante do app até logar
-
-# ---------- DASHBOARD ----------
-# Configuração da página (só roda depois do login)
-st.set_page_config(
-    page_title="Dashboard de Avaliação de Riscos",
-    page_icon="⚠️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# BOTÃO DE LOGOUT
-if st.button("Sair"):
-    st.session_state.logado = False
-    st.experimental_rerun()
-
+    # Para que o resto do app não carregue antes do login
+    st.stop()
 # ============================
 
 # Escalas de avaliação baseadas na metodologia TCU
