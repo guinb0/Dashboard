@@ -36,28 +36,6 @@ if not st.session_state.logado:
             st.error("Usuário ou senha incorretos")
     st.stop()  # Interrompe execução até o login
 
-# ---------- APP PRINCIPAL ----------
-st.header("Bem-vindo ao Dashboard de Avaliação de Riscos")
-
-
-# Botão de logout
-if st.button("Sair", key="logout_btn"):
-    st.session_state.logado = False
-    st.experimental_rerun()
-
-# ---------- DASHBOARD (Exemplo) ----------
-st.subheader("Dashboard")
-st.write("Aqui você pode colocar gráficos e métricas usando Plotly, pandas, etc.")
-
-# Exemplo rápido de gráfico Plotly
-df = pd.DataFrame({
-    "Data": pd.date_range(start="2025-01-01", periods=10, freq="D"),
-    "Risco": np.random.randint(1, 10, 10)
-})
-
-fig = px.line(df, x="Data", y="Risco", title="Exemplo de Evolução de Riscos")
-st.plotly_chart(fig, use_container_width=True)
-
 
 
 # ---------- DASHBOARD ----------
