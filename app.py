@@ -19,18 +19,30 @@ if not st.session_state.logado:
     st.title("Login")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
-    login = st.button("Entrar")
-    if login:
+    if st.button("Entrar"):
         if autenticar(usuario, senha):
             st.session_state.logado = True
-            st.success("Login bem-sucedido! Aguarde...")
-            # Apenas atualizar o app, sem erro
-            st.experimental_rerun()
+            # Apenas continua a execução do app
+            st.success("Login bem-sucedido! ✅")
         else:
             st.error("Usuário ou senha incorretos")
-    # Para que o resto do app não carregue antes do login
-    st.stop()
+    st.stop()  # Interrompe a execução do dashboard até logar
+
+# ---------- DASHBOARD ----------
+st.set_page_config(
+    page_title="Dashboard de Avaliação de Riscos",
+    page_icon="⚠️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+if st.button("Sair"):
+    st.session_state.logado = False
+    st.experimental_rerun()  # Logout ainda funciona
+
 # ============================
+st.write("Dashboard carregado com sucesso! 🚀")
+
 
 # Escalas de avaliação baseadas na metodologia TCU
 ESCALAS_IMPACTO = {
