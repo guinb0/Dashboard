@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -10,7 +11,7 @@ from datetime import datetime
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-USUARIOS = {"CGU": "eiju@1015@cgu", "user": "senha"}
+USUARIOS = {"CGU": "eiju@1015@cgu", "fabio": "1234"}
 
 def autenticar(usuario, senha):
     return USUARIOS.get(usuario) == senha
@@ -22,11 +23,23 @@ if not st.session_state.logado:
     if st.button("Entrar"):
         if autenticar(usuario, senha):
             st.session_state.logado = True
-            # Apenas continua a execução do app
             st.success("Login bem-sucedido! ✅")
         else:
             st.error("Usuário ou senha incorretos")
-    st.stop()  # Interrompe a execução do dashboard até logar
+    st.stop()  # Interrompe a execução do restante do app até logar
+
+# ---------- APP PRINCIPAL ----------
+# Lê o arquivo HTML
+with open("index.html", "r", encoding="utf-8") as f:
+    html_code = f.read()
+
+# Exibe dentro de um iframe no Streamlit
+components.html(
+    html_code,   # código HTML lido
+    height=800,  # altura do iframe
+    scrolling=True  # permite rolagem se o conteúdo for maior que a altura
+)
+
 
 # ---------- DASHBOARD ----------
 st.set_page_config(
