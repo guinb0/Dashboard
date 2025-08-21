@@ -11,7 +11,7 @@ if "logado" not in st.session_state:
     st.session_state.logado = False
 
 USUARIOS = {
-    "admin": "1234",
+    "CGU": "1234",
     "user": "senha"
 }
 
