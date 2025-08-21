@@ -10,7 +10,7 @@ from datetime import datetime
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-USUARIOS = {"admin": "1234", "user": "senha"}
+USUARIOS = {"CGU": "eiju@1015@cgu", "user": "senha"}
 
 def autenticar(usuario, senha):
     return USUARIOS.get(usuario) == senha
