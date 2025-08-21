@@ -5,14 +5,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime
- # streamlit run dashboard_riscos\app.py
-# Configuração da página
 
 # ---------- LOGIN ----------
 if "logado" not in st.session_state:
     st.session_state.logado = False
 
-# Usuários válidos
 USUARIOS = {
     "admin": "1234",
     "user": "senha"
@@ -28,31 +25,26 @@ if not st.session_state.logado:
     if st.button("Entrar"):
         if autenticar(usuario, senha):
             st.session_state.logado = True
-            st.experimental_rerun()  # Atualiza app após login
+            st.experimental_rerun()
         else:
             st.error("Usuário ou senha incorretos")
-else:
-    # ---------- DASHBOARD ----------
-    # Configuração da página
-    st.set_page_config(
-        page_title="Dashboard de Avaliação de Riscos",
-        page_icon="⚠️",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
+    st.stop()  # <--- interrompe a execução do restante do app até logar
 
-    # BOTÃO DE LOGOUT
-if st.button("Sair"):
-        st.session_state.logado = False
-        st.experimental_rerun()
-
-
+# ---------- DASHBOARD ----------
+# Configuração da página (só roda depois do login)
 st.set_page_config(
     page_title="Dashboard de Avaliação de Riscos",
     page_icon="⚠️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# BOTÃO DE LOGOUT
+if st.button("Sair"):
+    st.session_state.logado = False
+    st.experimental_rerun()
+
+# ============================
 
 # Escalas de avaliação baseadas na metodologia TCU
 ESCALAS_IMPACTO = {
