@@ -39,18 +39,6 @@ if not st.session_state.logado:
 # ---------- APP PRINCIPAL ----------
 st.header("Bem-vindo ao Dashboard de Avaliação de Riscos")
 
-# Exibe HTML com cards e seção objetivo
-try:
-    with open("index.html", "r", encoding="utf-8") as f:
-        html_code = f.read()
-
-    components.html(
-        html_code,
-        height=800,
-        scrolling=True
-    )
-except FileNotFoundError:
-    st.error("Arquivo index.html não encontrado!")
 
 # Botão de logout
 if st.button("Sair", key="logout_btn"):
