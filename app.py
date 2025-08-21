@@ -7,6 +7,14 @@ from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime
 
+# ---------- CONFIGURAÇÃO DA PÁGINA ----------
+st.set_page_config(
+    page_title="Dashboard de Avaliação de Riscos",
+    page_icon="⚠️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 # ---------- LOGIN ----------
 if "logado" not in st.session_state:
     st.session_state.logado = False
@@ -26,19 +34,27 @@ if not st.session_state.logado:
             st.success("Login bem-sucedido! ✅")
         else:
             st.error("Usuário ou senha incorretos")
-    st.stop()  # Interrompe a execução do restante do app até logar
+    st.stop()  # Interrompe a execução até o login
 
-# ---------- APP PRINCIPAL ----------
+# ---------- APP PRINCIPAL (após login) ----------
 # Lê o arquivo HTML
 with open("index.html", "r", encoding="utf-8") as f:
     html_code = f.read()
 
 # Exibe dentro de um iframe no Streamlit
 components.html(
-    html_code,   # código HTML lido
-    height=800,  # altura do iframe
-    scrolling=True  # permite rolagem se o conteúdo for maior que a altura
+    html_code,
+    height=800,
+    scrolling=True
 )
+
+# Botão de logout
+if st.button("Sair"):
+    st.session_state.logado = False
+    st.experimental_rerun()  # força reload para voltar ao login
+
+# Dashboard (conteúdo adicional)
+st.write("Dashboard carregado com sucesso! 🚀")
 
 
 # ---------- DASHBOARD ----------
