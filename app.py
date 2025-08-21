@@ -2,10 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import numpy as np
-from datetime import datetime
 
 # ---------- CONFIGURAÇÃO DA PÁGINA ----------
 st.set_page_config(
@@ -37,23 +34,36 @@ if not st.session_state.logado:
     st.stop()  # Interrompe execução até o login
 
 # ---------- APP PRINCIPAL ----------
-st.header("Bem-vindo ao Dashboard de Avaliação de Riscos")
-
-# Exibe HTML com cards e seção objetivo
+# Lê o arquivo HTML (cards + seção objetivo)
 try:
     with open("index.html", "r", encoding="utf-8") as f:
         html_code = f.read()
 
+    # Exibe HTML em iframe maior
     components.html(
         html_code,
-        height=800,
+        height=1500,  # altura aumentada
         scrolling=True
     )
 except FileNotFoundError:
     st.error("Arquivo index.html não encontrado!")
 
-# Botão de logout
+# ---------- BOTÃO DE LOGOUT ----------
 if st.button("Sair", key="logout_btn"):
     st.session_state.logado = False
     st.experimental_rerun()
+
+# ---------- DASHBOARD SIMPLES ----------
+st.subheader("Dashboard")
+st.write("Aqui você pode colocar gráficos e métricas usando Plotly, pandas, etc.")
+
+# Exemplo rápido de gráfico Plotly
+df = pd.DataFrame({
+    "Data": pd.date_range(start="2025-01-01", periods=10, freq="D"),
+    "Risco": np.random.randint(1, 10, 10)
+})
+
+fig = px.line(df, x="Data", y="Risco", title="Evolução de Riscos")
+st.plotly_chart(fig, use_container_width=True)
+
 
