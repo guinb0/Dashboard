@@ -7,6 +7,46 @@ import numpy as np
 from datetime import datetime
  # streamlit run dashboard_riscos\app.py
 # Configuração da página
+
+# ---------- LOGIN ----------
+if "logado" not in st.session_state:
+    st.session_state.logado = False
+
+# Usuários válidos
+USUARIOS = {
+    "admin": "1234",
+    "user": "senha"
+}
+
+def autenticar(usuario, senha):
+    return USUARIOS.get(usuario) == senha
+
+if not st.session_state.logado:
+    st.title("Login")
+    usuario = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
+    if st.button("Entrar"):
+        if autenticar(usuario, senha):
+            st.session_state.logado = True
+            st.experimental_rerun()  # Atualiza app após login
+        else:
+            st.error("Usuário ou senha incorretos")
+else:
+    # ---------- DASHBOARD ----------
+    # Configuração da página
+    st.set_page_config(
+        page_title="Dashboard de Avaliação de Riscos",
+        page_icon="⚠️",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
+
+    # BOTÃO DE LOGOUT
+if st.button("Sair"):
+        st.session_state.logado = False
+        st.experimental_rerun()
+
+
 st.set_page_config(
     page_title="Dashboard de Avaliação de Riscos",
     page_icon="⚠️",
