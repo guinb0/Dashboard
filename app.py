@@ -28,33 +28,48 @@ if not st.session_state.logado:
     st.title("Login")
     usuario = st.text_input("Usuário")
     senha = st.text_input("Senha", type="password")
-    if st.button("Entrar"):
+    if st.button("Entrar", key="login_btn"):
         if autenticar(usuario, senha):
             st.session_state.logado = True
             st.success("Login bem-sucedido! ✅")
         else:
             st.error("Usuário ou senha incorretos")
-    st.stop()  # Interrompe a execução até o login
+    st.stop()  # Interrompe execução até o login
 
-# ---------- APP PRINCIPAL (após login) ----------
-# Lê o arquivo HTML
-with open("index.html", "r", encoding="utf-8") as f:
-    html_code = f.read()
+# ---------- APP PRINCIPAL ----------
+st.header("Bem-vindo ao Dashboard de Avaliação de Riscos")
 
-# Exibe dentro de um iframe no Streamlit
-components.html(
-    html_code,
-    height=800,
-    scrolling=True
-)
+# Exibe HTML com cards e seção objetivo
+try:
+    with open("index.html", "r", encoding="utf-8") as f:
+        html_code = f.read()
+
+    components.html(
+        html_code,
+        height=800,
+        scrolling=True
+    )
+except FileNotFoundError:
+    st.error("Arquivo index.html não encontrado!")
 
 # Botão de logout
-if st.button("Sair"):
+if st.button("Sair", key="logout_btn"):
     st.session_state.logado = False
-    st.experimental_rerun()  # força reload para voltar ao login
+    st.experimental_rerun()
 
-# Dashboard (conteúdo adicional)
-st.write("Dashboard carregado com sucesso! 🚀")
+# ---------- DASHBOARD (Exemplo) ----------
+st.subheader("Dashboard")
+st.write("Aqui você pode colocar gráficos e métricas usando Plotly, pandas, etc.")
+
+# Exemplo rápido de gráfico Plotly
+df = pd.DataFrame({
+    "Data": pd.date_range(start="2025-01-01", periods=10, freq="D"),
+    "Risco": np.random.randint(1, 10, 10)
+})
+
+fig = px.line(df, x="Data", y="Risco", title="Exemplo de Evolução de Riscos")
+st.plotly_chart(fig, use_container_width=True)
+
 
 
 # ---------- DASHBOARD ----------
