@@ -839,6 +839,58 @@ footer p {
 
 
 	</style>
+	<style
+	/* Ajustar espaçamento da section */
+section {
+    padding: 60px 80px; /* menor padding que antes */
+}
+
+/* Layout principal da seção inicial */
+.contenido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px; /* espaço entre texto e imagem */
+    padding-left: 0; /* remove padding extra */
+}
+
+/* Texto ocupa metade da tela */
+.contenido .tituloBox {
+    flex: 1;
+    max-width: 50%;
+}
+
+/* Imagem ocupa metade da tela */
+.contenido .imgBox {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.contenido .imgBox img {
+    width: 250px;
+    height: auto;
+    box-shadow: 30px 30px 0px 0px #bbbeef;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 900px) {
+    .contenido {
+        flex-direction: column; /* coloca texto e imagem em coluna */
+        text-align: center;
+    }
+
+    .contenido .tituloBox {
+        max-width: 100%;
+    }
+
+    .contenido .imgBox img {
+        width: 200px; /* reduz no celular */
+        box-shadow: none; /* simplifica no mobile */
+        margin-top: 20px;
+    }
+}
+<style/>
 <head>
 
 <script>/* Función para cambiar el Navbar cada vez que el scroll baje */
