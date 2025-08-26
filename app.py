@@ -460,8 +460,8 @@ def gerar_relatorio_word():
             aval_para.add_run("Justificativa do risco: ").bold = True
             aval_para.add_run(risco["descricao"])
             aval_para.add_run(f"\n\n• Probabilidade: {risco["probabilidade_valor"]} ({risco["probabilidade_nivel"]})\n")
-            aval_para.add_run("Objetivo-Chave: ").bold = True
-            aval_para.add_run(risco["objetivo_chave"])
+            aval_para.add_run("Justificativa de mudança de Probabilidade: ").bold = True
+            aval_para.add_run(risco["contexto_especifico"])
             aval_para.add_run(f"\n\n• Risco Inerente: {risco["risco_inerente"]} pontos")
             aval_para.add_run(f"\n• Classificação: {risco["classificacao"]}")
             
