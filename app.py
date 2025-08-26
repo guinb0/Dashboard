@@ -324,50 +324,15 @@ def gerar_relatorio_word():
         
         # NOVA SEÇÃO: Informações do responsável pelo relatório
         # Solicitar identificação do usuário se não estiver definida
-        if 'identificacao_relatorio' not in st.session_state:
-            st.session_state.identificacao_relatorio = None
+        if 'identificacao_relatorio' not in st.session_state or st.session_state.identificacao_relatorio is None:
+            st.session_state.identificacao_relatorio = {
+                'nome': st.session_state.user,
+                'divisao': 'Divisão Padrão',
+                'orgao': 'SPU',
+                'email': 'usuario@spu.gov.br'
+            }
         
-        if not st.session_state.identificacao_relatorio:
-            with st.form("identificacao_form"):
-                st.subheader("📝 Identificação para o Relatório")
-                st.info("Por favor, forneça suas credenciais para incluir no relatório:")
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    nome_responsavel = st.text_input("Nome do Responsável:", value=st.session_state.user, placeholder="Ex: João Silva")
-                    divisao_responsavel = st.text_input("Divisão:", placeholder="Ex: Divisão de Gestão de Ativos")
-                
-                with col2:
-                    orgao_responsavel = st.text_input("Órgão/Instituição:", placeholder="Ex: SPU - Secretaria do Patrimônio da União")
-                    email_responsavel = st.text_input("E-mail:", placeholder="Ex: joao.silva@economia.gov.br")
-                
-                submitted = st.form_submit_button("✅ Confirmar Identificação", type="primary")
-                
-                if submitted and nome_responsavel and divisao_responsavel:
-                    st.session_state.identificacao_relatorio = {
-                        'nome': nome_responsavel,
-                        'divisao': divisao_responsavel,
-                        'orgao': orgao_responsavel,
-                        'email': email_responsavel
-                    }
-                    st.success("✅ Identificação salva! Gerando relatório...")
-                    # Forçar a geração do relatório imediatamente após a identificação
-                    buffer = gerar_relatorio_word()
-                    if buffer:
-                        st.download_button(
-                            label="📥 Baixar Relatório Word",
-                            data=buffer,
-                            file_name=f"relatorio_riscos_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                            key="download_report_auto"
-                        )
-                        st.success("✅ Relatório gerado e pronto para download!")
-                    st.rerun()
-                elif submitted:
-                    st.error("❌ Por favor, preencha pelo menos o Nome e a Divisão.")
-            
-            return None  # Retorna None para interromper a geração até que a identificação seja fornecida
-        
+
         # Informações do relatório com identificação
         info_para = doc.add_paragraph()
         info_para.add_run("Data da Análise: ").bold = True
@@ -2337,8 +2302,9 @@ def main():
                     st.download_button(
                         label="📥 Baixar Relatório Word",
                         data=buffer,
-                        file_name=f"relatorio_riscos_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        file_name=f"relatorio_riscos_{datetime.now().strftime("%Y%m%d_%H%M")}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        key="download_report_sidebar"
                     )
                     st.success("✅ Relatório gerado com sucesso!")
         
