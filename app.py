@@ -335,7 +335,7 @@ def gerar_relatorio_word():
                 col1, col2 = st.columns(2)
                 with col1:
                     nome_responsavel = st.text_input("Nome do Responsável:", placeholder="Ex: João Silva")
-                    cargo_responsavel = st.text_input("Cargo/Função:", placeholder="Ex: Analista de Riscos")
+                    divisao_responsavel = st.text_input("Divisão:", placeholder="Ex: Divisão de Gestão de Ativos")
                 
                 with col2:
                     orgao_responsavel = st.text_input("Órgão/Instituição:", placeholder="Ex: SPU - Secretaria do Patrimônio da União")
@@ -343,17 +343,28 @@ def gerar_relatorio_word():
                 
                 submitted = st.form_submit_button("✅ Confirmar Identificação", type="primary")
                 
-                if submitted and nome_responsavel and cargo_responsavel:
-                    st.session_state.identificacao_relatorio = {
-                        'nome': nome_responsavel,
-                        'cargo': cargo_responsavel,
-                        'orgao': orgao_responsavel,
-                        'email': email_responsavel
-                    }
-                    st.success("✅ Identificação salva! Clique novamente em 'Gerar Relatório Word' para continuar.")
-                    st.rerun()
-                elif submitted:
-                    st.error("❌ Por favor, preencha pelo menos o Nome e Cargo.")
+                    if submitted and nome_responsavel and divisao_responsavel:
+                        st.session_state.identificacao_relatorio = {
+                            'nome': nome_responsavel,
+                            'divisao': divisao_responsavel,
+                            'orgao': orgao_responsavel,
+                            'email': email_responsavel
+                        }
+                        st.success("✅ Identificação salva! Gerando relatório...")
+                        # Forçar a geração do relatório imediatamente após a identificação
+                        buffer = gerar_relatorio_word()
+                        if buffer:
+                            st.download_button(
+                                label="📥 Baixar Relatório Word",
+                                data=buffer,
+                                file_name=f"relatorio_riscos_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
+                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                key="download_report_auto"
+                            )
+                            st.success("✅ Relatório gerado e pronto para download!")
+                        st.rerun()
+                    elif submitted:
+                        st.error("❌ Por favor, preencha pelo menos o Nome e a Divisão.")
             
             return None  # Retorna None para interromper a geração até que a identificação seja fornecida
         
@@ -369,7 +380,7 @@ def gerar_relatorio_word():
         # Adicionar informações do responsável
         info_para.add_run("\n\nRESPONSÁVEL PELA ANÁLISE:").bold = True
         info_para.add_run(f"\nNome: {st.session_state.identificacao_relatorio['nome']}")
-        info_para.add_run(f"\nCargo: {st.session_state.identificacao_relatorio['cargo']}")
+        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
             info_para.add_run(f"\nÓrgão: {st.session_state.identificacao_relatorio['orgao']}")
         if st.session_state.identificacao_relatorio['email']:
@@ -723,9 +734,9 @@ def gerar_relatorio_word():
         rodape = doc.add_paragraph()
         rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos TCU v2.0").italic = True
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
-        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['cargo']}")
+        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nÓrgão: {st.session_state.identificacao_relatorio['orgao']}")
+            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio["divisao"]}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
@@ -2399,3 +2410,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
