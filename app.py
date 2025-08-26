@@ -334,7 +334,7 @@ def gerar_relatorio_word():
                 
                 col1, col2 = st.columns(2)
                 with col1:
-                    nome_responsavel = st.text_input("Nome do Responsável:", placeholder="Ex: João Silva")
+                    nome_responsavel = st.text_input("Nome do Responsável:", value=st.session_state.user, placeholder="Ex: João Silva")
                     divisao_responsavel = st.text_input("Divisão:", placeholder="Ex: Divisão de Gestão de Ativos")
                 
                 with col2:
@@ -343,28 +343,28 @@ def gerar_relatorio_word():
                 
                 submitted = st.form_submit_button("✅ Confirmar Identificação", type="primary")
                 
-                    if submitted and nome_responsavel and divisao_responsavel:
-                        st.session_state.identificacao_relatorio = {
-                            'nome': nome_responsavel,
-                            'divisao': divisao_responsavel,
-                            'orgao': orgao_responsavel,
-                            'email': email_responsavel
-                        }
-                        st.success("✅ Identificação salva! Gerando relatório...")
-                        # Forçar a geração do relatório imediatamente após a identificação
-                        buffer = gerar_relatorio_word()
-                        if buffer:
-                            st.download_button(
-                                label="📥 Baixar Relatório Word",
-                                data=buffer,
-                                file_name=f"relatorio_riscos_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
-                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                key="download_report_auto"
-                            )
-                            st.success("✅ Relatório gerado e pronto para download!")
-                        st.rerun()
-                    elif submitted:
-                        st.error("❌ Por favor, preencha pelo menos o Nome e a Divisão.")
+                if submitted and nome_responsavel and divisao_responsavel:
+                    st.session_state.identificacao_relatorio = {
+                        'nome': nome_responsavel,
+                        'divisao': divisao_responsavel,
+                        'orgao': orgao_responsavel,
+                        'email': email_responsavel
+                    }
+                    st.success("✅ Identificação salva! Gerando relatório...")
+                    # Forçar a geração do relatório imediatamente após a identificação
+                    buffer = gerar_relatorio_word()
+                    if buffer:
+                        st.download_button(
+                            label="📥 Baixar Relatório Word",
+                            data=buffer,
+                            file_name=f"relatorio_riscos_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            key="download_report_auto"
+                        )
+                        st.success("✅ Relatório gerado e pronto para download!")
+                    st.rerun()
+                elif submitted:
+                    st.error("❌ Por favor, preencha pelo menos o Nome e a Divisão.")
             
             return None  # Retorna None para interromper a geração até que a identificação seja fornecida
         
