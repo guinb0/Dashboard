@@ -330,6 +330,9 @@ def gerar_relatorio_word():
         info_para.add_run("Roteiro de Auditoria de Gestão de Riscos - TCU")
         info_para.add_run("\nVersão do Sistema: ").bold = True
         info_para.add_run("2.0 - Análise Ampliada")
+        if 'username' in st.session_state:
+            info_para.add_run("\nUsuário: ").bold = True
+            info_para.add_run(st.session_state.username)
         
         doc.add_paragraph()
         
@@ -1735,3 +1738,383 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+        # 2. METODOLOGIA DETALHADA
+        doc.add_heading(\'2. METODOLOGIA E CRITÉRIOS DE AVALIAÇÃO\', level=1)
+        metodologia = """
+        A avaliação seguiu rigorosamente a metodologia estabelecida pelo TCU no "Roteiro de Auditoria de 
+        Gestão de Riscos", aplicando escalas quantitativas padronizadas e critérios objetivos.
+        
+        2.1 ESCALAS DE AVALIAÇÃO
+        
+        IMPACTO (Consequências para os objetivos):
+        • Muito baixo (1): Degradação mínima das operações
+        • Baixo (2): Degradação pequena, facilmente recuperável
+        • Médio (5): Interrupção significativa mas recuperável
+        • Alto (8): Interrupção grave, reversão muito difícil
+        • Muito alto (10): Paralisação com impactos irreversíveis
+        
+        PROBABILIDADE (Chance de ocorrência):
+        • Muito baixa (1): Evento improvável, sem elementos indicativos
+        • Baixa (2): Evento raro, poucos elementos indicam possibilidade
+        • Média (5): Evento possível, elementos moderadamente indicativos
+        • Alta (8): Evento provável, elementos consistentemente indicativos
+        • Muito alta (10): Evento praticamente certo de ocorrer
+        
+        2.2 CÁLCULOS E MÉTRICAS
+        
+        • Risco Inerente = Impacto × Probabilidade
+        • Risco Residual = Risco Inerente × Fator de Mitigação (por modalidade)
+        • Risco Residual Acumulado = Σ(Riscos Residuais) por modalidade
+        • Eficácia de Mitigação = (1 - Fator de Mitigação) × 100%
+        • Classificação de Risco: Baixo (≤10), Médio (11-25), Alto (>25)
+        
+        2.3 CRITÉRIOS DE COMPARAÇÃO
+        
+        As modalidades foram comparadas considerando:
+        - Capacidade de mitigação de cada risco específico
+        - Risco residual acumulado total
+        - Eficácia percentual de mitigação
+        - Classificação final de risco
+        """
+        doc.add_paragraph(metodologia)
+        
+        # 3. ANÁLISE DETALHADA DOS RISCOS
+        doc.add_heading(\'3. ANÁLISE INDIVIDUAL DOS RISCOS\', level=1)
+        
+        for i, risco in enumerate(st.session_state.riscos, 1):
+            doc.add_heading(f\'3.{i} {risco["risco_chave"]}\'', level=2)
+            
+            # Informações básicas
+            info_risco = f"""
+            OBJETIVO ESTRATÉGICO: {risco[\'objetivo_chave\']}
+            
+            DESCRIÇÃO E JUSTIFICATIVA:
+            {risco[\'descricao\']}
+            """
+            doc.add_paragraph(info_risco)
+            
+            # Contexto específico se existir
+            if \'contexto_especifico\' in risco and risco[\'contexto_especifico\']:
+                contexto_para = doc.add_paragraph()
+                contexto_para.add_run("CONTEXTO ESPECÍFICO DO PROJETO: ").bold = True
+                contexto_para.add_run(risco[\'contexto_especifico\'])
+            
+            # Aspectos considerados na avaliação
+            risco_nome = risco[\'risco_chave\']
+            if risco_nome in ASPECTOS_RISCOS:
+                doc.add_paragraph().add_run("ASPECTOS CONSIDERADOS NA AVALIAÇÃO:").bold = True
+                
+                aspectos_para = doc.add_paragraph()
+                aspectos_para.add_run("Impacto: ").bold = True
+                for j, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome][\'impacto\'], 1):
+                    aspectos_para.add_run(f"\\n{j}. {aspecto}")
+                
+                aspectos_para.add_run("\\n\\nProbabilidade: ").bold = True
+                for j, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome][\'probabilidade\'], 1):
+                    aspectos_para.add_run(f"\\n{j}. {aspecto}")
+            
+            # Tabela de avaliação
+            table = doc.add_table(rows=1, cols=5)
+            table.style = \'Table Grid\'
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = \'Dimensão\'
+            hdr_cells[1].text = \'Nível Qualitativo\'
+            hdr_cells[2].text = \'Valor Quantitativo\'
+            hdr_cells[3].text = \'Resultado\'
+            hdr_cells[4].text = \'Classificação\'
+            
+            # Linha do Impacto
+            row_cells = table.add_row().cells
+            row_cells[0].text = \'IMPACTO\'
+            row_cells[1].text = risco[\'impacto_nivel\']
+            row_cells[2].text = str(risco[\'impacto_valor\'])
+            row_cells[3].text = f"I × P = {risco[\'impacto_valor\']} × {risco[\'probabilidade_valor\']}"
+            row_cells[4].text = risco[\'classificacao\']
+            
+            # Linha da Probabilidade
+            row_cells = table.add_row().cells
+            row_cells[0].text = \'PROBABILIDADE\'
+            row_cells[1].text = risco[\'probabilidade_nivel\']
+            row_cells[2].text = str(risco[\'probabilidade_valor\'])
+            row_cells[3].text = f"Risco Inerente = {risco[\'risco_inerente\']}"
+            row_cells[4].text = \'-\'  # Mudei de \'\' para \'-\'
+            
+            # Análise por modalidade para este risco
+            doc.add_paragraph().add_run("ANÁLISE POR MODALIDADE:").bold = True
+            
+            # Tabela de modalidades para este risco
+            modalidades_table = doc.add_table(rows=1, cols=4)
+            modalidades_table.style = \'Table Grid\'
+            hdr_cells = modalidades_table.rows[0].cells
+            hdr_cells[0].text = \'Modalidade\'
+            hdr_cells[1].text = \'Fator Mitigação\'
+            hdr_cells[2].text = \'Risco Residual\'
+            hdr_cells[3].text = \'Eficácia (%)\'
+            
+            # Ordenar modalidades por risco residual para este risco específico
+            modalidades_risco = []
+            for modalidade in st.session_state.modalidades:
+                if modalidade in risco[\'modalidades\']:
+                    fator = risco[\'modalidades\'][modalidade]
+                    risco_residual = risco[\'risco_inerente\'] * fator
+                    eficacia = (1 - fator) * 100
+                    modalidades_risco.append((modalidade, fator, risco_residual, eficacia))
+            
+            modalidades_risco.sort(key=lambda x: x[2])  # Ordenar por risco residual
+            
+            for modalidade, fator, risco_residual, eficacia in modalidades_risco:
+                row_cells = modalidades_table.add_row().cells
+                row_cells[0].text = modalidade[:30] + "..." if len(modalidade) > 30 else modalidade
+                row_cells[1].text = f"{fator:.2f}"
+                row_cells[2].text = f"{risco_residual:.1f}"
+                row_cells[3].text = f"{eficacia:.1f}%"
+            
+            doc.add_paragraph()
+        
+        # 4. ANÁLISE COMPARATIVA DAS MODALIDADES
+        doc.add_heading(\'4. ANÁLISE COMPARATIVA DAS MODALIDADES\', level=1)
+        
+        # Calcular dados para análise comparativa
+        dados_comparativos = {}
+        for modalidade in st.session_state.modalidades:
+            risco_residual_total = 0
+            risco_inerente_aplicavel = 0
+            count_riscos = 0
+            
+            for risco in st.session_state.riscos:
+                if modalidade in risco[\'modalidades\']:
+                    fator_mitigacao = risco[\'modalidades\'][modalidade]
+                    risco_residual = risco[\'risco_inerente\'] * fator_mitigacao
+                    risco_residual_total += risco_residual
+                    risco_inerente_aplicavel += risco[\'risco_inerente\']
+                    count_riscos += 1
+            
+            eficacia_total = ((risco_inerente_aplicavel - risco_residual_total) / risco_inerente_aplicavel * 100) if risco_inerente_aplicavel > 0 else 0
+            
+            dados_comparativos[modalidade] = {
+                \'risco_residual_total\': risco_residual_total,
+                \'risco_inerente_aplicavel\': risco_inerente_aplicavel,
+                \'eficacia_percentual\': eficacia_total,
+                \'classificacao\': classificar_risco(risco_residual_total)[0],
+                \'riscos_aplicaveis\': count_riscos
+            }
+        
+        # Tabela comparativa principal
+        doc.add_heading(\'4.1 Quadro Comparativo Consolidado\', level=2)
+        
+        table = doc.add_table(rows=1, cols=6)
+        table.style = \'Table Grid\'
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = \'Ranking\'
+        hdr_cells[1].text = \'Modalidade\'
+        hdr_cells[2].text = \'Risco Residual Total\'
+            hdr_cells[3].text = \'Eficácia Mitigação (%)\'
+            hdr_cells[4].text = \'Classificação Final\'
+            hdr_cells[5].text = \'Riscos Aplicáveis\'
+            
+            # Ordenar modalidades por risco residual
+            modalidades_ordenadas = sorted(dados_comparativos.items(), 
+                                         key=lambda x: x[1][\'risco_residual_total\'])
+            
+            for i, (modalidade, dados) in enumerate(modalidades_ordenadas, 1):
+                row_cells = table.add_row().cells
+                row_cells[0].text = f"{i}º"
+                row_cells[1].text = modalidade
+                row_cells[2].text = f"{dados[\'risco_residual_total\']:.1f}"
+                row_cells[3].text = f"{dados[\'eficacia_percentual\']:.1f}%"
+                row_cells[4].text = dados[\'classificacao\']
+                row_cells[5].text = f"{dados[\'riscos_aplicaveis\']}/{total_riscos}"
+            
+            # 4.2 Análise de Performance
+            doc.add_heading(\'4.2 Análise de Performance por Modalidade\', level=2)
+            
+            for i, (modalidade, dados) in enumerate(modalidades_ordenadas, 1):
+                posicao_texto = "RECOMENDADA" if i == 1 else "NÃO RECOMENDADA" if i == len(modalidades_ordenadas) else f"{i}ª COLOCADA"
+                
+                performance_para = doc.add_paragraph()
+                performance_para.add_run(f"{modalidade} - {posicao_texto}").bold = True
+                performance_para.add_run(f"""
+                • Risco Residual Total: {dados[\'risco_residual_total\']:.1f} pontos
+                • Eficácia de Mitigação: {dados[\'eficacia_percentual\']:.1f}%
+                • Classificação de Risco: {dados[\'classificacao\']}
+                • Redução Absoluta do Risco: {dados[\'risco_inerente_aplicavel\'] - dados[\'risco_residual_total\']:.1f} pontos
+                • Riscos Aplicáveis: {dados[\'riscos_aplicaveis\']} de {total_riscos} riscos
+                """)
+            
+            # 5. MATRIZ DETALHADA DE RISCOS
+            doc.add_heading(\'5. MATRIZ DETALHADA DE RISCOS POR MODALIDADE\', level=1)
+            
+            # Criar tabela expandida
+            num_cols = 3 + len(st.session_state.modalidades)
+            table = doc.add_table(rows=1, cols=num_cols)
+            table.style = \'Table Grid\'
+            
+            # Cabeçalhos
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = \'Risco\'
+            hdr_cells[1].text = \'Impacto\'
+            hdr_cells[2].text = \'Probabilidade\'
+            for i, modalidade in enumerate(st.session_state.modalidades):
+                col_name = modalidade[:15] + "..." if len(modalidade) > 15 else modalidade
+                hdr_cells[3 + i].text = col_name
+            
+            # Dados por risco
+            for risco in st.session_state.riscos:
+                row_cells = table.add_row().cells
+                risco_name = risco[\'risco_chave\'][:25] + "..." if len(risco[\'risco_chave\']) > 25 else risco[\'risco_chave\']
+                row_cells[0].text = risco_name
+                row_cells[1].text = str(risco[\'impacto_valor\'])
+                row_cells[2].text = str(risco[\'probabilidade_valor\'])
+                
+                for i, modalidade in enumerate(st.session_state.modalidades):
+                    if modalidade in risco[\'modalidades\']:
+                        fator = risco[\'modalidades\'][modalidade]
+                        risco_residual = risco[\'risco_inerente\'] * fator
+                        row_cells[3 + i].text = f"{risco_residual:.1f}"
+                    else:
+                        row_cells[3 + i].text = "N/A"
+            
+            # Linha de totais
+            row_cells = table.add_row().cells
+            row_cells[0].text = "TOTAL ACUMULADO"
+            row_cells[1].text = "-"  # Mudei de "" para "-"
+            row_cells[2].text = "-"  # Mudei de "" para "-"
+            
+            for i, modalidade in enumerate(st.session_state.modalidades):
+                if modalidade in dados_comparativos:
+                    row_cells[3 + i].text = f"{dados_comparativos[modalidade][\'risco_residual_total\']:.1f}"
+                else:
+                    row_cells[3 + i].text = "N/A"
+            
+            # 6. RECOMENDAÇÕES E CONCLUSÕES
+            doc.add_heading(\'6. RECOMENDAÇÕES EXECUTIVAS\', level=1)
+            
+            melhor_modalidade_dados = dados_comparativos[melhor_modalidade]
+            pior_modalidade_dados = dados_comparativos[pior_modalidade]
+            
+            recomendacoes = f"""
+            6.1 MODALIDADE RECOMENDADA
+            
+            Com base na análise quantitativa realizada, recomenda-se a adoção da modalidade:
+            "{melhor_modalidade}"
+            
+            JUSTIFICATIVAS TÉCNICAS:
+            • Menor risco residual acumulado: {melhor_modalidade_dados[\'risco_residual_total\']:.1f} pontos
+            • Maior eficácia de mitigação: {melhor_modalidade_dados[\'eficacia_percentual\']:.1f}%
+            • Classificação de risco final: {melhor_modalidade_dados[\'classificacao\']}
+            • Aplicabilidade: {melhor_modalidade_dados[\'riscos_aplicaveis\']} de {total_riscos} riscos
+            
+            6.2 MODALIDADES NÃO RECOMENDADAS
+            
+            A modalidade de maior risco identificada é:
+            "{pior_modalidade}"
+            
+            RAZÕES PARA NÃO RECOMENDAÇÃO:
+            • Maior risco residual acumulado: {pior_modalidade_dados[\'risco_residual_total\']:.1f} pontos
+            • Menor eficácia de mitigação: {pior_modalidade_dados[\'eficacia_percentual\']:.1f}%
+            • Classificação de risco final: {pior_modalidade_dados[\'classificacao\']}
+            
+            6.3 IMPACTO DA ESCOLHA DA MODALIDADE
+            
+            A diferença entre a melhor e pior modalidade é de {pior_modalidade_dados[\'risco_residual_total\'] - melhor_modalidade_dados[\'risco_residual_total\']:.1f} pontos de risco, 
+            representando {(pior_modalidade_dados[\'risco_residual_total\'] - melhor_modalidade_dados[\'risco_residual_total\'])/risco_inerente_total*100:.1f}% 
+            do risco total do projeto.
+            
+            Esta diferença demonstra a importância crítica da escolha adequada da modalidade de contratação 
+            para o sucesso do empreendimento.
+            """
+            doc.add_paragraph(recomendacoes)
+            
+            # 7. CONCLUSÕES FINAIS
+            doc.add_heading(\'7. CONCLUSÕES E CONSIDERAÇÕES FINAIS\', level=1)
+            
+            conclusoes = f"""
+            A presente análise, baseada na metodologia consolidada do TCU, permitiu uma avaliação 
+            objetiva e fundamentada das modalidades de contratação disponíveis para o projeto.
+            
+            PRINCIPAIS RESULTADOS:
+            
+            1. RISCO TOTAL DO PROJETO: {risco_inerente_total:.1f} pontos (antes da mitigação)
+            
+            2. ESTRATÉGIA ÓTIMA IDENTIFICADA: {melhor_modalidade}
+               - Reduz o risco total para {melhor_modalidade_dados[\'risco_residual_total\']:.1f} pontos
+               - Eficácia de mitigação de {melhor_modalidade_dados[\'eficacia_percentual\']:.1f}%
+               - Redução absoluta de {melhor_modalidade_dados[\'risco_inerente_aplicavel\'] - melhor_modalidade_dados[\'risco_residual_total\']:.1f} pontos de risco
+               
+            3. AMPLITUDE DE VARIAÇÃO: As modalidades analisadas apresentam variação de risco residual 
+               de {pior_modalidade_dados[\'risco_residual_total\'] - melhor_modalidade_dados[\'risco_residual_total\']:.1f} pontos, 
+               evidenciando a relevância da escolha estratégica.
+               
+            4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
+               pelo TCU para gestão de riscos em projetos públicos, garantindo objetividade e 
+               fundamentação técnica para a tomada de decisão.
+            
+            CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
+            
+            • A modalidade recomendada deve ser implementada observando-se os aspectos específicos 
+              identificados na análise de cada risco.
+            • Recomenda-se o monitoramento contínuo dos fatores de risco durante a execução do projeto.
+            • Os resultados desta análise devem ser revisados caso ocorram mudanças significativas 
+              no contexto do projeto ou nas condições de mercado.
+            
+            Esta análise fornece base técnica sólida e metodologicamente consistente para a tomada 
+            de decisão, em total conformidade com as melhores práticas de gestão de riscos estabelecidas 
+            pelos órgãos de controle.
+            """
+            doc.add_paragraph(conclusoes)
+            
+            # ANEXOS
+            doc.add_heading(\'ANEXOS\', level=1)
+            
+            # Anexo I - Escalas utilizadas
+            doc.add_heading(\'ANEXO I - Escalas de Avaliação Utilizadas\', level=2)
+            
+            escalas_texto = """
+            ESCALA DE IMPACTO:
+            1 - Muito baixo: Degradação de operações causando impactos mínimos nos objetivos
+            2 - Baixo: Degradação de operações causando impactos pequenos nos objetivos  
+            5 - Médio: Interrupção de operações causando impactos significativos mas recuperáveis
+            8 - Alto: Interrupção de operações causando impactos de reversão muito difícil
+            10 - Muito alto: Paralisação de operações causando impactos irreversíveis/catastróficos
+            
+            ESCALA DE PROBABILIDADE:
+            1 - Muito baixa: Evento improvável de ocorrer. Não há elementos que indiquem essa possibilidade
+            2 - Baixa: Evento raro de ocorrer. Poucos elementos indicam essa possibilidade
+            5 - Média: Evento possível de ocorrer. Elementos indicam moderadamente essa possibilidade  
+            8 - Alta: Evento provável de ocorrer. Elementos indicam consistentemente essa possibilidade
+            10 - Muito alta: Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade
+            """
+            doc.add_paragraph(escalas_texto)
+            
+            # Rodapé
+            doc.add_paragraph()
+            doc.add_paragraph("_" * 50)
+            rodape = doc.add_paragraph()
+            rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos TCU v2.0").italic = True
+            rodape.add_run(f"\\nData e hora: {datetime.now().strftime(\'%d/%m/%Y às %H:%M\')}")
+            rodape.add_run(f"\\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
+            
+            # Salvar em buffer
+            buffer = BytesIO()
+            doc.save(buffer)
+            buffer.seek(0)
+            
+            return buffer
+            
+        except ImportError:
+            st.error("📋 Para gerar relatórios Word, instale a biblioteca python-docx: pip install python-docx")
+            return None
+        except Exception as e:
+            st.error(f"Erro ao gerar relatório: {str(e)}")
+            return None
+
+def calcular_risco_inerente(impacto, probabilidade):
+    """Calcula o risco inerente (Impacto x Probabilidade)"""
+    return impacto * probabilidade
+
+def criar_heatmap_modalidades_melhorado(riscos_comparacao):
+    """Cr
+
+
