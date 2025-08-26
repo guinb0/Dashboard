@@ -1097,8 +1097,8 @@ def cadastro_riscos():
             )
             
             contexto_especifico = st.text_area(
-                "Justificativa de mudança de Probabilidade:",
-                placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
+                "Descrição/Justificativa de Probabilidade:",
+                placeholder="Ex: Complexidade, Tempo, etc...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
         
@@ -1281,7 +1281,7 @@ def editar_riscos():
         
         with col2:
             # Contexto específico
-            st.subheader("🗗️ Justificativa de mudança de Probabilidade")
+            st.subheader("🗗️ Justificativa de Probabilidade")
             contexto_especifico = st.text_area(
                 "Fatores específicos que influenciam a probabilidade deste risco:",
                 value=risco_atual.get('contexto_especifico', ''),
