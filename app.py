@@ -301,7 +301,7 @@ def classificar_risco(valor_risco):
     else:
         return "Alto", "#dc3545"
 
-def gerar_relatorio_word():
+def gerar_relatorio_word(nome_projeto="Projeto"):
     """Gera relatório completo e amplo em formato Word"""
     try:
         from docx import Document
@@ -314,8 +314,8 @@ def gerar_relatorio_word():
         # Criar documento
         doc = Document()
         
-        # Título principal
-        title = doc.add_heading('RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS', 0)
+        # Título principal com nome do projeto
+        title = doc.add_heading(f'RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS - {nome_projeto}', 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # Subtítulo
@@ -2298,17 +2298,21 @@ def main():
         
         # Botão para gerar relatório Word
         if st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
-            with st.spinner("Gerando relatório..."):
-                buffer = gerar_relatorio_word()
-                if buffer:
-                    st.download_button(
-                        label="📥 Baixar Relatório Word",
-                        data=buffer,
-                        file_name=f"relatorio_riscos_{datetime.now().strftime("%Y%m%d_%H%M")}.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        key="download_report_sidebar"
-                    )
-                    st.success("✅ Relatório gerado com sucesso!")
+            nome_projeto = st.text_input("Digite o nome do projeto:", key="nome_projeto_input")
+            if nome_projeto:
+                with st.spinner("Gerando relatório..."):
+                    buffer = gerar_relatorio_word(nome_projeto)
+                    if buffer:
+                        st.download_button(
+                            label="📥 Baixar Relatório Word",
+                            data=buffer,
+                            file_name=f"relatorio_riscos_{nome_projeto.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            key="download_report_sidebar"
+                        )
+                        st.success("✅ Relatório gerado com sucesso!")
+            else:
+                st.warning("Por favor, digite o nome do projeto para gerar o relatório.")
         
         if st.button("💾 Exportar dados (JSON)"):
             import json
@@ -2378,3 +2382,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
