@@ -451,17 +451,19 @@ def gerar_relatorio_word():
             # Informações básicas do risco
             risco_para = doc.add_paragraph()
             risco_para.add_run("Objetivo-Chave: ").bold = True
-            risco_para.add_run(risco['objetivo_chave'])
-            risco_para.add_run("\n\nDescrição/Justificativa: ").bold = True
-            risco_para.add_run(risco['descricao'])
+            risco_para.add_run(risco["objetivo_chave"])
             
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
             aval_para.add_run("\nAVALIAÇÃO QUANTITATIVA:").bold = True
-            aval_para.add_run(f"\n• Impacto: {risco['impacto_valor']} ({risco['impacto_nivel']})")
-            aval_para.add_run(f"\n• Probabilidade: {risco['probabilidade_valor']} ({risco['probabilidade_nivel']})")
-            aval_para.add_run(f"\n• Risco Inerente: {risco['risco_inerente']} pontos")
-            aval_para.add_run(f"\n• Classificação: {risco['classificacao']}")
+            aval_para.add_run(f"\n• Impacto: {risco["impacto_valor"]} ({risco["impacto_nivel"]})")
+            aval_para.add_run("\nObjetivo-Chave: ").bold = True
+            aval_para.add_run(risco["objetivo_chave"])
+            aval_para.add_run(f"\n• Probabilidade: {risco["probabilidade_valor"]} ({risco["probabilidade_nivel"]})")
+            aval_para.add_run("\nDescrição/Justificativa: ").bold = True
+            aval_para.add_run(risco["descricao"])
+            aval_para.add_run(f"\n• Risco Inerente: {risco["risco_inerente"]} pontos")
+            aval_para.add_run(f"\n• Classificação: {risco["classificacao"]}")
             
             # Análise por modalidade
             modal_para = doc.add_paragraph()
@@ -1095,7 +1097,7 @@ def cadastro_riscos():
             )
             
             contexto_especifico = st.text_area(
-                "Características do Caso Concreto:",
+                "Justificativa de mudança de Probabilidade:",
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
@@ -1279,9 +1281,9 @@ def editar_riscos():
         
         with col2:
             # Contexto específico
-            st.subheader("🗗️ Características do Caso Concreto")
+            st.subheader("🗗️ Justificativa de mudança de Probabilidade")
             contexto_especifico = st.text_area(
-                "Fatores específicos que influenciam este risco:",
+                "Fatores específicos que influenciam a probabilidade deste risco:",
                 value=risco_atual.get('contexto_especifico', ''),
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
