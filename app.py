@@ -322,7 +322,7 @@ def gerar_relatorio_word():
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # Subtítulo
-        subtitle = doc.add_heading("Metodologia TCU - Análise Comparativa de Modalidades de Contratação", level=1)
+        subtitle = doc.add_heading("Metodologia - Análise Comparativa de Modalidades de Contratação", level=1)
         subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # NOVO: Nome do Projeto como título dentro do documento
@@ -386,8 +386,8 @@ def gerar_relatorio_word():
                              key=lambda x: risco_acumulado_por_modalidade[x])
         
         resumo = f"""
-        Este relatório apresenta análise quantitativa de {total_riscos} riscos identificados para o projeto, 
-        utilizando a metodologia do Tribunal de Contas da União (TCU). A análise inclui avaliação detalhada 
+        Este relatório apresenta análise quantitativa de {total_riscos} riscos identificados para o projeto 
+        . A análise inclui avaliação detalhada 
         de impacto e probabilidade, cálculo de riscos inerentes e residuais, e comparação sistemática entre 
         {len(st.session_state.modalidades)} modalidades de contratação.
         
@@ -411,7 +411,7 @@ def gerar_relatorio_word():
         # 2. METODOLOGIA DETALHADA
         doc.add_heading('2. METODOLOGIA E CRITÉRIOS DE AVALIAÇÃO', level=1)
         metodologia = """
-        A avaliação seguiu rigorosamente a metodologia estabelecida pelo TCU no "Roteiro de Auditoria de 
+        A avaliação seguiu rigorosamente a metodologia estabelecida no "Roteiro de Auditoria de 
         Gestão de Riscos", aplicando escalas quantitativas padronizadas e critérios objetivos.
         
         2.1 ESCALAS DE AVALIAÇÃO
