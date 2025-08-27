@@ -311,11 +311,14 @@ def gerar_relatorio_word():
         from docx.oxml.shared import OxmlElement, qn
         from io import BytesIO
         
+        # Obter nome do projeto da session_state
+        nome_projeto = st.session_state.get('nome_projeto', 'Projeto')
+        
         # Criar documento
         doc = Document()
         
-        # Título principal
-        title = doc.add_heading('RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS', 0)
+        # Título principal com nome do projeto
+        title = doc.add_heading(f'RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS - {nome_projeto}', 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # Subtítulo
@@ -456,14 +459,14 @@ def gerar_relatorio_word():
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
             aval_para.add_run("\nAVALIAÇÃO QUANTITATIVA:").bold = True
-            aval_para.add_run(f"\n• Impacto: {risco["impacto_valor"]} ({risco["impacto_nivel"]})\n")
+            aval_para.add_run(f"\n• Impacto: {risco['impacto_valor']} ({risco['impacto_nivel']})\n")
             aval_para.add_run("Justificativa do risco: ").bold = True
             aval_para.add_run(risco["descricao"])
-            aval_para.add_run(f"\n\n• Probabilidade: {risco["probabilidade_valor"]} ({risco["probabilidade_nivel"]})\n")
+            aval_para.add_run(f"\n\n• Probabilidade: {risco['probabilidade_valor']} ({risco['probabilidade_nivel']})\n")
             aval_para.add_run("Justificativa de Probabilidade de ocorrência: ").bold = True
             aval_para.add_run(risco.get("contexto_especifico", ""))
-            aval_para.add_run(f"\n\n• Risco Inerente: {risco["risco_inerente"]} pontos")
-            aval_para.add_run(f"\n• Classificação: {risco["classificacao"]}")
+            aval_para.add_run(f"\n\n• Risco Inerente: {risco['risco_inerente']} pontos")
+            aval_para.add_run(f"\n• Classificação: {risco['classificacao']}")
             
             # Análise por modalidade
             modal_para = doc.add_paragraph()
@@ -703,7 +706,7 @@ def gerar_relatorio_word():
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio["divisao"]}")
+            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
@@ -2205,11 +2208,17 @@ def main():
                 username = st.text_input("Usuário", placeholder="Digite seu usuário")
                 password = st.text_input("Senha", type="password", placeholder="Digite sua senha")
                 
+                # NOVO: Campo para nome do projeto
+                nome_projeto = st.text_input("Nome do Projeto", placeholder="Digite o nome do projeto trabalhado")
+                
                 submitted = st.form_submit_button("Entrar")
                 
                 if submitted:
-                    if verificar_login(username, password):
+                    if not nome_projeto.strip():
+                        st.error("Por favor, digite o nome do projeto")
+                    elif verificar_login(username, password):
                         st.session_state.user = username
+                        st.session_state.nome_projeto = nome_projeto.strip()
                         st.rerun()
                     else:
                         st.error("Usuário ou senha incorretos")
@@ -2217,7 +2226,8 @@ def main():
         st.stop()
     
     # Se está logado, mostrar a aplicação normal
-    st.title("🛡️ Dashboard de Avaliação de Riscos")
+    nome_projeto_titulo = st.session_state.get('nome_projeto', 'Projeto')
+    st.title(f"🛡️ Dashboard de Avaliação de Riscos - {nome_projeto_titulo}")
     st.markdown(f"*Usuário: {st.session_state.user}*")
     st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos do TCU*")
     
@@ -2301,10 +2311,11 @@ def main():
             with st.spinner("Gerando relatório..."):
                 buffer = gerar_relatorio_word()
                 if buffer:
+                    nome_projeto_arquivo = st.session_state.get('nome_projeto', 'Projeto').replace(' ', '_')
                     st.download_button(
                         label="📥 Baixar Relatório Word",
                         data=buffer,
-                        file_name=f"relatorio_riscos_{datetime.now().strftime("%Y%m%d_%H%M")}.docx",
+                        file_name=f"relatorio_riscos_{nome_projeto_arquivo}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         key="download_report_sidebar"
                     )
@@ -2378,3 +2389,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
