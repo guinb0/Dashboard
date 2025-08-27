@@ -1247,7 +1247,7 @@ def editar_riscos():
         with col1:
             # Edição da descrição/justificativa
             nova_descricao = st.text_area(
-                "Justificativa para o caso concreto:",
+                "Justificativa para a pontuação de risco:",
                 value=risco_atual['descricao'],
                 help="Descreva as características específicas do seu caso que justificam a avaliação"
             )
@@ -1286,7 +1286,7 @@ def editar_riscos():
             # Contexto específico
             st.subheader("🗗️ Justificativa de mudança de Probabilidade")
             contexto_especifico = st.text_area(
-                "Fatores específicos que influenciam a probabilidade deste risco:",
+                "Justificativa da pontuação de probabilidade:",
                 value=risco_atual.get('contexto_especifico', ''),
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
