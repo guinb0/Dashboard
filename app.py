@@ -2233,7 +2233,7 @@ def main():
     nome_projeto_titulo = st.session_state.get('nome_projeto', 'Projeto')
     st.title(f"🛡️ Dashboard de Avaliação de Riscos - {nome_projeto_titulo}")
     st.markdown(f"*Usuário: {st.session_state.user}*")
-    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos do TCU*")
+    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos *")
     
     inicializar_dados()
     
