@@ -2205,7 +2205,7 @@ def show_login_screen():
     with st.form("login_form"):
         project_name = st.text_input("Nome do Projeto", placeholder="Digite o nome do projeto")
         username = st.text_input("Usuário")
-        password = st.text_input("Senha", type=\'password\')
+        password = st.text_input("Senha", type='password')
         submitted = st.form_submit_button("Login")
 
         if submitted:
