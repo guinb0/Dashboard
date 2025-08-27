@@ -322,8 +322,12 @@ def gerar_relatorio_word():
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # Subtítulo
-        subtitle = doc.add_heading('Metodologia TCU - Análise Comparativa de Modalidades de Contratação', level=1)
+        subtitle = doc.add_heading("Metodologia TCU - Análise Comparativa de Modalidades de Contratação", level=1)
         subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        # NOVO: Nome do Projeto como título dentro do documento
+        doc.add_heading(f"Projeto: {nome_projeto}", level=2)
+        doc.add_paragraph()
         
         # NOVA SEÇÃO: Informações do responsável pelo relatório
         # Solicitar identificação do usuário se não estiver definida
@@ -1247,7 +1251,7 @@ def editar_riscos():
         with col1:
             # Edição da descrição/justificativa
             nova_descricao = st.text_area(
-                "Justificativa para a pontuação de risco:",
+                "Justificativa para o caso concreto:",
                 value=risco_atual['descricao'],
                 help="Descreva as características específicas do seu caso que justificam a avaliação"
             )
@@ -1286,7 +1290,7 @@ def editar_riscos():
             # Contexto específico
             st.subheader("🗗️ Justificativa de mudança de Probabilidade")
             contexto_especifico = st.text_area(
-                "Justificativa da pontuação de probabilidade:",
+                "Fatores específicos que influenciam a probabilidade deste risco:",
                 value=risco_atual.get('contexto_especifico', ''),
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
