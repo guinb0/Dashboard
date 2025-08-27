@@ -301,8 +301,9 @@ def classificar_risco(valor_risco):
     else:
         return "Alto", "#dc3545"
 
-def gerar_relatorio_word(nome_projeto="Projeto"):
+def gerar_relatorio_word():
     """Gera relatório completo e amplo em formato Word"""
+    nome_projeto = st.session_state.get("project_name", "Projeto Padrão")
     try:
         from docx import Document
         from docx.shared import Inches
@@ -2197,29 +2198,26 @@ def main():
     if not st.session_state.user:
         st.title("🔐 Login - Sistema de Gestão de Riscos")
         
-        col1, col2, col3 = st.columns([1, 2, 1])
-        
-        with col2:
-            with st.form("login_form"):
-                # MUDANÇA: Usar text_input em vez de selectbox para permitir digitação livre
-                username = st.text_input("Usuário", placeholder="Digite seu usuário")
-                password = st.text_input("Senha", type="password", placeholder="Digite sua senha")
-                
-                submitted = st.form_submit_button("Entrar")
-                
-                if submitted:
-                    if verificar_login(username, password):
-                        st.session_state.user = username
-                        st.rerun()
-                    else:
-                        st.error("Usuário ou senha incorretos")
-        
-        st.stop()
+def show_login_screen():
+    """Exibe a tela de login"""
+    st.title("Login - Dashboard de Riscos")
     
-    # Se está logado, mostrar a aplicação normal
-    st.title("🛡️ Dashboard de Avaliação de Riscos")
-    st.markdown(f"*Usuário: {st.session_state.user}*")
-    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos do TCU*")
+    with st.form("login_form"):
+        project_name = st.text_input("Nome do Projeto", placeholder="Digite o nome do projeto")
+        username = st.text_input("Usuário")
+        password = st.text_input("Senha", type=\'password\')
+        submitted = st.form_submit_button("Login")
+
+        if submitted:
+            if verificar_login(username, password):
+                st.session_state.logged_in = True
+                st.session_state.user = username
+                st.session_state.project_name = project_name
+                registrar_acao(username, "login_sucesso")
+                st.rerun()  # Usar st.rerun() para recarregar a página
+            else:
+                st.error("Usuário ou senha incorretos.")
+                registrar_acao(username, "login_falha")
     
     inicializar_dados()
     
@@ -2337,9 +2335,8 @@ def main():
             st.rerun()
         
         if st.button("🔥 Limpar todos os dados"):
-            if st.checkbox("⚠️ Confirmo que quero limpar todos os dados"):
-                st.session_state.riscos = []
-                st.session_state.modalidades = MODALIDADES_PADRAO.copy()
+            if st.checkbox("⚠️ Confirmo que quero limpar todos os dados                st.session_state.logged_in = True
+                st.session_state.user = username
                 st.success("Dados limpos!")
                 st.rerun()
             else:
