@@ -334,7 +334,7 @@ def gerar_relatorio_word():
         if 'identificacao_relatorio' not in st.session_state or st.session_state.identificacao_relatorio is None:
             st.session_state.identificacao_relatorio = {
                 'nome': st.session_state.user,
-                'divisao': 'Divisão Padrão',
+                'unidade': 'Unidade Padrão',
                 'orgao': 'SPU',
                 'email': 'usuario@spu.gov.br'
             }
@@ -352,7 +352,7 @@ def gerar_relatorio_word():
         # Adicionar informações do responsável
         info_para.add_run("\n\nRESPONSÁVEL PELA ANÁLISE:").bold = True
         info_para.add_run(f"\nNome: {st.session_state.identificacao_relatorio['nome']}")
-        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
+        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
         if st.session_state.identificacao_relatorio['orgao']:
             info_para.add_run(f"\nÓrgão: {st.session_state.identificacao_relatorio['orgao']}")
         if st.session_state.identificacao_relatorio['email']:
@@ -708,9 +708,9 @@ def gerar_relatorio_word():
         rodape = doc.add_paragraph()
         rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos SAROI v2.0").italic = True
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
-        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
+        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['unidade']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
+            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
@@ -932,12 +932,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.6,
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.4,
                     'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
+                    'Contratação com dação em pagamento': 0.6,
+                    'Obra pública convencional': 0.6
                 }
             },
             {
@@ -951,12 +951,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.2,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 1.0
+                    'Permuta por imóvel já construído': 1.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por obra (terreno da União)': 1.0,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.2
                 }
             },
             {
@@ -970,12 +970,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.8
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
+                    'Permuta por obra (terreno da União)': 0.9,
+                    'Build to Suit (terreno da União)': 0.9,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.1
                 }
             },
             {
@@ -989,12 +989,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
                     'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
+                    'Build to Suit (terreno da União)': 0.2,
                     'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
+                    'Obra pública convencional': 0.4
                 }
             },
             {
