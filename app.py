@@ -1150,6 +1150,7 @@ def cadastro_riscos():
         st.info("Para cada modalidade, defina os fatores de mitigação (0.0 = elimina totalmente o risco, 1.0 = não mitiga)")
         
         modalidades_avaliacao = {}
+        justificativas_modalidades = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1164,6 +1165,15 @@ def cadastro_riscos():
                 )
                 modalidades_avaliacao[modalidade] = fator
                 
+                # Campo de justificação obrigatório
+                justificativa = st.text_area(
+                    f"Justificativa para {modalidade}:",
+                    placeholder="Explique por que esta modalidade tem este fator de mitigação...",
+                    key=f"justificativa_{i}",
+                    help="Campo obrigatório: justifique a nota atribuída"
+                )
+                justificativas_modalidades[modalidade] = justificativa
+                
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
                 class_residual, _ = classificar_risco(risco_residual)
@@ -1172,31 +1182,38 @@ def cadastro_riscos():
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
         if submitted and objetivo_chave and risco_chave:
-            novo_risco = {
-                'objetivo_chave': objetivo_chave,
-                'risco_chave': risco_chave,
-                'descricao': descricao_risco,
-                'contexto_especifico': contexto_especifico,
-                'impacto_nivel': impacto_nivel,
-                'impacto_valor': impacto_valor,
-                'probabilidade_nivel': probabilidade_nivel,
-                'probabilidade_valor': probabilidade_valor,
-                'risco_inerente': risco_inerente,
-                'classificacao': classificacao,
-                'modalidades': modalidades_avaliacao.copy(),
-                'personalizado': True,  # Marcar como personalizado
-                'criado_por': st.session_state.user,
-                'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
-            }
+            # Verificar se todas as justificativas foram preenchidas
+            justificativas_vazias = [modalidade for modalidade, justificativa in justificativas_modalidades.items() if not justificativa.strip()]
             
-            st.session_state.riscos.append(novo_risco)
-            
-            # Registrar a ação no log
-            registrar_acao(
-                st.session_state.user, 
-                "Criou risco", 
-                {"risco": risco_chave, "detalhes": novo_risco}
-            )
+            if justificativas_vazias:
+                st.error(f"⚠️ Por favor, preencha as justificativas para as seguintes modalidades: {', '.join(justificativas_vazias)}")
+            else:
+                novo_risco = {
+                    'objetivo_chave': objetivo_chave,
+                    'risco_chave': risco_chave,
+                    'descricao': descricao_risco,
+                    'contexto_especifico': contexto_especifico,
+                    'impacto_nivel': impacto_nivel,
+                    'impacto_valor': impacto_valor,
+                    'probabilidade_nivel': probabilidade_nivel,
+                    'probabilidade_valor': probabilidade_valor,
+                    'risco_inerente': risco_inerente,
+                    'classificacao': classificacao,
+                    'modalidades': modalidades_avaliacao.copy(),
+                    'justificativas_modalidades': justificativas_modalidades.copy(),
+                    'personalizado': True,  # Marcar como personalizado
+                    'criado_por': st.session_state.user,
+                    'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
+                }
+                
+                st.session_state.riscos.append(novo_risco)
+                
+                # Registrar a ação no log
+                registrar_acao(
+                    st.session_state.user, 
+                    "Criou risco", 
+                    {"risco": risco_chave, "detalhes": novo_risco}
+                )
             
             st.success(f"✅ Risco '{risco_chave}' salvo com sucesso!")
             st.rerun()
@@ -2364,8 +2381,8 @@ def main():
     
     # Abas principais - CORREÇÃO: Adicionada a aba de logs
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📝 Cadastro de Riscos", 
         "✏️ Editar Riscos",
+        "📝 Cadastro de Riscos", 
         "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
@@ -2373,10 +2390,10 @@ def main():
     ])
     
     with tab1:
-        cadastro_riscos()
+        editar_riscos()
     
     with tab2:
-        editar_riscos()
+        cadastro_riscos()
     
     with tab3:
         analise_riscos()
