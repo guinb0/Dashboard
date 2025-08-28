@@ -247,12 +247,14 @@ def init_db():
 
     ]
     
-    for usuario, senha_hash in usuarios_padrao:
-        try:
-            c.execute("INSERT INTO usuarios (username, password_hash) VALUES (?, ?)", 
-                     (usuario, senha_hash))
-        except sqlite3.IntegrityError:
-            pass  # Usuário já existe
+for usuario, senha_hash, unidade, orgao, email in usuarios_padrao:
+    try:
+        c.execute("""
+            INSERT INTO usuarios (username, password_hash, unidade, orgao, email) 
+            VALUES (?, ?, ?, ?, ?)
+        """, (usuario, senha_hash, unidade, orgao, email))
+    except sqlite3.IntegrityError:
+        pass  # Usuário já existe
     
     conn.commit()
     conn.close()
