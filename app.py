@@ -1148,28 +1148,13 @@ def cadastro_riscos():
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
-            with cols[i % len(cols)]:
-                fator = st.slider(
-                    f"{modalidade}:",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.5,
-                    step=0.1,
-                    key=f"modalidade_{i}"
-                )
-                modalidades_avaliacao[modalidade] = fator
-                
-                # Campo de justificação obrigatório
-                justificativa = st.text_area(
+            with cols[i                 justificativa = st.text_area(
                     f"Justificativa para {modalidade}:",
                     placeholder="Explique por que esta modalidade tem este fator de mitigação...",
                     key=f"justificativa_{i}",
                     help="Campo obrigatório: justifique a nota atribuída"
                 )
-                  modalidades_avaliacao[modalidade] = fatoresidual})")
-        
-        submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
-        
+                justificativas_modalidades[modalidade] = justificativa 
         if submitted and risco_chave:
             # Verificar se todas as justificativas foram preenchidas
             justificativas_vazias = [modalidade for modalidade, justificativa in justificativas_modalidades.items() if not justificativa.strip()]
