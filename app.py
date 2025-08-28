@@ -1088,6 +1088,11 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
+            objetivo_chave = st.text_area(
+                "Objetivo-Chave:",
+                placeholder="Ex: Entrega da obra no prazo, com qualidade e preço compatível..."
+            )
+            
             risco_chave = st.text_input(
                 "Risco-Chave:",
                 placeholder="Ex: Descumprimento do Prazo de entrega"
@@ -1103,6 +1108,7 @@ def cadastro_riscos():
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
+        
         with col2:
             # Avaliação de Impacto
             st.subheader("🎯 Avaliação de Impacto")
@@ -1144,50 +1150,53 @@ def cadastro_riscos():
         st.info("Para cada modalidade, defina os fatores de mitigação (0.0 = elimina totalmente o risco, 1.0 = não mitiga)")
         
         modalidades_avaliacao = {}
-        justificativas_modalidades = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
-            with cols[i                 justificativa = st.text_area(
-                    f"Justificativa para {modalidade}:",
-                    placeholder="Explique por que esta modalidade tem este fator de mitigação...",
-                    key=f"justificativa_{i}",
-                    help="Campo obrigatório: justifique a nota atribuída"
+            with cols[i % len(cols)]:
+                fator = st.slider(
+                    f"{modalidade}:",
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=0.5,
+                    step=0.1,
+                    key=f"modalidade_{i}"
                 )
-                justificativas_modalidades[modalidade] = justificativa 
-        if submitted and risco_chave:
-            # Verificar se todas as justificativas foram preenchidas
-            justificativas_vazias = [modalidade for modalidade, justificativa in justificativas_modalidades.items() if not justificativa.strip()]
+                modalidades_avaliacao[modalidade] = fator
+                
+                # Calcular risco residual
+                risco_residual = risco_inerente * fator
+                class_residual, _ = classificar_risco(risco_residual)
+                st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
+        
+        submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
+        
+        if submitted and objetivo_chave and risco_chave:
+            novo_risco = {
+                'objetivo_chave': objetivo_chave,
+                'risco_chave': risco_chave,
+                'descricao': descricao_risco,
+                'contexto_especifico': contexto_especifico,
+                'impacto_nivel': impacto_nivel,
+                'impacto_valor': impacto_valor,
+                'probabilidade_nivel': probabilidade_nivel,
+                'probabilidade_valor': probabilidade_valor,
+                'risco_inerente': risco_inerente,
+                'classificacao': classificacao,
+                'modalidades': modalidades_avaliacao.copy(),
+                'personalizado': True,  # Marcar como personalizado
+                'criado_por': st.session_state.user,
+                'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
+            }
             
-            if justificativas_vazias:
-                st.error(f"⚠️ Por favor, preencha as justificativas para as seguintes modalidades: {', '.join(justificativas_vazias)}")
-            else:
-                novo_risco = {
-                    # 'objetivo_chave': objetivo_chave, # Removido conforme solicitação
-                    'risco_chave': risco_chave,
-                    'descricao': descricao_risco,
-                    'contexto_especifico': contexto_especifico,
-                    'impacto_nivel': impacto_nivel,
-                    'impacto_valor': impacto_valor,
-                    'probabilidade_nivel': probabilidade_nivel,
-                    'probabilidade_valor': probabilidade_valor,
-                    'risco_inerente': risco_inerente,
-                    'classificacao': classificacao,
-                    'modalidades': modalidades_avaliacao.copy(),
-                    'justificativas_modalidades': justificativas_modalidades.copy(),
-                    'personalizado': True,  # Marcar como personalizado
-                    'criado_por': st.session_state.user,
-                    'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
-                }
-                
-                st.session_state.riscos.append(novo_risco)
-                
-                # Registrar a ação no log
-                registrar_acao(
-                    st.session_state.user, 
-                    "Criou risco", 
-                    {"risco": risco_chave, "detalhes": novo_risco}
-                )
+            st.session_state.riscos.append(novo_risco)
+            
+            # Registrar a ação no log
+            registrar_acao(
+                st.session_state.user, 
+                "Criou risco", 
+                {"risco": risco_chave, "detalhes": novo_risco}
+            )
             
             st.success(f"✅ Risco '{risco_chave}' salvo com sucesso!")
             st.rerun()
@@ -2338,7 +2347,7 @@ def main():
             st.success("Dados originais recarregados!")
             st.rerun()
         
-        if st.button("🔥 Limpar todos os dados"):
+        if st.button(" Limpar todos os dados"):
             if st.checkbox("⚠️ Confirmo que quero limpar todos os dados"):
                 st.session_state.riscos = []
                 st.session_state.modalidades = MODALIDADES_PADRAO.copy()
@@ -2355,8 +2364,8 @@ def main():
     
     # Abas principais - CORREÇÃO: Adicionada a aba de logs
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "✏️ Editar Riscos",
         "📝 Cadastro de Riscos", 
+        "✏️ Editar Riscos",
         "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
@@ -2364,10 +2373,10 @@ def main():
     ])
     
     with tab1:
-        editar_riscos()
+        cadastro_riscos()
     
     with tab2:
-        cadastro_riscos()
+        editar_riscos()
     
     with tab3:
         analise_riscos()
