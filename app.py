@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Escalas de avaliação baseadas na metodologia TCU
+# Escalas de avaliação baseadas na metodologia SAROI
 ESCALAS_IMPACTO = {
     "Muito baixo": {
         "valor": 1,
@@ -311,16 +311,23 @@ def gerar_relatorio_word():
         from docx.oxml.shared import OxmlElement, qn
         from io import BytesIO
         
+        # Obter nome do projeto da session_state
+        nome_projeto = st.session_state.get('nome_projeto', 'Projeto')
+        
         # Criar documento
         doc = Document()
         
-        # Título principal
-        title = doc.add_heading('RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS', 0)
+        # Título principal com nome do projeto
+        title = doc.add_heading(f'RELATÓRIO EXECUTIVO DE AVALIAÇÃO DE RISCOS - {nome_projeto}', 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         # Subtítulo
-        subtitle = doc.add_heading('Metodologia TCU - Análise Comparativa de Modalidades de Contratação', level=1)
+        subtitle = doc.add_heading("Metodologia - Análise Comparativa de Modalidades de Contratação", level=1)
         subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        # NOVO: Nome do Projeto como título dentro do documento
+        doc.add_heading(f"Projeto: {nome_projeto}", level=2)
+        doc.add_paragraph()
         
         # NOVA SEÇÃO: Informações do responsável pelo relatório
         # Solicitar identificação do usuário se não estiver definida
@@ -338,7 +345,7 @@ def gerar_relatorio_word():
         info_para.add_run("Data da Análise: ").bold = True
         info_para.add_run(f"{datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         info_para.add_run("\nMetodologia: ").bold = True
-        info_para.add_run("Roteiro de Auditoria de Gestão de Riscos - TCU")
+        info_para.add_run("Roteiro de Auditoria de Gestão de Riscos - SAROI")
         info_para.add_run("\nVersão do Sistema: ").bold = True
         info_para.add_run("2.0 - Análise Ampliada")
         
@@ -379,8 +386,8 @@ def gerar_relatorio_word():
                              key=lambda x: risco_acumulado_por_modalidade[x])
         
         resumo = f"""
-        Este relatório apresenta análise quantitativa de {total_riscos} riscos identificados para o projeto, 
-        utilizando a metodologia do Tribunal de Contas da União (TCU). A análise inclui avaliação detalhada 
+        Este relatório apresenta análise quantitativa de {total_riscos} riscos identificados para o projeto 
+        . A análise inclui avaliação detalhada 
         de impacto e probabilidade, cálculo de riscos inerentes e residuais, e comparação sistemática entre 
         {len(st.session_state.modalidades)} modalidades de contratação.
         
@@ -404,7 +411,7 @@ def gerar_relatorio_word():
         # 2. METODOLOGIA DETALHADA
         doc.add_heading('2. METODOLOGIA E CRITÉRIOS DE AVALIAÇÃO', level=1)
         metodologia = """
-        A avaliação seguiu rigorosamente a metodologia estabelecida pelo TCU no "Roteiro de Auditoria de 
+        A avaliação seguiu rigorosamente a metodologia estabelecida no "Roteiro de Auditoria de 
         Gestão de Riscos", aplicando escalas quantitativas padronizadas e critérios objetivos.
         
         2.1 ESCALAS DE AVALIAÇÃO
@@ -456,14 +463,14 @@ def gerar_relatorio_word():
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
             aval_para.add_run("\nAVALIAÇÃO QUANTITATIVA:").bold = True
-            aval_para.add_run(f"\n• Impacto: {risco["impacto_valor"]} ({risco["impacto_nivel"]})\n")
+            aval_para.add_run(f"\n• Impacto: {risco['impacto_valor']} ({risco['impacto_nivel']})\n")
             aval_para.add_run("Justificativa do risco: ").bold = True
             aval_para.add_run(risco["descricao"])
-            aval_para.add_run(f"\n\n• Probabilidade: {risco["probabilidade_valor"]} ({risco["probabilidade_nivel"]})\n")
+            aval_para.add_run(f"\n\n• Probabilidade: {risco['probabilidade_valor']} ({risco['probabilidade_nivel']})\n")
             aval_para.add_run("Justificativa de Probabilidade de ocorrência: ").bold = True
             aval_para.add_run(risco.get("contexto_especifico", ""))
-            aval_para.add_run(f"\n\n• Risco Inerente: {risco["risco_inerente"]} pontos")
-            aval_para.add_run(f"\n• Classificação: {risco["classificacao"]}")
+            aval_para.add_run(f"\n\n• Risco Inerente: {risco['risco_inerente']} pontos")
+            aval_para.add_run(f"\n• Classificação: {risco['classificacao']}")
             
             # Análise por modalidade
             modal_para = doc.add_paragraph()
@@ -638,7 +645,7 @@ def gerar_relatorio_word():
         doc.add_heading('7. CONCLUSÕES E CONSIDERAÇÕES FINAIS', level=1)
         
         conclusoes = f"""
-        A presente análise, baseada na metodologia consolidada do TCU, permitiu uma avaliação 
+        A presente análise, baseada na metodologia consolidada do SAROI, permitiu uma avaliação 
         objetiva e fundamentada das modalidades de contratação disponíveis para o projeto.
         
         PRINCIPAIS RESULTADOS:
@@ -655,7 +662,7 @@ def gerar_relatorio_word():
            evidenciando a relevância da escolha estratégica.
            
         4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
-           pelo TCU para gestão de riscos em projetos públicos, garantindo objetividade e 
+           pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
            fundamentação técnica para a tomada de decisão.
         
         CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
@@ -699,11 +706,11 @@ def gerar_relatorio_word():
         doc.add_paragraph()
         doc.add_paragraph("_" * 50)
         rodape = doc.add_paragraph()
-        rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos TCU v2.0").italic = True
+        rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos SAROI v2.0").italic = True
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio["divisao"]}")
+            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
@@ -1081,11 +1088,6 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
-            objetivo_chave = st.text_area(
-                "Objetivo-Chave:",
-                placeholder="Ex: Entrega da obra no prazo, com qualidade e preço compatível..."
-            )
-            
             risco_chave = st.text_input(
                 "Risco-Chave:",
                 placeholder="Ex: Descumprimento do Prazo de entrega"
@@ -1101,14 +1103,13 @@ def cadastro_riscos():
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
-        
         with col2:
             # Avaliação de Impacto
             st.subheader("🎯 Avaliação de Impacto")
             impacto_nivel = st.selectbox(
                 "Nível de Impacto:",
                 list(ESCALAS_IMPACTO.keys()),
-                help="Selecione o nível de impacto baseado na escala TCU"
+                help="Selecione o nível de impacto baseado na escala SAROI"
             )
             st.info(f"**{impacto_nivel}** (Valor: {ESCALAS_IMPACTO[impacto_nivel]['valor']})")
             st.caption(ESCALAS_IMPACTO[impacto_nivel]['descricao'])
@@ -1118,7 +1119,7 @@ def cadastro_riscos():
             probabilidade_nivel = st.selectbox(
                 "Nível de Probabilidade:",
                 list(ESCALAS_PROBABILIDADE.keys()),
-                help="Selecione o nível de probabilidade baseado na escala TCU"
+                help="Selecione o nível de probabilidade baseado na escala SAROI"
             )
             st.info(f"**{probabilidade_nivel}** (Valor: {ESCALAS_PROBABILIDADE[probabilidade_nivel]['valor']})")
             st.caption(ESCALAS_PROBABILIDADE[probabilidade_nivel]['descricao'])
@@ -1143,53 +1144,50 @@ def cadastro_riscos():
         st.info("Para cada modalidade, defina os fatores de mitigação (0.0 = elimina totalmente o risco, 1.0 = não mitiga)")
         
         modalidades_avaliacao = {}
+        justificativas_modalidades = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
-            with cols[i % len(cols)]:
-                fator = st.slider(
-                    f"{modalidade}:",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.5,
-                    step=0.1,
-                    key=f"modalidade_{i}"
+            with cols[i                 justificativa = st.text_area(
+                    f"Justificativa para {modalidade}:",
+                    placeholder="Explique por que esta modalidade tem este fator de mitigação...",
+                    key=f"justificativa_{i}",
+                    help="Campo obrigatório: justifique a nota atribuída"
                 )
-                modalidades_avaliacao[modalidade] = fator
+                justificativas_modalidades[modalidade] = justificativa 
+        if submitted and risco_chave:
+            # Verificar se todas as justificativas foram preenchidas
+            justificativas_vazias = [modalidade for modalidade, justificativa in justificativas_modalidades.items() if not justificativa.strip()]
+            
+            if justificativas_vazias:
+                st.error(f"⚠️ Por favor, preencha as justificativas para as seguintes modalidades: {', '.join(justificativas_vazias)}")
+            else:
+                novo_risco = {
+                    # 'objetivo_chave': objetivo_chave, # Removido conforme solicitação
+                    'risco_chave': risco_chave,
+                    'descricao': descricao_risco,
+                    'contexto_especifico': contexto_especifico,
+                    'impacto_nivel': impacto_nivel,
+                    'impacto_valor': impacto_valor,
+                    'probabilidade_nivel': probabilidade_nivel,
+                    'probabilidade_valor': probabilidade_valor,
+                    'risco_inerente': risco_inerente,
+                    'classificacao': classificacao,
+                    'modalidades': modalidades_avaliacao.copy(),
+                    'justificativas_modalidades': justificativas_modalidades.copy(),
+                    'personalizado': True,  # Marcar como personalizado
+                    'criado_por': st.session_state.user,
+                    'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
+                }
                 
-                # Calcular risco residual
-                risco_residual = risco_inerente * fator
-                class_residual, _ = classificar_risco(risco_residual)
-                st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
-        
-        submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
-        
-        if submitted and objetivo_chave and risco_chave:
-            novo_risco = {
-                'objetivo_chave': objetivo_chave,
-                'risco_chave': risco_chave,
-                'descricao': descricao_risco,
-                'contexto_especifico': contexto_especifico,
-                'impacto_nivel': impacto_nivel,
-                'impacto_valor': impacto_valor,
-                'probabilidade_nivel': probabilidade_nivel,
-                'probabilidade_valor': probabilidade_valor,
-                'risco_inerente': risco_inerente,
-                'classificacao': classificacao,
-                'modalidades': modalidades_avaliacao.copy(),
-                'personalizado': True,  # Marcar como personalizado
-                'criado_por': st.session_state.user,
-                'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
-            }
-            
-            st.session_state.riscos.append(novo_risco)
-            
-            # Registrar a ação no log
-            registrar_acao(
-                st.session_state.user, 
-                "Criou risco", 
-                {"risco": risco_chave, "detalhes": novo_risco}
-            )
+                st.session_state.riscos.append(novo_risco)
+                
+                # Registrar a ação no log
+                registrar_acao(
+                    st.session_state.user, 
+                    "Criou risco", 
+                    {"risco": risco_chave, "detalhes": novo_risco}
+                )
             
             st.success(f"✅ Risco '{risco_chave}' salvo com sucesso!")
             st.rerun()
@@ -2205,11 +2203,17 @@ def main():
                 username = st.text_input("Usuário", placeholder="Digite seu usuário")
                 password = st.text_input("Senha", type="password", placeholder="Digite sua senha")
                 
+                # NOVO: Campo para nome do projeto
+                nome_projeto = st.text_input("Nome do Projeto", placeholder="Digite o nome do projeto trabalhado")
+                
                 submitted = st.form_submit_button("Entrar")
                 
                 if submitted:
-                    if verificar_login(username, password):
+                    if not nome_projeto.strip():
+                        st.error("Por favor, digite o nome do projeto")
+                    elif verificar_login(username, password):
                         st.session_state.user = username
+                        st.session_state.nome_projeto = nome_projeto.strip()
                         st.rerun()
                     else:
                         st.error("Usuário ou senha incorretos")
@@ -2217,9 +2221,10 @@ def main():
         st.stop()
     
     # Se está logado, mostrar a aplicação normal
-    st.title("🛡️ Dashboard de Avaliação de Riscos")
+    nome_projeto_titulo = st.session_state.get('nome_projeto', 'Projeto')
+    st.title(f"🛡️ Dashboard de Avaliação de Riscos - {nome_projeto_titulo}")
     st.markdown(f"*Usuário: {st.session_state.user}*")
-    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos do TCU*")
+    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos *")
     
     inicializar_dados()
     
@@ -2301,10 +2306,11 @@ def main():
             with st.spinner("Gerando relatório..."):
                 buffer = gerar_relatorio_word()
                 if buffer:
+                    nome_projeto_arquivo = st.session_state.get('nome_projeto', 'Projeto').replace(' ', '_')
                     st.download_button(
                         label="📥 Baixar Relatório Word",
                         data=buffer,
-                        file_name=f"relatorio_riscos_{datetime.now().strftime("%Y%m%d_%H%M")}.docx",
+                        file_name=f"relatorio_riscos_{nome_projeto_arquivo}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                         key="download_report_sidebar"
                     )
@@ -2349,8 +2355,8 @@ def main():
     
     # Abas principais - CORREÇÃO: Adicionada a aba de logs
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📝 Cadastro de Riscos", 
         "✏️ Editar Riscos",
+        "📝 Cadastro de Riscos", 
         "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
@@ -2358,10 +2364,10 @@ def main():
     ])
     
     with tab1:
-        cadastro_riscos()
+        editar_riscos()
     
     with tab2:
-        editar_riscos()
+        cadastro_riscos()
     
     with tab3:
         analise_riscos()
@@ -2378,3 +2384,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
