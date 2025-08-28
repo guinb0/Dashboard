@@ -240,21 +240,18 @@ def init_db():
                   detalhes TEXT)''')
     
     # Inserir usuários padrão se não existirem
-usuarios_padrao = [
-    ("SPU 1", hashlib.sha256("1234".encode()).hexdigest(), "Unidade A", "SPU", "spu1@spu.gov.br"),
-    ("SPU 2", hashlib.sha256("1234".encode()).hexdigest(), "Unidade B", "SPU", "spu2@spu.gov.br"),
-    ("SPU 3", hashlib.sha256("1234".encode()).hexdigest(), "Unidade C", "SPU", "spu3@spu.gov.br")
-]
-
+    usuarios_padrao = [
+        ("SPU 1", hashlib.sha256("1234".encode()).hexdigest()),
+        ("SPU 2", hashlib.sha256("1234".encode()).hexdigest()),
+        ("SPU 3", hashlib.sha256("1234".encode()).hexdigest())
+    ]
     
-for usuario, senha_hash, unidade, orgao, email in usuarios_padrao:
-    try:
-        c.execute("""
-            INSERT INTO usuarios (username, password_hash, unidade, orgao, email) 
-            VALUES (?, ?, ?, ?, ?)
-        """, (usuario, senha_hash, unidade, orgao, email))
-    except sqlite3.IntegrityError:
-        pass  # Usuário já existe
+    for usuario, senha_hash in usuarios_padrao:
+        try:
+            c.execute("INSERT INTO usuarios (username, password_hash) VALUES (?, ?)", 
+                     (usuario, senha_hash))
+        except sqlite3.IntegrityError:
+            pass  # Usuário já existe
     
     conn.commit()
     conn.close()
@@ -337,7 +334,7 @@ def gerar_relatorio_word():
         if 'identificacao_relatorio' not in st.session_state or st.session_state.identificacao_relatorio is None:
             st.session_state.identificacao_relatorio = {
                 'nome': st.session_state.user,
-                'unidade': 'Unidade Padrão',
+                'divisao': 'Divisão Padrão',
                 'orgao': 'SPU',
                 'email': 'usuario@spu.gov.br'
             }
@@ -355,7 +352,7 @@ def gerar_relatorio_word():
         # Adicionar informações do responsável
         info_para.add_run("\n\nRESPONSÁVEL PELA ANÁLISE:").bold = True
         info_para.add_run(f"\nNome: {st.session_state.identificacao_relatorio['nome']}")
-        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
+        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
             info_para.add_run(f"\nÓrgão: {st.session_state.identificacao_relatorio['orgao']}")
         if st.session_state.identificacao_relatorio['email']:
@@ -711,9 +708,9 @@ def gerar_relatorio_word():
         rodape = doc.add_paragraph()
         rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos SAROI v2.0").italic = True
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
-        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['unidade']}")
+        rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
+            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['divisao']}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
@@ -2396,4 +2393,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
