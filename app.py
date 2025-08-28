@@ -1046,15 +1046,14 @@ def analise_riscos():
     
     with col2:
         # Riscos por valor inerente
-        df_riscos = pd.DataFrame(st.session_state.riscos)
-        fig_bar = px.bar(df_riscos, x='risco_chave', y='risco_inerente',
-                        title="Valor do Risco Inerente por Tipo",
-                        color='classificacao',
-                        color_discrete_map={'Alto': '#dc3545', 'Médio': '#ffc107', 'Baixo': '#28a745'})
-        fig_bar.update_xaxis(tickangle=45)
-        st.plotly_chart(fig_bar, use_container_width=True)
-    
-    # Tabela detalhada
+        if not df_riscos.empty:
+            fig_bar = px.bar(df_riscos, x='risco_chave', y='risco_inerente',
+                            title="Valor do Risco Inerente por Tipo",
+                            color='classificacao',
+                            color_discrete_map={'Alto': '#dc3545', 'Médio': '#ffc107', 'Baixo': '#28a745'})
+            fig_bar.update_xaxes(tickangle=45)            st.plotly_chart(fig_bar, use_container_width=True)
+        else:
+            st.info("Não há dados de riscos para exibir no gráfico de barras.")
     st.subheader("📋 Detalhamento dos Riscos")
     
     # Preparar dados para a tabela
