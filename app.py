@@ -240,7 +240,7 @@ def init_db():
                   detalhes TEXT)''')
     
     # Inserir usuários padrão se não existirem
-   usuarios_padrao = [
+usuarios_padrao = [
     ("SPU 1", hashlib.sha256("1234".encode()).hexdigest(), "Unidade A", "SPU", "spu1@spu.gov.br"),
     ("SPU 2", hashlib.sha256("1234".encode()).hexdigest(), "Unidade B", "SPU", "spu2@spu.gov.br"),
     ("SPU 3", hashlib.sha256("1234".encode()).hexdigest(), "Unidade C", "SPU", "spu3@spu.gov.br")
