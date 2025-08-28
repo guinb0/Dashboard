@@ -1051,11 +1051,11 @@ def analise_riscos():
                             title="Valor do Risco Inerente por Tipo",
                             color='classificacao',
                             color_discrete_map={'Alto': '#dc3545', 'Médio': '#ffc107', 'Baixo': '#28a745'})
-            fig_bar.update_xaxes(tickangle=45)            st.plotly_chart(fig_bar, use_container_width=True)
+            fig_bar.update_xaxes(tickangle=45)
+            st.plotly_chart(fig_bar, use_container_width=True)
         else:
-            st.info("Não há dados de riscos para exibir no gráfico de barras.")
-    st.subheader("📋 Detalhamento dos Riscos")
-    
+            st.info("Não há dados de riscos para exibir no gráfico de barras.")    
+    # Tabela detalhada
     # Preparar dados para a tabela
     dados_tabela = []
     for risco in st.session_state.riscos:
