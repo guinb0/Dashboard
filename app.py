@@ -1088,11 +1088,6 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
-            objetivo_chave = st.text_area(
-                "Objetivo-Chave:",
-                placeholder="Ex: Entrega da obra no prazo, com qualidade e preço compatível..."
-            )
-            
             risco_chave = st.text_input(
                 "Risco-Chave:",
                 placeholder="Ex: Descumprimento do Prazo de entrega"
@@ -1108,7 +1103,6 @@ def cadastro_riscos():
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
-        
         with col2:
             # Avaliação de Impacto
             st.subheader("🎯 Avaliação de Impacto")
@@ -1172,16 +1166,11 @@ def cadastro_riscos():
                     key=f"justificativa_{i}",
                     help="Campo obrigatório: justifique a nota atribuída"
                 )
-                justificativas_modalidades[modalidade] = justificativa
-                
-                # Calcular risco residual
-                risco_residual = risco_inerente * fator
-                class_residual, _ = classificar_risco(risco_residual)
-                st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
+                  modalidades_avaliacao[modalidade] = fatoresidual})")
         
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
-        if submitted and objetivo_chave and risco_chave:
+        if submitted and risco_chave:
             # Verificar se todas as justificativas foram preenchidas
             justificativas_vazias = [modalidade for modalidade, justificativa in justificativas_modalidades.items() if not justificativa.strip()]
             
@@ -1189,7 +1178,7 @@ def cadastro_riscos():
                 st.error(f"⚠️ Por favor, preencha as justificativas para as seguintes modalidades: {', '.join(justificativas_vazias)}")
             else:
                 novo_risco = {
-                    'objetivo_chave': objetivo_chave,
+                    # 'objetivo_chave': objetivo_chave, # Removido conforme solicitação
                     'risco_chave': risco_chave,
                     'descricao': descricao_risco,
                     'contexto_especifico': contexto_especifico,
