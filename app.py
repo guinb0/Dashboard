@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Escalas de avaliação baseadas na metodologia TCU
+# Escalas de avaliação baseadas na metodologia SAROI
 ESCALAS_IMPACTO = {
     "Muito baixo": {
         "valor": 1,
@@ -345,7 +345,7 @@ def gerar_relatorio_word():
         info_para.add_run("Data da Análise: ").bold = True
         info_para.add_run(f"{datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         info_para.add_run("\nMetodologia: ").bold = True
-        info_para.add_run("Roteiro de Auditoria de Gestão de Riscos - TCU")
+        info_para.add_run("Roteiro de Auditoria de Gestão de Riscos - SAROI")
         info_para.add_run("\nVersão do Sistema: ").bold = True
         info_para.add_run("2.0 - Análise Ampliada")
         
@@ -645,7 +645,7 @@ def gerar_relatorio_word():
         doc.add_heading('7. CONCLUSÕES E CONSIDERAÇÕES FINAIS', level=1)
         
         conclusoes = f"""
-        A presente análise, baseada na metodologia consolidada do TCU, permitiu uma avaliação 
+        A presente análise, baseada na metodologia consolidada do SAROI, permitiu uma avaliação 
         objetiva e fundamentada das modalidades de contratação disponíveis para o projeto.
         
         PRINCIPAIS RESULTADOS:
@@ -662,7 +662,7 @@ def gerar_relatorio_word():
            evidenciando a relevância da escolha estratégica.
            
         4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
-           pelo TCU para gestão de riscos em projetos públicos, garantindo objetividade e 
+           pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
            fundamentação técnica para a tomada de decisão.
         
         CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
@@ -706,7 +706,7 @@ def gerar_relatorio_word():
         doc.add_paragraph()
         doc.add_paragraph("_" * 50)
         rodape = doc.add_paragraph()
-        rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos TCU v2.0").italic = True
+        rodape.add_run("Relatório gerado automaticamente pelo Sistema de Avaliação de Riscos SAROI v2.0").italic = True
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['divisao']}")
         if st.session_state.identificacao_relatorio['orgao']:
@@ -1115,7 +1115,7 @@ def cadastro_riscos():
             impacto_nivel = st.selectbox(
                 "Nível de Impacto:",
                 list(ESCALAS_IMPACTO.keys()),
-                help="Selecione o nível de impacto baseado na escala TCU"
+                help="Selecione o nível de impacto baseado na escala SAROI"
             )
             st.info(f"**{impacto_nivel}** (Valor: {ESCALAS_IMPACTO[impacto_nivel]['valor']})")
             st.caption(ESCALAS_IMPACTO[impacto_nivel]['descricao'])
@@ -1125,7 +1125,7 @@ def cadastro_riscos():
             probabilidade_nivel = st.selectbox(
                 "Nível de Probabilidade:",
                 list(ESCALAS_PROBABILIDADE.keys()),
-                help="Selecione o nível de probabilidade baseado na escala TCU"
+                help="Selecione o nível de probabilidade baseado na escala SAROI"
             )
             st.info(f"**{probabilidade_nivel}** (Valor: {ESCALAS_PROBABILIDADE[probabilidade_nivel]['valor']})")
             st.caption(ESCALAS_PROBABILIDADE[probabilidade_nivel]['descricao'])
