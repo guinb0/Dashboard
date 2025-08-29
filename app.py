@@ -1170,11 +1170,9 @@ def cadastro_riscos():
                 class_residual, _ = classificar_risco(risco_residual)
                 st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
         
-        submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
-        
         submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
-        
-        if submitted and risco_chave:
+
+        if submitted:tted and risco_chave:
             novo_risco = {
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
@@ -1351,7 +1349,7 @@ def editar_riscos():
         
         for i, modalidade in enumerate(st.session_state.modalidades):
             with cols[i % len(cols)]:
-                valor_atual = risco_atual['modalidades'].get(modalidade, 0.5)
+                valor_atual = risco_atual['modalidades'].get(modalidade, {}).get('fator', 0.5)
                 novo_fator = st.slider(
                     f"{modalidade}:",
                     min_value=0.0,
@@ -1369,7 +1367,7 @@ def editar_riscos():
                 novas_modalidades[modalidade] = {"fator": novo_fator, "justificativa": nova_justificativa}
                 
                 # Mostrar comparação do risco residual
-                risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
+                risco_residual_antigo = risco_atual['risco_inerente'] * (valor_atual if isinstance(valor_atual, (int, float)) else valor_atual.get('fator', 0.5))
                 risco_residual_novo = novo_risco_inerente * novo_fator
                 delta_residual = risco_residual_novo - risco_residual_antigo
                 
@@ -1377,7 +1375,7 @@ def editar_riscos():
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
-        submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
+
         
         if submitted:
             # Atualizar o risco
