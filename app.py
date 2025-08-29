@@ -457,8 +457,7 @@ def gerar_relatorio_word():
             
             # Informações básicas do risco
             risco_para = doc.add_paragraph()
-            risco_para.add_run("Objetivo-Chave: ").bold = True
-            risco_para.add_run(risco["objetivo_chave"])
+
             
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
@@ -922,7 +921,7 @@ def inicializar_dados():
     if 'riscos' not in st.session_state:
         st.session_state.riscos = [
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Descumprimento do Prazo de entrega',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -941,7 +940,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -960,7 +959,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Condições de mercado desfavoráveis',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -979,7 +978,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Abandono da obra pela empresa',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -998,7 +997,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Baixa rentabilização do estoque de imóveis',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -1017,7 +1016,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Dotação orçamentária insuficiente',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Muito alto',
@@ -1036,7 +1035,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Questionamento jurídico',
                 'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
                 'impacto_nivel': 'Médio',
@@ -1055,7 +1054,7 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+
                 'risco_chave': 'Baixa qualidade dos serviços entregues',
                 'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
                 'impacto_nivel': 'Médio',
@@ -1088,10 +1087,7 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
-            objetivo_chave = st.text_area(
-                "Objetivo-Chave:",
-                placeholder="Ex: Entrega da obra no prazo, com qualidade e preço compatível..."
-            )
+
             
             risco_chave = st.text_input(
                 "Risco-Chave:",
@@ -1171,9 +1167,8 @@ def cadastro_riscos():
         
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
-        if submitted and objetivo_chave and risco_chave:
+        if submitted and risco_chave:
             novo_risco = {
-                'objetivo_chave': objetivo_chave,
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
                 'contexto_especifico': contexto_especifico,
