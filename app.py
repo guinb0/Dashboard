@@ -1172,7 +1172,7 @@ def cadastro_riscos():
         
         submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
 
-        if submitted:tted and risco_chave:
+        if submitted and risco_chave:
             novo_risco = {
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
