@@ -1286,21 +1286,20 @@ def editar_riscos():
                     emoji = "👉" if nivel == nova_probabilidade_nivel else "•"
                     st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
 
-        st.subheader("Impacto")
-        col1, col2 = st.columns(2)
+        st.subheader("Justificativas Detalhadas")
+        col_justificativa1, col_justificativa2 = st.columns(2)
 
-        with col1:
+        with col_justificativa1:
             nova_descricao = st.text_area(
                 "Justificativa fator de impacto:",
-                value=risco_atual['descricao'],
+                value=risco_atual["descricao"],
                 help="Descreva as características específicas do seu caso que justificam a avaliação"
             )
 
-        with col2:
-            st.subheader("🗗️ Justificativa fator de probabilidade")
+        with col_justificativa2:
             contexto_especifico = st.text_area(
                 "Fatores específicos que influenciam a probabilidade deste risco:",
-                value=risco_atual.get('contexto_especifico', ''),
+                value=risco_atual.get("contexto_especifico", ""),
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
             )
