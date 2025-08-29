@@ -937,14 +937,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.6,
                     'Obra pública convencional': 0.6
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -964,14 +956,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.2
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -991,14 +975,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.9,
                     'Contratação com dação em pagamento': 0.2,
                     'Obra pública convencional': 0.1
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -1018,14 +994,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.2,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.4
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -1045,14 +1013,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.6,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.8
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -1072,14 +1032,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 1.0
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -1099,14 +1051,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.6,
                     'Obra pública convencional': 0.1
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             },
             {
@@ -1126,14 +1070,6 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.2,
                     'Obra pública convencional': 0.2
-                },
-                'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': '.',
-                    'Permuta por edificação a construir (terreno terceiros)': '.',
-                    'Permuta por obra (terreno da União)': '.',
-                    'Build to Suit (terreno da União)': '.',
-                    'Contratação com dação em pagamento': '.',
-                    'Obra pública convencional': '.'
                 }
             }
         ]
@@ -1210,7 +1146,6 @@ def cadastro_riscos():
         st.info("Para cada modalidade, defina os fatores de mitigação (0.0 = elimina totalmente o risco, 1.0 = não mitiga)")
         
         modalidades_avaliacao = {}
-        justificativas_modalidades = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1225,9 +1160,6 @@ def cadastro_riscos():
                 )
                 modalidades_avaliacao[modalidade] = fator
                 
-                justificativa = st.text_input("Justificativa para a nota:", key=f"justificativa_cadastro_{i}", placeholder="Digite sua justificativa para a nota...")
-                justificativas_modalidades[modalidade] = justificativa
-
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
                 class_residual, _ = classificar_risco(risco_residual)
@@ -1247,7 +1179,6 @@ def cadastro_riscos():
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
                 'modalidades': modalidades_avaliacao.copy(),
-                'justificativas_modalidades': justificativas_modalidades.copy(),
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1409,7 +1340,6 @@ def editar_riscos():
         st.info("Ajuste os fatores de mitigação considerando as características específicas do seu caso")
         
         novas_modalidades = {}
-        novas_justificativas = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1421,28 +1351,16 @@ def editar_riscos():
                     max_value=1.0,
                     value=valor_atual,
                     step=0.1,
-                    key=f"edit_modalidade_{indice_risco}_{i}"
+                    key=f"nova_modalidade_{i}_{indice_risco}"
                 )
                 novas_modalidades[modalidade] = novo_fator
                 
-                # Obter justificativa atual ou usar "." como padrão
-                justificativa_atual = risco_atual.get('justificativas_modalidades', {}).get(modalidade, ".")
-                nova_justificativa = st.text_input(
-                    "Justificativa para a nota:",
-                    value=justificativa_atual,
-                    key=f"justificativa_edit_{indice_risco}_{i}",
-                    placeholder="Digite sua justificativa para a nota..."
-                )
-                novas_justificativas[modalidade] = nova_justificativa
+                # Mostrar comparação do risco residual
+                risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
+                risco_residual_novo = novo_risco_inerente * novo_fator
+                delta_residual = risco_residual_novo - risco_residual_antigo
                 
-                # Calcular novo risco residual
-                novo_risco_residual = novo_risco_inerente * novo_fator
-                nova_class_residual, _ = classificar_risco(novo_risco_residual)
-                st.caption(f"Novo Risco Residual: {novo_risco_residual:.1f} ({nova_class_residual})")
-                
-                # Mostrar comparação
-                risco_residual_atual = risco_atual['risco_inerente'] * valor_atual
-                delta_residual = novo_risco_residual - risco_residual_atual
+                st.caption(f"Risco Residual: {risco_residual_novo:.1f}")
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
@@ -1460,7 +1378,6 @@ def editar_riscos():
                 'risco_inerente': novo_risco_inerente,
                 'classificacao': nova_classificacao,
                 'modalidades': novas_modalidades.copy(),
-                'justificativas_modalidades': novas_justificativas.copy(),
                 'editado': True,  # Marcar como editado
                 'editado_por': st.session_state.user,
                 'data_edicao': datetime.now().strftime("%d/%m/%Y %H:%M")
