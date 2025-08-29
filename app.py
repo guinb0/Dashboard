@@ -2373,10 +2373,10 @@ def main():
     ])
     
     with tab1:
-        cadastro_riscos()
+        editar_riscos()
     
     with tab2:
-        editar_riscos()
+        cadastro_riscos()
     
     with tab3:
         analise_riscos()
