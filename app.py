@@ -2364,8 +2364,8 @@ def main():
     
     # Abas principais - CORREÇÃO: Adicionada a aba de logs
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "✏️ Editar Riscos",
         "📝 Cadastro de Riscos", 
+        "✏️ Editar Riscos",
         "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
