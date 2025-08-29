@@ -931,12 +931,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.6
+                    'Permuta por imóvel já construído': {'fator': 0.1, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.4, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.6, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.6, 'justificativa': '.'}
                 }
             },
             {
@@ -950,12 +950,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 1.0,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.2
+                    'Permuta por imóvel já construído': {'fator': 1.0, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 1.0, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 1.0, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.2, 'justificativa': '.'}
                 }
             },
             {
@@ -969,12 +969,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
-                    'Permuta por obra (terreno da União)': 0.9,
-                    'Build to Suit (terreno da União)': 0.9,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.1
+                    'Permuta por imóvel já construído': {'fator': 0.8, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.9, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.9, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.9, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.2, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.1, 'justificativa': '.'}
                 }
             },
             {
@@ -988,12 +988,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.2,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.4
+                    'Permuta por imóvel já construído': {'fator': 0.1, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.6, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.4, 'justificativa': '.'}
                 }
             },
             {
@@ -1007,12 +1007,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
+                    'Permuta por imóvel já construído': {'fator': 1.0, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 1.0, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.6, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.8, 'justificativa': '.'}
                 }
             },
             {
@@ -1026,12 +1026,12 @@ def inicializar_dados():
                 'risco_inerente': 100,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
+                    'Permuta por imóvel já construído': {'fator': 0.0, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.1, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.1, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 1.0, 'justificativa': '.'}
                 }
             },
             {
@@ -1045,12 +1045,12 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
+                    'Permuta por imóvel já construído': {'fator': 0.2, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.4, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.6, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.1, 'justificativa': '.'}
                 }
             },
             {
@@ -1064,12 +1064,12 @@ def inicializar_dados():
                 'risco_inerente': 10,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
+                    'Permuta por imóvel já construído': {'fator': 0.8, 'justificativa': '.'},
+                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.8, 'justificativa': '.'},
+                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
+                    'Contratação com dação em pagamento': {'fator': 0.2, 'justificativa': '.'},
+                    'Obra pública convencional': {'fator': 0.2, 'justificativa': '.'}
                 }
             }
         ]
@@ -1171,6 +1171,8 @@ def cadastro_riscos():
                 st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
         
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
+        
+        submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
         
         if submitted and risco_chave:
             novo_risco = {
