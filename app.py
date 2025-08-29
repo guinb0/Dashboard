@@ -375,7 +375,7 @@ def gerar_relatorio_word():
             risco_residual_total = 0
             for risco in st.session_state.riscos:
                 if modalidade in risco['modalidades']:
-                    fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                    fator_mitigacao = risco['modalidades'][modalidade]
                     risco_residual = risco['risco_inerente'] * fator_mitigacao
                     risco_residual_total += risco_residual
             risco_acumulado_por_modalidade[modalidade] = risco_residual_total
@@ -498,7 +498,7 @@ def gerar_relatorio_word():
             
             for risco in st.session_state.riscos:
                 if modalidade in risco['modalidades']:
-                    fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                    fator_mitigacao = risco['modalidades'][modalidade]
                     risco_residual = risco['risco_inerente'] * fator_mitigacao
                     risco_residual_total += risco_residual
                     risco_inerente_aplicavel += risco['risco_inerente']
@@ -741,7 +741,7 @@ def criar_heatmap_modalidades_melhorado(riscos_comparacao):
         linha_risco = []
         for modalidade in modalidades:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                fator_mitigacao = risco['modalidades'][modalidade]
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 linha_risco.append(risco_residual)
             else:
@@ -837,7 +837,7 @@ def criar_heatmap_eficacia_melhorado(riscos_comparacao):
         linha_eficacia = []
         for modalidade in modalidades:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                fator_mitigacao = risco['modalidades'][modalidade]
                 eficacia = (1 - fator_mitigacao) * 100  # Percentual de redução
                 linha_eficacia.append(eficacia)
             else:
@@ -931,12 +931,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.1, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.4, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.6, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.6, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.6,
+                    'Obra pública convencional': 0.6
                 }
             },
             {
@@ -950,12 +950,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 1.0, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 1.0, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 1.0, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.2, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 1.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por obra (terreno da União)': 1.0,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.2
                 }
             },
             {
@@ -969,12 +969,12 @@ def inicializar_dados():
                 'risco_inerente': 40,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.8, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.9, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.9, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.9, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.2, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.1, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
+                    'Permuta por obra (terreno da União)': 0.9,
+                    'Build to Suit (terreno da União)': 0.9,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.1
                 }
             },
             {
@@ -988,12 +988,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.1, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.6, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.4, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
+                    'Permuta por obra (terreno da União)': 0.2,
+                    'Build to Suit (terreno da União)': 0.2,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.4
                 }
             },
             {
@@ -1007,12 +1007,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 1.0, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 1.0, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.2, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.6, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.8, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 1.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por obra (terreno da União)': 0.2,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.8
                 }
             },
             {
@@ -1026,12 +1026,12 @@ def inicializar_dados():
                 'risco_inerente': 100,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.0, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.1, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.1, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.4, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 1.0, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
+                    'Permuta por obra (terreno da União)': 0.1,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 1.0
                 }
             },
             {
@@ -1045,12 +1045,12 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.2, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.4, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.6, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.1, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.2,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.6,
+                    'Obra pública convencional': 0.1
                 }
             },
             {
@@ -1064,12 +1064,12 @@ def inicializar_dados():
                 'risco_inerente': 10,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': {'fator': 0.8, 'justificativa': '.'},
-                    'Permuta por edificação a construir (terreno terceiros)': {'fator': 0.8, 'justificativa': '.'},
-                    'Permuta por obra (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Build to Suit (terreno da União)': {'fator': 0.4, 'justificativa': '.'},
-                    'Contratação com dação em pagamento': {'fator': 0.2, 'justificativa': '.'},
-                    'Obra pública convencional': {'fator': 0.2, 'justificativa': '.'}
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.2
                 }
             }
         ]
@@ -1158,20 +1158,15 @@ def cadastro_riscos():
                     step=0.1,
                     key=f"modalidade_{i}"
                 )
-                justificativa_modalidade = st.text_area(
-                    f"Justificativa para {modalidade}:",
-                    value=".",
-                    key=f"justificativa_modalidade_{i}"
-                )
-                modalidades_avaliacao[modalidade] = {"fator": fator, "justificativa": justificativa_modalidade}
+                modalidades_avaliacao[modalidade] = fator
                 
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
                 class_residual, _ = classificar_risco(risco_residual)
                 st.caption(f"Risco Residual: {risco_residual:.1f} ({class_residual})")
         
-        submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
-
+        submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
+        
         if submitted and risco_chave:
             novo_risco = {
                 'risco_chave': risco_chave,
@@ -1183,7 +1178,7 @@ def cadastro_riscos():
                 'probabilidade_valor': probabilidade_valor,
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
-                'modalidades': {mod: {'fator': data['fator'], 'justificativa': data['justificativa']} for mod, data in modalidades_avaliacao.items()},
+                'modalidades': modalidades_avaliacao.copy(),
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1349,25 +1344,19 @@ def editar_riscos():
         
         for i, modalidade in enumerate(st.session_state.modalidades):
             with cols[i % len(cols)]:
-                valor_atual = risco_atual['modalidades'].get(modalidade, {}).get('fator', 0.5)
+                valor_atual = risco_atual['modalidades'].get(modalidade, 0.5)
                 novo_fator = st.slider(
                     f"{modalidade}:",
                     min_value=0.0,
                     max_value=1.0,
                     value=valor_atual,
                     step=0.1,
-                    key=f"editar_modalidade_{indice_risco}_{i}"
+                    key=f"nova_modalidade_{i}_{indice_risco}"
                 )
-                justificativa_atual = risco_atual["modalidades"].get(modalidade, {}).get("justificativa", ".")
-                nova_justificativa = st.text_area(
-                    f"Justificativa para {modalidade}:",
-                    value=justificativa_atual,
-                    key=f"editar_justificativa_modalidade_{indice_risco}_{i}"
-                )
-                novas_modalidades[modalidade] = {"fator": novo_fator, "justificativa": nova_justificativa}
+                novas_modalidades[modalidade] = novo_fator
                 
                 # Mostrar comparação do risco residual
-                risco_residual_antigo = risco_atual['risco_inerente'] * (valor_atual if isinstance(valor_atual, (int, float)) else valor_atual.get('fator', 0.5))
+                risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
                 risco_residual_novo = novo_risco_inerente * novo_fator
                 delta_residual = risco_residual_novo - risco_residual_antigo
                 
@@ -1375,7 +1364,7 @@ def editar_riscos():
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
-
+        submitted = st.form_submit_button("💾 Salvar Alterações", type="primary")
         
         if submitted:
             # Atualizar o risco
@@ -1645,7 +1634,7 @@ def comparacao_modalidades():
         
         for risco in riscos_comparacao:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                fator_mitigacao = risco['modalidades'][modalidade]
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 risco_residual_total += risco_residual
                 classificacao_residual, _ = classificar_risco(risco_residual)
@@ -1880,7 +1869,7 @@ def dashboard_geral():
         
         for risco in st.session_state.riscos:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]['fator']
+                fator_mitigacao = risco['modalidades'][modalidade]
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 risco_residual_total += risco_residual
                 count_riscos += 1
@@ -2275,7 +2264,7 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' not in risco:
                         risco['modalidades'] = {}
-                    risco['modalidades'][nova_modalidade] = {'fator': 0.5, 'justificativa': '.'}  # Valor padrão e justificativa
+                    risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
