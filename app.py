@@ -1239,23 +1239,11 @@ def editar_riscos():
     
     # Formulário de edição
     with st.form(f"editar_risco_{indice_risco}"):
-        st.subheader(f"🎯 Editando: {risco_atual['risco_chave']}")
-        
         col1, col2 = st.columns(2)
-        
+
         with col1:
-            # Edição da descrição/justificativa
-            nova_descricao = st.text_area(
-                "Justificativa fator de impacto:",
-                value=risco_atual['descricao'],
-                help="Descreva as características específicas do seu caso que justificam a avaliação"
-            )
-            
-            # Avaliação de Impacto
             st.subheader("🎯 Reavaliação de Impacto")
             st.caption("Considere as características específicas do seu projeto:")
-            
-            # Mostrar aspectos a serem considerados para IMPACTO
             risco_nome = risco_atual['risco_chave']
             if risco_nome in ASPECTOS_RISCOS:
                 with st.expander("💡 Aspectos a serem considerados para IMPACTO", expanded=True):
@@ -1263,26 +1251,52 @@ def editar_riscos():
                     for i, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome]['impacto'], 1):
                         st.write(f"• {aspecto}")
                     st.info("💡 **Dica:** Analise como cada aspecto se aplica ao seu caso específico antes de definir o nível de impacto.")
-            
-            # Encontrar o índice atual do impacto
             niveis_impacto = list(ESCALAS_IMPACTO.keys())
             indice_impacto_atual = niveis_impacto.index(risco_atual['impacto_nivel'])
-            
             novo_impacto_nivel = st.selectbox(
                 "Novo Nível de Impacto:",
                 niveis_impacto,
                 index=indice_impacto_atual,
                 help="Baseado nas características do seu caso concreto"
             )
-            
-            # Mostrar a escala para referência
             with st.expander("📖 Consultar Escala de Impacto"):
                 for nivel, dados in ESCALAS_IMPACTO.items():
                     emoji = "👉" if nivel == novo_impacto_nivel else "•"
                     st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
-        
+
         with col2:
-            # Contexto específico
+            st.subheader("📊 Reavaliação de Probabilidade")
+            st.caption("Considere a realidade do seu contexto:")
+            if risco_nome in ASPECTOS_RISCOS:
+                with st.expander("💡 Aspectos a serem considerados para PROBABILIDADE", expanded=True):
+                    st.write("**Considere os seguintes aspectos ao avaliar a probabilidade:**")
+                    for i, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome]['probabilidade'], 1):
+                        st.write(f"• {aspecto}")
+                    st.info("💡 **Dica:** Analise como cada aspecto se aplica ao seu contexto antes de definir o nível de probabilidade.")
+            niveis_probabilidade = list(ESCALAS_PROBABILIDADE.keys())
+            indice_probabilidade_atual = niveis_probabilidade.index(risco_atual['probabilidade_nivel'])
+            nova_probabilidade_nivel = st.selectbox(
+                "Novo Nível de Probabilidade:",
+                niveis_probabilidade,
+                index=indice_probabilidade_atual,
+                help="Baseado na realidade do seu contexto"
+            )
+            with st.expander("📖 Consultar Escala de Probabilidade"):
+                for nivel, dados in ESCALAS_PROBABILIDADE.items():
+                    emoji = "👉" if nivel == nova_probabilidade_nivel else "•"
+                    st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
+
+        st.subheader("Impacto")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            nova_descricao = st.text_area(
+                "Justificativa fator de impacto:",
+                value=risco_atual['descricao'],
+                help="Descreva as características específicas do seu caso que justificam a avaliação"
+            )
+
+        with col2:
             st.subheader("🗗️ Justificativa fator de probabilidade")
             contexto_especifico = st.text_area(
                 "Fatores específicos que influenciam a probabilidade deste risco:",
@@ -1290,35 +1304,6 @@ def editar_riscos():
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
             )
-            
-            # Avaliação de Probabilidade
-            st.subheader("📊 Reavaliação de Probabilidade")
-            st.caption("Considere a realidade do seu contexto:")
-            
-            # Mostrar aspectos a serem considerados para PROBABILIDADE
-            if risco_nome in ASPECTOS_RISCOS:
-                with st.expander("💡 Aspectos a serem considerados para PROBABILIDADE", expanded=True):
-                    st.write("**Considere os seguintes aspectos ao avaliar a probabilidade:**")
-                    for i, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome]['probabilidade'], 1):
-                        st.write(f"• {aspecto}")
-                    st.info("💡 **Dica:** Analise como cada aspecto se aplica ao seu contexto antes de definir o nível de probabilidade.")
-            
-            # Encontrar o índice atual da probabilidade
-            niveis_probabilidade = list(ESCALAS_PROBABILIDADE.keys())
-            indice_probabilidade_atual = niveis_probabilidade.index(risco_atual['probabilidade_nivel'])
-            
-            nova_probabilidade_nivel = st.selectbox(
-                "Novo Nível de Probabilidade:",
-                niveis_probabilidade,
-                index=indice_probabilidade_atual,
-                help="Baseado na realidade do seu contexto"
-            )
-            
-            # Mostrar a escala para referência
-            with st.expander("📖 Consultar Escala de Probabilidade"):
-                for nivel, dados in ESCALAS_PROBABILIDADE.items():
-                    emoji = "👉" if nivel == nova_probabilidade_nivel else "•"
-                    st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
         
         # Calcular novos valores
         novo_impacto_valor = ESCALAS_IMPACTO[novo_impacto_nivel]['valor']
