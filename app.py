@@ -375,7 +375,7 @@ def gerar_relatorio_word():
             risco_residual_total = 0
             for risco in st.session_state.riscos:
                 if modalidade in risco['modalidades']:
-                    fator_mitigacao = risco['modalidades'][modalidade]
+                    fator_mitigacao = risco['modalidades'][modalidade]['fator']
                     risco_residual = risco['risco_inerente'] * fator_mitigacao
                     risco_residual_total += risco_residual
             risco_acumulado_por_modalidade[modalidade] = risco_residual_total
@@ -498,7 +498,7 @@ def gerar_relatorio_word():
             
             for risco in st.session_state.riscos:
                 if modalidade in risco['modalidades']:
-                    fator_mitigacao = risco['modalidades'][modalidade]
+                    fator_mitigacao = risco['modalidades'][modalidade]['fator']
                     risco_residual = risco['risco_inerente'] * fator_mitigacao
                     risco_residual_total += risco_residual
                     risco_inerente_aplicavel += risco['risco_inerente']
@@ -741,7 +741,7 @@ def criar_heatmap_modalidades_melhorado(riscos_comparacao):
         linha_risco = []
         for modalidade in modalidades:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]
+                fator_mitigacao = risco['modalidades'][modalidade]['fator']
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 linha_risco.append(risco_residual)
             else:
@@ -837,7 +837,7 @@ def criar_heatmap_eficacia_melhorado(riscos_comparacao):
         linha_eficacia = []
         for modalidade in modalidades:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]
+                fator_mitigacao = risco['modalidades'][modalidade]['fator']
                 eficacia = (1 - fator_mitigacao) * 100  # Percentual de redução
                 linha_eficacia.append(eficacia)
             else:
@@ -1158,7 +1158,12 @@ def cadastro_riscos():
                     step=0.1,
                     key=f"modalidade_{i}"
                 )
-                modalidades_avaliacao[modalidade] = fator
+                justificativa_modalidade = st.text_area(
+                    f"Justificativa para {modalidade}:",
+                    value=".",
+                    key=f"justificativa_modalidade_{i}"
+                )
+                modalidades_avaliacao[modalidade] = {"fator": fator, "justificativa": justificativa_modalidade}
                 
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
@@ -1178,7 +1183,7 @@ def cadastro_riscos():
                 'probabilidade_valor': probabilidade_valor,
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
-                'modalidades': modalidades_avaliacao.copy(),
+                'modalidades': {mod: {'fator': data['fator'], 'justificativa': data['justificativa']} for mod, data in modalidades_avaliacao.items()},
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1351,9 +1356,15 @@ def editar_riscos():
                     max_value=1.0,
                     value=valor_atual,
                     step=0.1,
-                    key=f"nova_modalidade_{i}_{indice_risco}"
+                    key=f"editar_modalidade_{indice_risco}_{i}"
                 )
-                novas_modalidades[modalidade] = novo_fator
+                justificativa_atual = risco_atual["modalidades"].get(modalidade, {}).get("justificativa", ".")
+                nova_justificativa = st.text_area(
+                    f"Justificativa para {modalidade}:",
+                    value=justificativa_atual,
+                    key=f"editar_justificativa_modalidade_{indice_risco}_{i}"
+                )
+                novas_modalidades[modalidade] = {"fator": novo_fator, "justificativa": nova_justificativa}
                 
                 # Mostrar comparação do risco residual
                 risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
@@ -1634,7 +1645,7 @@ def comparacao_modalidades():
         
         for risco in riscos_comparacao:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]
+                fator_mitigacao = risco['modalidades'][modalidade]['fator']
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 risco_residual_total += risco_residual
                 classificacao_residual, _ = classificar_risco(risco_residual)
@@ -1869,7 +1880,7 @@ def dashboard_geral():
         
         for risco in st.session_state.riscos:
             if modalidade in risco['modalidades']:
-                fator_mitigacao = risco['modalidades'][modalidade]
+                fator_mitigacao = risco['modalidades'][modalidade]['fator']
                 risco_residual = risco['risco_inerente'] * fator_mitigacao
                 risco_residual_total += risco_residual
                 count_riscos += 1
@@ -2264,7 +2275,7 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' not in risco:
                         risco['modalidades'] = {}
-                    risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
+                    risco['modalidades'][nova_modalidade] = {'fator': 0.5, 'justificativa': '.'}  # Valor padrão e justificativa
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
