@@ -2014,11 +2014,11 @@ def inicializar_dados():
                 'classificacao': 'Médio',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno tercei            ]
-         ]
-    riscos_iniciais = [
+                    'Permuta por edificação a construir (terreno terceiros)': 0.8
+                }
+            },
             {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
+   'risco_chave': 'Descumprimento do Prazo de entrega',
                 'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
