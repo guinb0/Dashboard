@@ -1336,7 +1336,7 @@ def editar_riscos():
 
         with col2:
             contexto_especifico = st.text_area(
-                "Fatores específicos que influenciam a probabilidade deste risco:",
+                "Justificativa fator de probabilidade:",
                 value=risco_atual.get('contexto_especifico', ''),
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
                 help="Descreva os aspectos únicos do seu projeto"
