@@ -468,30 +468,37 @@ def gerar_relatorio_word():
             aval_para.add_run("\nAVALIAÇÃO QUANTITATIVA:").bold = True
             aval_para.add_run(f"\n• Impacto: {risco['impacto_valor']} ({risco['impacto_nivel']})\n")
             aval_para.add_run("Justificativa do risco: ").bold = True
-            aval_para.add_run(risco["descricao"])
+            aval_para.add_run(risco.get("descricao", ""))
             aval_para.add_run(f"\n\n• Probabilidade: {risco['probabilidade_valor']} ({risco['probabilidade_nivel']})\n")
             aval_para.add_run("Justificativa de Probabilidade de ocorrência: ").bold = True
             aval_para.add_run(risco.get("contexto_especifico", ""))
             aval_para.add_run(f"\n\n• Risco Inerente: {risco['risco_inerente']} pontos")
             aval_para.add_run(f"\n• Classificação: {risco['classificacao']}")
             
-            # Análise por modalidade
-            modal_para = doc.add_paragraph()
-            modal_para.add_run("\nANÁLISE POR MODALIDADE:").bold = True
+            # Análise por modalidade - AGORA EM TABELA
+            doc.add_heading('3.x Análise por Modalidade', level=3)
             
-            # Exibe justificativas das modalidades se existirem
+            table = doc.add_table(rows=1, cols=5)
+            table.style = 'Table Grid'
+            
+            hdr_cells = table.rows[0].cells
+            hdr_cells[0].text = 'Modalidade'
+            hdr_cells[1].text = 'Fator de Mitigação'
+            hdr_cells[2].text = 'Risco Residual'
+            hdr_cells[3].text = 'Eficácia (%)'
+            hdr_cells[4].text = 'Justificativa'
+            
             justificativas_modalidades = risco.get("justificativas_modalidades", {})
             for modalidade, fator in risco['modalidades'].items():
                 risco_residual = risco['risco_inerente'] * fator
                 eficacia = (1 - fator) * 100
-                classificacao_residual, _ = classificar_risco(risco_residual)
                 
-                modal_para.add_run(f"\n• {modalidade}:")
-                modal_para.add_run(f"\n  - Fator de Mitigação: {fator:.1f}")
-                modal_para.add_run(f"\n  - Risco Residual: {risco_residual:.1f} ({classificacao_residual})")
-                modal_para.add_run(f"\n  - Eficácia: {eficacia:.1f}%")
-                if modalidade in justificativas_modalidades and justificativas_modalidades[modalidade]:
-                    modal_para.add_run(f"\n  - Justificativa: {justificativas_modalidades[modalidade]}")
+                row_cells = table.add_row().cells
+                row_cells[0].text = modalidade
+                row_cells[1].text = f"{fator:.1f}"
+                row_cells[2].text = f"{risco_residual:.1f} ({classificar_risco(risco_residual)[0]})"
+                row_cells[3].text = f"{eficacia:.1f}%"
+                row_cells[4].text = justificativas_modalidades.get(modalidade, "")
         
         # 4. ANÁLISE COMPARATIVA DAS MODALIDADES
         doc.add_heading('4. ANÁLISE COMPARATIVA DAS MODALIDADES', level=1)
@@ -1081,13 +1088,13 @@ def inicializar_dados():
         ]
         
         textos_exemplo_mitigacao = [
-            "A mitigação por esta modalidade se deve à... (ex: menor dependência de terceiros).",
-            "Esta modalidade é eficaz porque permite maior controle sobre... (ex: a qualidade dos materiais).",
-            "O fator de mitigação é baixo devido a... (ex: alta volatilidade do mercado para este tipo de ativo).",
-            "A escolha desta modalidade reduz o risco de... (ex: abandono da obra, pois o pagamento está atrelado à entrega).",
+            "A mitigação por esta modalidade se deve à menor dependência de terceiros.",
+            "Esta modalidade é eficaz porque permite maior controle sobre a qualidade dos materiais.",
+            "O fator de mitigação é baixo devido à alta volatilidade do mercado para este tipo de ativo.",
+            "A escolha desta modalidade reduz o risco de abandono da obra, pois o pagamento está atrelado à entrega.",
             "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
-            "O risco residual é alto nesta modalidade, pois a Administração assume... (ex: os custos de renegociação).",
-            "Esta é a modalidade mais segura em termos de... (ex: orçamento, pois o custo é fixo e previamente estabelecido).",
+            "O risco residual é alto nesta modalidade, pois a Administração assume os custos de renegociação.",
+            "Esta é a modalidade mais segura em termos de orçamento, pois o custo é fixo e previamente estabelecido.",
             "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
         ]
         
@@ -1096,7 +1103,7 @@ def inicializar_dados():
                 risco["justificativas_modalidades"] = {
                     modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]
                 }
-            if "contexto_especifico" not in risco:
+            if "contexto_especifico" not in risco or not risco["contexto_especifico"]:
                 risco["contexto_especifico"] = np.random.choice(textos_exemplo_prob)
         
         st.session_state.riscos = riscos_iniciais
