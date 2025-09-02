@@ -1089,13 +1089,13 @@ def inicializar_dados():
         ]
         
         textos_exemplo_mitigacao = [
-            "A mitigação por esta modalidade se deve à menor dependência de terceiros.",
+            "Administração privada em imóvel privado",
             "Esta modalidade é eficaz porque permite maior controle sobre a qualidade dos materiais.",
             "O fator de mitigação é baixo devido à alta volatilidade do mercado para este tipo de ativo.",
             "A escolha desta modalidade reduz o risco de abandono da obra, pois o pagamento está atrelado à entrega.",
             "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
             "O risco residual é alto nesta modalidade, pois a Administração assume os custos de renegociação.",
-            "Esta é a modalidade mais segura em termos de orçamento, pois o custo é fixo e previamente estabelecido.",
+            "Imóvel pronto",
             "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
         ]
         
