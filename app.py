@@ -1082,26 +1082,6 @@ def inicializar_dados():
         ]
         
         # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
-        textos_exemplo_prob = {
-            'Descumprimento do Prazo de entrega': 'A probabilidade é alta devido à complexidade da obra e do terreno.',
-            'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
-            'Condições de mercado desfavoráveis': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
-            'Abandono da obra pela empresa': 'A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.',
-            'Baixa rentabilização do estoque de imóveis': 'A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas.',
-            'Dotação orçamentária insuficiente': 'A probabilidade é muito alta, dado o cenário fiscal e orçamentário da União e a priorização do projeto no planejamento governamental.',
-            'Questionamento jurídico': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
-            'Baixa qualidade dos serviços entregues': 'A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.'
-        }
-        
-        justificativas_modalidades_padrao = {
-            'Permuta por imóvel já construído': "Imóvel pronto.",
-            'Permuta por edificação a construir (terreno terceiros)': "Administração privada em imóvel privado.",
-            'Permuta por obra (terreno da União)': "Administração privada em imóvel público.",
-            'Build to Suit (terreno da União)': "Administração privada em imóvel público.",
-            'Contratação com dação em pagamento': "Contrato público submetido a contingenciamentos.",
-            'Obra pública convencional': "Construção custeada com OGU."
-        }
-        
         justificativas_modalidades_detalhadas = {
             'Descumprimento do Prazo de entrega': {
                 'Permuta por imóvel já construído': 'Imóvel pronto.',
@@ -1168,13 +1148,21 @@ def inicializar_dados():
                 'Obra pública convencional': 'Acompanhamento pleno (contrato de serviço).'
             }
         }
+
+        textos_exemplo_prob = {
+            'Descumprimento do Prazo de entrega': 'A probabilidade é alta devido à complexidade da obra e do terreno.',
+            'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
+            'Condições de mercado desfavoráveis': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
+            'Abandono da obra pela empresa': 'A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.',
+            'Baixa rentabilização do estoque de imóveis': 'A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas.',
+            'Dotação orçamentária insuficiente': 'A probabilidade é muito alta, dado o cenário fiscal e orçamentário da União e a priorização do projeto no planejamento governamental.',
+            'Questionamento jurídico': 'A probabilidade é média, pois o histórico de projetos similares na região é misto.',
+            'Baixa qualidade dos serviços entregues': 'A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.'
+        }
         
         for risco in riscos_iniciais:
-            risco.setdefault('justificativas_modalidades', {})
+            risco.setdefault('justificativas_modalidades', justificativas_modalidades_detalhadas.get(risco['risco_chave'], {}))
             risco.setdefault('contexto_especifico', textos_exemplo_prob.get(risco['risco_chave'], ""))
-
-            # Preencher com as justificativas detalhadas
-            risco['justificativas_modalidades'] = justificativas_modalidades_detalhadas.get(risco['risco_chave'], {})
             
         st.session_state.riscos = riscos_iniciais
         
@@ -2298,13 +2286,18 @@ def main():
     # Verificar se o usuário está logado
     if 'user' not in st.session_state:
         st.session_state.user = None
-        st.session_state.logged_in = False
-    
-    # Exibir a página de boas-vindas HTML se não estiver logado
-    if not st.session_state.user and not st.session_state.get('show_login', False):
-        st.title("Olá! Bem-vindo ao Sistema de Avaliação de Riscos")
         
-        # Conteúdo HTML e script para comunicação com o Streamlit
+    # Inicializar a variável para controlar a exibição do login
+    if 'show_login' not in st.session_state:
+        st.session_state.show_login = False
+        
+    if 'html_message' in st.session_state and st.session_state.html_message == 'login_requested':
+        st.session_state.show_login = True
+        del st.session_state.html_message
+        st.rerun()
+
+    # Se não está logado e não solicitou o login, mostrar a página de boas-vindas HTML
+    if not st.session_state.user and not st.session_state.show_login:
         html_code = """
         <!DOCTYPE html>
         <html lang="pt-BR">
@@ -2319,7 +2312,6 @@ def main():
                     padding: 0;
                     box-sizing: border-box;
                 }
-
                 :root {
                     --primary: #1e40af;
                     --primary-light: #3b82f6;
@@ -2332,7 +2324,6 @@ def main():
                     --text-light: #6b7280;
                     --border: #e5e7eb;
                 }
-
                 body {
                     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
                     line-height: 1.6;
@@ -2340,8 +2331,6 @@ def main():
                     overflow-x: hidden;
                     background-color: var(--light);
                 }
-
-                /* Header */
                 .header {
                     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
                     color: white;
@@ -2353,7 +2342,6 @@ def main():
                     justify-content: center;
                     align-items: center;
                 }
-
                 .header::before {
                     content: '';
                     position: absolute;
@@ -2364,7 +2352,6 @@ def main():
                     background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" fill-opacity="0.05"><polygon points="0,100 1000,0 1000,100"/></svg>');
                     background-size: cover;
                 }
-
                 .nav {
                     width: 100%;
                     background: rgba(0, 0, 0, 0.1);
@@ -2374,7 +2361,6 @@ def main():
                     top: 0;
                     z-index: 1000;
                 }
-
                 .nav-container {
                     max-width: 1200px;
                     margin: 0 auto;
@@ -2383,7 +2369,6 @@ def main():
                     justify-content: space-between;
                     align-items: center;
                 }
-
                 .logo {
                     display: flex;
                     align-items: center;
@@ -2391,7 +2376,6 @@ def main():
                     font-weight: 700;
                     font-size: 1.25rem;
                 }
-
                 .logo-icon {
                     background: white;
                     color: var(--primary);
@@ -2403,13 +2387,11 @@ def main():
                     justify-content: center;
                     font-weight: bold;
                 }
-
                 .nav-links {
                     display: flex;
                     gap: 2rem;
                     align-items: center;
                 }
-
                 .nav-link {
                     color: white;
                     text-decoration: none;
@@ -2418,11 +2400,9 @@ def main():
                     transition: all 0.3s ease;
                     font-weight: 500;
                 }
-
                 .nav-link:hover {
                     background: rgba(255, 255, 255, 0.1);
                 }
-
                 .cta-button {
                     background: var(--secondary);
                     color: white;
@@ -2433,14 +2413,11 @@ def main():
                     transition: all 0.3s ease;
                     box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
                 }
-
                 .cta-button:hover {
                     background: #047857;
                     transform: translateY(-2px);
                     box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
                 }
-
-                /* Hero Section */
                 .hero {
                     padding: 6rem 0 4rem;
                     text-align: center;
@@ -2448,20 +2425,17 @@ def main():
                     z-index: 1;
                     width: 100%;
                 }
-
                 .hero-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 0 2rem;
                 }
-
                 .hero h1 {
                     font-size: 3.5rem;
                     font-weight: 800;
                     margin-bottom: 1.5rem;
                     line-height: 1.1;
                 }
-
                 .hero p {
                     font-size: 1.25rem;
                     margin-bottom: 2.5rem;
@@ -2470,14 +2444,12 @@ def main():
                     margin-left: auto;
                     margin-right: auto;
                 }
-
                 .hero-buttons {
                     display: flex;
                     gap: 1rem;
                     justify-content: center;
                     flex-wrap: wrap;
                 }
-
                 .btn-primary, .btn-secondary {
                     padding: 1rem 2rem;
                     border-radius: 12px;
@@ -2490,48 +2462,39 @@ def main():
                     gap: 0.5rem;
                     cursor: pointer;
                 }
-
                 .btn-primary {
                     background: white;
                     color: var(--primary);
                     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
                     border: none;
                 }
-
                 .btn-primary:hover {
                     transform: translateY(-3px);
                     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
                 }
-
                 .btn-secondary {
                     background: rgba(255, 255, 255, 0.1);
                     color: white;
                     border: 2px solid rgba(255, 255, 255, 0.3);
                 }
-
                 .btn-secondary:hover {
                     background: rgba(255, 255, 255, 0.2);
                     border-color: rgba(255, 255, 255, 0.5);
                 }
-
-                /* Stats Section */
                 .stats {
                     background: var(--light);
                     padding: 4rem 0;
                 }
-
                 .stats-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 0 2rem;
                 }
-
                 .stats-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 2rem;
                 }
-
                 .stat-card {
                     background: white;
                     padding: 2rem;
@@ -2540,12 +2503,10 @@ def main():
                     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
                     transition: all 0.3s ease;
                 }
-
                 .stat-card:hover {
                     transform: translateY(-5px);
                     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
                 }
-
                 .stat-icon {
                     width: 60px;
                     height: 60px;
@@ -2557,62 +2518,51 @@ def main():
                     margin: 0 auto 1rem;
                     color: white;
                 }
-
                 .stat-number {
                     font-size: 3rem;
                     font-weight: 800;
                     color: var(--primary);
                     margin-bottom: 0.5rem;
                 }
-
                 .stat-label {
                     font-weight: 600;
                     color: var(--text);
                     margin-bottom: 0.5rem;
                 }
-
                 .stat-description {
                     font-size: 0.9rem;
                     color: var(--text-light);
                 }
-
-                /* Features Section */
                 .features {
                     padding: 6rem 0;
                     background: white;
                 }
-
                 .features-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 0 2rem;
                 }
-
                 .section-header {
                     text-align: center;
                     margin-bottom: 4rem;
                 }
-
                 .section-title {
                     font-size: 2.5rem;
                     font-weight: 700;
                     color: var(--dark);
                     margin-bottom: 1rem;
                 }
-
                 .section-subtitle {
                     font-size: 1.25rem;
                     color: var(--text-light);
                     max-width: 600px;
                     margin: 0 auto;
                 }
-
                 .features-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
                     gap: 2rem;
                 }
-
                 .feature-card {
                     background: var(--light);
                     padding: 2.5rem;
@@ -2620,13 +2570,11 @@ def main():
                     transition: all 0.3s ease;
                     border: 1px solid var(--border);
                 }
-
                 .feature-card:hover {
                     transform: translateY(-10px);
                     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
                     border-color: var(--primary-light);
                 }
-
                 .feature-icon {
                     width: 70px;
                     height: 70px;
@@ -2638,32 +2586,27 @@ def main():
                     margin-bottom: 1.5rem;
                     color: white;
                 }
-
                 .feature-title {
                     font-size: 1.5rem;
                     font-weight: 700;
                     margin-bottom: 1rem;
                     color: var(--dark);
                 }
-
                 .feature-description {
                     color: var(--text-light);
                     margin-bottom: 1.5rem;
                     line-height: 1.7;
                 }
-
                 .feature-list {
                     list-style: none;
                     padding: 0;
                 }
-
                 .feature-list li {
                     padding: 0.5rem 0;
                     color: var(--text);
                     position: relative;
                     padding-left: 1.5rem;
                 }
-
                 .feature-list li::before {
                     content: "✓";
                     position: absolute;
@@ -2671,15 +2614,12 @@ def main():
                     color: var(--secondary);
                     font-weight: bold;
                 }
-
-                /* Process Section */
                 .process {
                     background: var(--dark);
                     color: white;
                     padding: 6rem 0;
                     position: relative;
                 }
-
                 .process::before {
                     content: '';
                     position: absolute;
@@ -2690,7 +2630,6 @@ def main():
                     background: linear-gradient(45deg, var(--dark) 0%, #374151 100%);
                     opacity: 0.9;
                 }
-
                 .process-container {
                     max-width: 1200px;
                     margin: 0 auto;
@@ -2698,14 +2637,12 @@ def main():
                     position: relative;
                     z-index: 1;
                 }
-
                 .process-steps {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                     gap: 2rem;
                     margin-top: 3rem;
                 }
-
                 .process-step {
                     text-align: center;
                     padding: 2rem 1rem;
@@ -2715,12 +2652,10 @@ def main():
                     border: 1px solid rgba(255, 255, 255, 0.1);
                     transition: all 0.3s ease;
                 }
-
                 .process-step:hover {
                     background: rgba(255, 255, 255, 0.1);
                     transform: translateY(-5px);
                 }
-
                 .step-number {
                     width: 50px;
                     height: 50px;
@@ -2734,37 +2669,30 @@ def main():
                     font-size: 1.25rem;
                     margin: 0 auto 1rem;
                 }
-
                 .step-title {
                     font-weight: 600;
                     margin-bottom: 0.5rem;
                     font-size: 1.1rem;
                 }
-
                 .step-description {
                     font-size: 0.9rem;
                     opacity: 0.8;
                 }
-
-                /* Resources Section */
                 .resources {
                     padding: 6rem 0;
                     background: var(--light);
                 }
-
                 .resources-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 0 2rem;
                 }
-
                 .resources-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                     gap: 2rem;
                     margin-top: 3rem;
                 }
-
                 .resource-card {
                     background: white;
                     padding: 2rem;
@@ -2773,12 +2701,10 @@ def main():
                     transition: all 0.3s ease;
                     border-left: 4px solid var(--primary);
                 }
-
                 .resource-card:hover {
                     transform: translateY(-5px);
                     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
                 }
-
                 .resource-icon {
                     width: 50px;
                     height: 50px;
@@ -2790,19 +2716,16 @@ def main():
                     margin-bottom: 1rem;
                     color: white;
                 }
-
                 .resource-title {
                     font-size: 1.25rem;
                     font-weight: 600;
                     margin-bottom: 1rem;
                     color: var(--dark);
                 }
-
                 .resource-description {
                     color: var(--text-light);
                     margin-bottom: 1.5rem;
                 }
-
                 .resource-link {
                     color: var(--primary);
                     text-decoration: none;
@@ -2812,93 +2735,74 @@ def main():
                     gap: 0.5rem;
                     transition: all 0.3s ease;
                 }
-
                 .resource-link:hover {
                     color: var(--primary-light);
                     gap: 1rem;
                 }
-
-                /* Footer */
                 .footer {
                     background: var(--dark);
                     color: white;
                     padding: 4rem 0 2rem;
                 }
-
                 .footer-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 0 2rem;
                 }
-
                 .footer-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 2rem;
                     margin-bottom: 2rem;
                 }
-
                 .footer-section h3 {
                     font-weight: 600;
                     margin-bottom: 1rem;
                     color: white;
                 }
-
                 .footer-section ul {
                     list-style: none;
                     padding: 0;
                 }
-
                 .footer-section li {
                     margin-bottom: 0.5rem;
                 }
-
                 .footer-section a {
                     color: #9ca3af;
                     text-decoration: none;
                     transition: color 0.3s ease;
                 }
-
                 .footer-section a:hover {
                     color: white;
                 }
-
                 .footer-bottom {
                     border-top: 1px solid #374151;
                     padding-top: 2rem;
                     text-align: center;
                     color: #9ca3af;
                 }
-
-                /* Mobile Responsive */
                 @media (max-width: 768px) {
                     .nav-links {
                         display: none;
                     }
-                    
                     .hero h1 {
                         font-size: 2.5rem;
                     }
-                    
                     .hero p {
                         font-size: 1.1rem;
                     }
-                    
                     .hero-buttons {
                         flex-direction: column;
                         align-items: center;
                     }
-                    
                     .features-grid,
                     .resources-grid {
                         grid-template-columns: 1fr;
                     }
-                    
                     .section-title {
                         font-size: 2rem;
                     }
                 }
-                
                 .animate-on-scroll {
                     animation: none !important;
                 }
@@ -2920,7 +2824,6 @@ def main():
                         </div>
                     </div>
                 </nav>
-
                 <div class="hero">
                     <div class="hero-container">
                         <h1>Análise Quantitativa de Riscos para Modalidades de Contratação</h1>
@@ -2937,7 +2840,6 @@ def main():
                     </div>
                 </div>
             </header>
-
             <section class="stats" id="stats-section">
                 <div class="stats-container">
                     <div class="stats-grid">
@@ -2976,14 +2878,12 @@ def main():
                     </div>
                 </div>
             </section>
-
             <section class="features" id="features">
                 <div class="features-container">
                     <div class="section-header">
                         <h2 class="section-title">Recursos Principais</h2>
                         <p class="section-subtitle">Uma solução completa para gestão e análise de riscos em operações patrimoniais e modalidades de contratação</p>
                     </div>
-
                     <div class="features-grid">
                         <div class="feature-card animate-on-scroll">
                             <div class="feature-icon" style="background: var(--primary);">
@@ -2998,7 +2898,6 @@ def main():
                                 <li>Validação de consistência dos dados</li>
                             </ul>
                         </div>
-
                         <div class="feature-card animate-on-scroll">
                             <div class="feature-icon" style="background: var(--secondary);">
                                 <i class="fas fa-chart-bar"></i>
@@ -3012,7 +2911,6 @@ def main():
                                 <li>Insights e recomendações automáticas</li>
                             </ul>
                         </div>
-
                         <div class="feature-card animate-on-scroll">
                             <div class="feature-icon" style="background: var(--accent);">
                                 <i class="fas fa-file-alt"></i>
@@ -3026,7 +2924,6 @@ def main():
                                 <li>Documentação de metodologia e premissas</li>
                             </ul>
                         </div>
-
                         <div class="feature-card animate-on-scroll">
                             <div class="feature-icon" style="background: var(--danger);">
                                 <i class="fas fa-cogs"></i>
@@ -3043,14 +2940,12 @@ def main():
                     </div>
                 </div>
             </section>
-
             <section class="process" id="process">
                 <div class="process-container">
                     <div class="section-header">
                         <h2 class="section-title" style="color: white;">Metodologia em 5 Fases</h2>
                         <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.8);">Processo estruturado baseado no Roteiro de Auditoria de Gestão de Riscos da CGU</p>
                     </div>
-
                     <div class="process-steps">
                         <div class="process-step animate-on-scroll">
                             <div class="step-number">1</div>
@@ -3080,14 +2975,12 @@ def main():
                     </div>
                 </div>
             </section>
-
             <section class="resources" id="resources">
                 <div class="resources-container">
                     <div class="section-header">
                         <h2 class="section-title">Recursos e Documentação</h2>
                         <p class="section-subtitle">Acesse manuais, guias e materiais de apoio para aplicação da metodologia</p>
                     </div>
-
                     <div class="resources-grid">
                         <div class="resource-card animate-on-scroll">
                             <div class="resource-icon" style="background: var(--primary);">
@@ -3152,7 +3045,6 @@ def main():
                     </div>
                 </div>
             </section>
-
             <footer class="footer" id="about">
                 <div class="footer-container">
                     <div class="footer-grid">
@@ -3198,7 +3090,6 @@ def main():
                     </div>
                 </div>
             </footer>
-
             <script>
                 // Adiciona um listener para o botão de acesso
                 document.getElementById('access-btn').addEventListener('click', () => {
@@ -3208,19 +3099,990 @@ def main():
         </body>
         </html>
         """
-
         components.html(html_code, height=1000, scrolling=True)
-
-        # Usar uma chave na session_state para controlar o estado
-        if st.session_state.get('login_requested', False):
-            # Se o botão foi clicado, redireciona para o formulário de login
-            st.session_state.show_login = True
-            st.session_state.login_requested = False  # Resetar para evitar loop
-            st.rerun()
-            
         st.stop()
+
+    # Se está logado, mostrar a aplicação normal
+    nome_projeto_titulo = st.session_state.get('nome_projeto', 'Projeto')
+    st.title(f"🛡️ Dashboard de Avaliação de Riscos - {nome_projeto_titulo}")
+    st.markdown(f"*Usuário: {st.session_state.user}*")
+    st.markdown("*Metodologia baseada no Roteiro de Auditoria de Gestão de Riscos *")
     
-    # Se já foi para a tela de login, ou já está logado, a lógica a seguir é executada
+    inicializar_dados()
+    
+    # Sidebar para configurações
+    with st.sidebar:
+        st.header("⚙️ Configurações")
+        
+        st.info("💡 **Dados Pré-carregados**\n\nOs riscos da sua planilha já estão carregados! Você pode adicionar novos, editar existentes ou modificar modalidades.")
+        
+        # Mostrar estatísticas dos riscos
+        if st.session_state.riscos:
+            st.subheader("📊 Estatísticas Atuais")
+            total = len(st.session_state.riscos)
+            altos = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Alto')
+            medios = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Médio')
+            baixos = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Baixo')
+            editados = sum(1 for r in st.session_state.riscos if r.get('editado', False))
+            adicionados = sum(1 for r in st.session_state.riscos if r.get('personalizado', False))
+            
+            st.write(f"**Total:** {total} riscos")
+            st.write(f"🔴 **Altos:** {altos} ({altos/total*100:.0f}%)")
+            st.write(f"🟡 **Médios:** {medios} ({medios/total*100:.0f}%)")
+            st.write(f"🟢 **Baixos:** {baixos} ({baixos/total*100:.0f}%)")
+            
+            if editados > 0:
+                st.write(f"✏️ **Personalizados:** {editados}")
+            if adicionados > 0:
+                st.write(f"➕ **Adicionados:** {adicionados}")
+        
+        st.divider()
+        
+        # Gerenciar modalidades
+        st.subheader("Modalidades de Mitigação")
+        nova_modalidade = st.text_input("Adicionar nova modalidade:")
+        if st.button("➕ Adicionar") and nova_modalidade:
+            if nova_modalidade not in st.session_state.modalidades:
+                st.session_state.modalidades.append(nova_modalidade)
+                # Adicionar a nova modalidade a todos os riscos existentes
+                for risco in st.session_state.riscos:
+                    if 'modalidades' not in risco:
+                        risco['modalidades'] = {}
+                    risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
+                    # Garante que a nova justificativa também seja adicionada
+                    risco.setdefault('justificativas_modalidades', {})[nova_modalidade] = ""
+                st.success(f"Modalidade '{nova_modalidade}' adicionada!")
+                st.rerun()
+            else:
+                st.warning("Modalidade já existe!")
+        
+        # Remover modalidade
+        if st.session_state.modalidades:
+            modalidade_remover = st.selectbox(
+                "Remover modalidade:",
+                ["Selecione..."] + st.session_state.modalidades
+            )
+            if st.button("🗑️ Remover") and modalidade_remover != "Selecione...":
+                st.session_state.modalidades.remove(modalidade_remover)
+                # Remover a modalidade de todos os riscos
+                for risco in st.session_state.riscos:
+                    if 'modalidades' in risco and modalidade_remover in risco['modalidades']:
+                        del risco['modalidades'][modalidade_remover]
+                    if 'justificativas_modalidades' in risco and modalidade_remover in risco['justificativas_modalidades']:
+                        del risco['justificativas_modalidades'][modalidade_remover]
+                st.success(f"Modalidade '{modalidade_remover}' removida!")
+                st.rerun()
+        
+        st.divider()
+        
+        # Exportar/Importar dados
+        st.subheader("📄 Gerenciar Dados")
+        
+        # Botão para gerar relatório Word
+        if Document and st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
+            with st.spinner("Gerando relatório..."):
+                buffer = gerar_relatorio_word()
+                if buffer:
+                    nome_projeto_arquivo = st.session_state.get('nome_projeto', 'Projeto').replace(' ', '_')
+                    st.download_button(
+                        label="📥 Baixar Relatório Word",
+                        data=buffer,
+                        file_name=f"relatorio_riscos_{nome_projeto_arquivo}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        key="download_report_sidebar"
+                    )
+                    st.success("✅ Relatório gerado com sucesso!")
+        
+        if st.button("💾 Exportar dados (JSON)"):
+            import json
+            dados_export = {
+                'riscos': st.session_state.riscos,
+                'modalidades': st.session_state.modalidades
+            }
+            json_string = json.dumps(dados_export, indent=2, ensure_ascii=False)
+            st.download_button(
+                label="📥 Baixar arquivo JSON",
+                data=json_string,
+                file_name="avaliacao_riscos.json",
+                mime="application/json"
+            )
+        
+        # Resetar dados
+        if st.button("🔄 Recarregar dados originais"):
+            st.session_state.riscos = []
+            st.session_state.modalidades = []
+            inicializar_dados()
+            st.success("Dados originais recarregados!")
+            st.rerun()
+        
+        if st.button(" Limpar todos os dados"):
+            if st.checkbox("⚠️ Confirmo que quero limpar todos os dados"):
+                st.session_state.riscos = []
+                st.session_state.modalidades = MODALIDADES_PADRAO.copy()
+                st.success("Dados limpos!")
+                st.rerun()
+            else:
+                st.warning("Marque a confirmação para limpar os dados")
+        
+        st.divider()
+        st.write(f"Usuário: **{st.session_state.user}**")
+        if st.button("🚪 Sair"):
+            st.session_state.user = None
+            st.session_state.show_login = False
+            st.rerun()
+    
+    # Abas principais
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        "✏️ Editar Riscos",
+        "📝 Cadastro de Riscos",
+        "📊 Análise de Riscos", 
+        "🔄 Comparação de Modalidades",
+        "📈 Dashboard Geral",
+        "📋 Log de Ações"
+    ])
+    
+    with tab1:
+        editar_riscos()
+    
+    with tab2:
+        cadastro_riscos()
+    
+    with tab3:
+        analise_riscos()
+    
+    with tab4:
+        comparacao_modalidades()
+    
+    with tab5:
+        dashboard_geral()
+    
+    with tab6:
+        visualizar_logs()
+
+def main():
+    # Inicializar banco de dados
+    init_db()
+    
+    # Adicionar o estado de login se não existir
+    if 'user' not in st.session_state:
+        st.session_state.user = None
+    if 'show_login' not in st.session_state:
+        st.session_state.show_login = False
+    
+    # Se a mensagem de login foi recebida do HTML, atualiza o estado
+    if st.experimental_get_query_params().get("login", [""])[0] == "true":
+        st.session_state.show_login = True
+        st.experimental_set_query_params(login=None)
+        
+    # Lógica de controle de fluxo
+    if not st.session_state.user and not st.session_state.show_login:
+        html_code = """
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Metodologia CGU - Análise de Riscos em Modalidades de Contratação</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                :root {
+                    --primary: #1e40af;
+                    --primary-light: #3b82f6;
+                    --secondary: #059669;
+                    --accent: #f59e0b;
+                    --danger: #dc2626;
+                    --dark: #1f2937;
+                    --light: #f8fafc;
+                    --text: #374151;
+                    --text-light: #6b7280;
+                    --border: #e5e7eb;
+                }
+                body {
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                    line-height: 1.6;
+                    color: var(--text);
+                    overflow-x: hidden;
+                    background-color: var(--light);
+                }
+                .header {
+                    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+                    color: white;
+                    position: relative;
+                    overflow: hidden;
+                    height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .header::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" fill-opacity="0.05"><polygon points="0,100 1000,0 1000,100"/></svg>');
+                    background-size: cover;
+                }
+                .nav {
+                    width: 100%;
+                    background: rgba(0, 0, 0, 0.1);
+                    backdrop-filter: blur(10px);
+                    padding: 1rem 0;
+                    position: fixed;
+                    top: 0;
+                    z-index: 1000;
+                }
+                .nav-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .logo {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    font-weight: 700;
+                    font-size: 1.25rem;
+                }
+                .logo-icon {
+                    background: white;
+                    color: var(--primary);
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                }
+                .nav-links {
+                    display: flex;
+                    gap: 2rem;
+                    align-items: center;
+                }
+                .nav-link {
+                    color: white;
+                    text-decoration: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                    font-weight: 500;
+                }
+                .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+                .cta-button {
+                    background: var(--secondary);
+                    color: white;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+                }
+                .cta-button:hover {
+                    background: #047857;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+                }
+                .hero {
+                    padding: 6rem 0 4rem;
+                    text-align: center;
+                    position: relative;
+                    z-index: 1;
+                    width: 100%;
+                }
+                .hero-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                }
+                .hero h1 {
+                    font-size: 3.5rem;
+                    font-weight: 800;
+                    margin-bottom: 1.5rem;
+                    line-height: 1.1;
+                }
+                .hero p {
+                    font-size: 1.25rem;
+                    margin-bottom: 2.5rem;
+                    opacity: 0.95;
+                    max-width: 800px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                .hero-buttons {
+                    display: flex;
+                    gap: 1rem;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }
+                .btn-primary, .btn-secondary {
+                    padding: 1rem 2rem;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    transition: all 0.3s ease;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    cursor: pointer;
+                }
+                .btn-primary {
+                    background: white;
+                    color: var(--primary);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                    border: none;
+                }
+                .btn-primary:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+                }
+                .btn-secondary {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                }
+                .btn-secondary:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    border-color: rgba(255, 255, 255, 0.5);
+                }
+                .stats {
+                    background: var(--light);
+                    padding: 4rem 0;
+                }
+                .stats-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                }
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 2rem;
+                }
+                .stat-card {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    text-align: center;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                    transition: all 0.3s ease;
+                }
+                .stat-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                }
+                .stat-icon {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.5rem;
+                    margin: 0 auto 1rem;
+                    color: white;
+                }
+                .stat-number {
+                    font-size: 3rem;
+                    font-weight: 800;
+                    color: var(--primary);
+                    margin-bottom: 0.5rem;
+                }
+                .stat-label {
+                    font-weight: 600;
+                    color: var(--text);
+                    margin-bottom: 0.5rem;
+                }
+                .stat-description {
+                    font-size: 0.9rem;
+                    color: var(--text-light);
+                }
+                .features {
+                    padding: 6rem 0;
+                    background: white;
+                }
+                .features-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                }
+                .section-header {
+                    text-align: center;
+                    margin-bottom: 4rem;
+                }
+                .section-title {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    color: var(--dark);
+                    margin-bottom: 1rem;
+                }
+                .section-subtitle {
+                    font-size: 1.25rem;
+                    color: var(--text-light);
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+                .features-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                    gap: 2rem;
+                }
+                .feature-card {
+                    background: var(--light);
+                    padding: 2.5rem;
+                    border-radius: 20px;
+                    transition: all 0.3s ease;
+                    border: 1px solid var(--border);
+                }
+                .feature-card:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+                    border-color: var(--primary-light);
+                }
+                .feature-icon {
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.75rem;
+                    margin-bottom: 1.5rem;
+                    color: white;
+                }
+                .feature-title {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    margin-bottom: 1rem;
+                    color: var(--dark);
+                }
+                .feature-description {
+                    color: var(--text-light);
+                    margin-bottom: 1.5rem;
+                    line-height: 1.7;
+                }
+                .feature-list {
+                    list-style: none;
+                    padding: 0;
+                }
+                .feature-list li {
+                    padding: 0.5rem 0;
+                    color: var(--text);
+                    position: relative;
+                    padding-left: 1.5rem;
+                }
+                .feature-list li::before {
+                    content: "✓";
+                    position: absolute;
+                    left: 0;
+                    color: var(--secondary);
+                    font-weight: bold;
+                }
+                .process {
+                    background: var(--dark);
+                    color: white;
+                    padding: 6rem 0;
+                    position: relative;
+                }
+                .process::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(45deg, var(--dark) 0%, #374151 100%);
+                    opacity: 0.9;
+                }
+                .process-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                    position: relative;
+                    z-index: 1;
+                }
+                .process-steps {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 2rem;
+                    margin-top: 3rem;
+                }
+                .process-step {
+                    text-align: center;
+                    padding: 2rem 1rem;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 16px;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    transition: all 0.3s ease;
+                }
+                .process-step:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    transform: translateY(-5px);
+                }
+                .step-number {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    background: var(--primary-light);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 1.25rem;
+                    margin: 0 auto 1rem;
+                }
+                .step-title {
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                    font-size: 1.1rem;
+                }
+                .step-description {
+                    font-size: 0.9rem;
+                    opacity: 0.8;
+                }
+                .resources {
+                    padding: 6rem 0;
+                    background: var(--light);
+                }
+                .resources-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                }
+                .resources-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: 2rem;
+                    margin-top: 3rem;
+                }
+                .resource-card {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                    transition: all 0.3s ease;
+                    border-left: 4px solid var(--primary);
+                }
+                .resource-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                }
+                .resource-icon {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.25rem;
+                    margin-bottom: 1rem;
+                    color: white;
+                }
+                .resource-title {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    color: var(--dark);
+                }
+                .resource-description {
+                    color: var(--text-light);
+                    margin-bottom: 1.5rem;
+                }
+                .resource-link {
+                    color: var(--primary);
+                    text-decoration: none;
+                    font-weight: 600;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    transition: all 0.3s ease;
+                }
+                .resource-link:hover {
+                    color: var(--primary-light);
+                    gap: 1rem;
+                }
+                .footer {
+                    background: var(--dark);
+                    color: white;
+                    padding: 4rem 0 2rem;
+                }
+                .footer-container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 0 2rem;
+                }
+                .footer-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 2rem;
+                    margin-bottom: 2rem;
+                }
+                .footer-section h3 {
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    color: white;
+                }
+                .footer-section ul {
+                    list-style: none;
+                    padding: 0;
+                }
+                .footer-section li {
+                    margin-bottom: 0.5rem;
+                }
+                .footer-section a {
+                    color: #9ca3af;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+                }
+                .footer-section a:hover {
+                    color: white;
+                }
+                .footer-bottom {
+                    border-top: 1px solid #374151;
+                    padding-top: 2rem;
+                    text-align: center;
+                    color: #9ca3af;
+                }
+                @media (max-width: 768px) {
+                    .nav-links {
+                        display: none;
+                    }
+                    .hero h1 {
+                        font-size: 2.5rem;
+                    }
+                    .hero p {
+                        font-size: 1.1rem;
+                    }
+                    .hero-buttons {
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                    .features-grid,
+                    .resources-grid {
+                        grid-template-columns: 1fr;
+                    }
+                    .section-title {
+                        font-size: 2rem;
+                    }
+                }
+                .animate-on-scroll {
+                    animation: none !important;
+                }
+            </style>
+        </head>
+        <body>
+            <header class="header">
+                <nav class="nav">
+                    <div class="nav-container">
+                        <div class="logo">
+                            <div class="logo-icon">CGU</div>
+                            Metodologia de Análise de Riscos
+                        </div>
+                        <div class="nav-links">
+                            <a href="#features" class="nav-link">Recursos</a>
+                            <a href="#process" class="nav-link">Metodologia</a>
+                            <a href="#resources" class="nav-link">Documentação</a>
+                            <a href="#about" class="nav-link">Sobre</a>
+                        </div>
+                    </div>
+                </nav>
+                <div class="hero">
+                    <div class="hero-container">
+                        <h1>Análise Quantitativa de Riscos para Modalidades de Contratação</h1>
+                        <p>Sistema completo baseado na metodologia oficial da CGU para análise, comparação e documentação de riscos em operações de permuta com imóveis da União e projetos de infraestrutura pública.</p>
+                        <div class="hero-buttons">
+                            <button id="access-btn" class="btn-primary">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Acessar Sistema
+                            </button>
+                            <a href="#" class="btn-secondary" onclick="window.parent.postMessage({ type: 'streamlit:scrollTo', target: 'features' }, '*')">
+                                Ver Recursos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <section class="stats" id="stats-section">
+                <div class="stats-container">
+                    <div class="stats-grid">
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon" style="background: var(--primary);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Riscos Analisados</div>
+                            <div class="stat-description">Riscos típicos pré-configurados para operações patrimoniais</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon" style="background: var(--secondary);">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">Modalidades de Contratação</div>
+                            <div class="stat-description">Comparação entre permutas, build-to-suit e obra convencional</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon" style="background: var(--accent);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Conformidade CGU</div>
+                            <div class="stat-description">Implementação fiel da metodologia oficial de auditoria</div>
+                        </div>
+                        <div class="stat-card animate-on-scroll">
+                            <div class="stat-icon" style="background: var(--danger);">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Módulos Integrados</div>
+                            <div class="stat-description">Sistema completo para análise e documentação</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="features" id="features">
+                <div class="features-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Recursos Principais</h2>
+                        <p class="section-subtitle">Uma solução completa para gestão e análise de riscos em operações patrimoniais e modalidades de contratação</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card animate-on-scroll">
+                            <div class="feature-icon" style="background: var(--primary);">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <h3 class="feature-title">Cadastro Inteligente de Riscos</h3>
+                            <p class="feature-description">Sistema estruturado para identificação e registro de riscos com cálculos automáticos e validação em tempo real.</p>
+                            <ul class="feature-list">
+                                <li>Formulário com aspectos orientadores específicos</li>
+                                <li>Cálculo automático do risco inerente</li>
+                                <li>Classificação automática por níveis</li>
+                                <li>Validação de consistência dos dados</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card animate-on-scroll">
+                            <div class="feature-icon" style="background: var(--secondary);">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h3 class="feature-title">Análise Comparativa Avançada</h3>
+                            <p class="feature-description">Comparação objetiva entre modalidades com visualizações interativas e rankings automáticos baseados em critérios técnicos.</p>
+                            <ul class="feature-list">
+                                <li>Mapas de calor interativos</li>
+                                <li>Gráficos de eficácia comparativa</li>
+                                <li>Rankings automáticos das modalidades</li>
+                                <li>Insights e recomendações automáticas</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card animate-on-scroll">
+                            <div class="feature-icon" style="background: var(--accent);">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3 class="feature-title">Relatórios Profissionais</h3>
+                            <p class="feature-description">Geração automática de documentação completa com padrão profissional para apresentação a órgãos de controle.</p>
+                            <ul class="feature-list">
+                                <li>Relatórios executivos em Word</li>
+                                <li>7 seções técnicas detalhadas</li>
+                                <li>Exportação JSON completa</li>
+                                <li>Documentação de metodologia e premissas</li>
+                            </ul>
+                        </div>
+                        <div class="feature-card animate-on-scroll">
+                            <div class="feature-icon" style="background: var(--danger);">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h3 class="feature-title">Dashboard Executivo</h3>
+                            <p class="feature-description">Visão consolidada em tempo real com métricas principais e indicadores visuais para tomada de decisão estratégica.</p>
+                            <ul class="feature-list">
+                                <li>Métricas executivas em tempo real</li>
+                                <li>Top 5 riscos mais críticos</li>
+                                <li>Visualizações Plotly interativas</li>
+                                <li>Interface responsiva desktop/mobile</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="process" id="process">
+                <div class="process-container">
+                    <div class="section-header">
+                        <h2 class="section-title" style="color: white;">Metodologia em 5 Fases</h2>
+                        <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.8);">Processo estruturado baseado no Roteiro de Auditoria de Gestão de Riscos da CGU</p>
+                    </div>
+                    <div class="process-steps">
+                        <div class="process-step animate-on-scroll">
+                            <div class="step-number">1</div>
+                            <h3 class="step-title">Preparação</h3>
+                            <p class="step-description">Definição de objetivos, modalidades viáveis e constituição de equipe multidisciplinar</p>
+                        </div>
+                        <div class="process-step animate-on-scroll">
+                            <div class="step-number">2</div>
+                            <h3 class="step-title">Identificação</h3>
+                            <p class="step-description">Análise criteriosa de riscos com avaliação de impacto e probabilidade usando escalas CGU</p>
+                        </div>
+                        <div class="process-step animate-on-scroll">
+                            <div class="step-number">3</div>
+                            <h3 class="step-title">Mitigação</h3>
+                            <p class="step-description">Análise de como cada modalidade influencia a materialização dos riscos identificados</p>
+                        </div>
+                        <div class="process-step animate-on-scroll">
+                            <div class="step-number">4</div>
+                            <h3 class="step-title">Comparação</h3>
+                            <p class="step-description">Cálculo de métricas consolidadas e ranking baseado em risco residual total</p>
+                        </div>
+                        <div class="process-step animate-on-scroll">
+                            <div class="step-number">5</div>
+                            <h3 class="step-title">Documentação</h3>
+                            <p class="step-description">Relatório executivo com metodologia, premissas e recomendações fundamentadas</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="resources" id="resources">
+                <div class="resources-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Recursos e Documentação</h2>
+                        <p class="section-subtitle">Acesse manuais, guias e materiais de apoio para aplicação da metodologia</p>
+                    </div>
+                    <div class="resources-grid">
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: var(--primary);">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <h3 class="resource-title">Manual de Uso Completo</h3>
+                            <p class="resource-description">Guia detalhado com instruções passo a passo para utilização de todos os módulos do sistema.</p>
+                            <a href="#" class="resource-link">
+                                Baixar Manual <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: var(--secondary);">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="resource-title">Guia de Metodologia</h3>
+                            <p class="resource-description">Fundamentos teóricos, escalas de avaliação e processos de aplicação baseados nas diretrizes CGU.</p>
+                            <a href="#" class="resource-link">
+                                Ver Guia <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: var(--accent);">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <h3 class="resource-title">Tutoriais em Vídeo</h3>
+                            <p class="resource-description">Série de vídeos demonstrando casos práticos de aplicação em projetos reais de infraestrutura.</p>
+                            <a href="#" class="resource-link">
+                                Assistir Vídeos <i class="fas fa-play"></i>
+                            </a>
+                        </div>
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: var(--danger);">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <h3 class="resource-title">Templates e Exemplos</h3>
+                            <p class="resource-description">Planilhas, templates de relatórios e exemplos práticos de análises já realizadas.</p>
+                            <a href="#" class="resource-link">
+                                Baixar Templates <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: #8b5cf6;">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h3 class="resource-title">FAQ e Suporte</h3>
+                            <p class="resource-description">Respostas para perguntas frequentes e canal de suporte técnico especializado.</p>
+                            <a href="#" class="resource-link">
+                                Ver FAQ <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div class="resource-card animate-on-scroll">
+                            <div class="resource-icon" style="background: #ec4899;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3 class="resource-title">Treinamentos</h3>
+                            <p class="resource-description">Cursos presenciais e online para capacitação de equipes em gestão de riscos e metodologia CGU.</p>
+                            <a href="#" class="resource-link">
+                                Ver Agenda <i class="fas fa-calendar"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="footer" id="about">
+                <div class="footer-container">
+                    <div class="footer-grid">
+                        <div class="footer-section">
+                            <h3>Sistema CGU</h3>
+                            <p style="color: #9ca3af; margin-bottom: 1rem;">Metodologia oficial para análise quantitativa de riscos em modalidades de contratação pública e operações de permuta com imóveis da União.</p>
+                            <p style="color: #9ca3af; font-size: 0.9rem;">Desenvolvido com base no Roteiro de Auditoria de Gestão de Riscos da Controladoria-Geral da União.</p>
+                        </div>
+                        <div class="footer-section">
+                            <h3>Recursos</h3>
+                            <ul>
+                                <li><a href="#">Sistema Web</a></li>
+                                <li><a href="#">Dashboard Executivo</a></li>
+                                <li><a href="#">Relatórios Automáticos</a></li>
+                                <li><a href="#">API de Integração</a></li>
+                                <li><a href="#">Exportação de Dados</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h3>Documentação</h3>
+                            <ul>
+                                <li><a href="#">Manual do Usuário</a></li>
+                                <li><a href="#">Guia de Metodologia</a></li>
+                                <li><a href="#">Exemplos Práticos</a></li>
+                                <li><a href="#">Templates</a></li>
+                                <li><a href="#">Tutoriais</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h3>Suporte</h3>
+                            <ul>
+                                <li><a href="#">FAQ</a></li>
+                                <li><a href="#">Suporte Técnico</a></li>
+                                <li><a href="#">Treinamentos</a></li>
+                                <li><a href="#">Comunidade</a></li>
+                                <li><a href="#">Contato</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="footer-bottom">
+                        <p>&copy; 2024 Controladoria-Geral da União. Sistema de Metodologia de Análise de Riscos para Modalidades de Contratação.</p>
+                        <p style="margin-top: 0.5rem;">Desenvolvido em conformidade com as diretrizes oficiais CGU • Streamlit Application</p>
+                    </div>
+                </div>
+            </footer>
+        
+            <script>
+                // Adiciona um listener para o botão de acesso
+                document.getElementById('access-btn').addEventListener('click', () => {
+                    // Usa window.location para recarregar a página com um parâmetro, ativando o login
+                    window.location.href = window.location.href.split('?')[0] + '?login=true';
+                });
+            </script>
+        </body>
+        </html>
+        """
+        components.html(html_code, height=1000, scrolling=True)
+        st.stop()
+        
+    # Se já solicitou login, mostrar o formulário
     if not st.session_state.user:
         st.title("🔐 Login - Sistema de Gestão de Riscos")
         
@@ -3241,7 +4103,7 @@ def main():
                     elif verificar_login(username, password):
                         st.session_state.user = username
                         st.session_state.nome_projeto = nome_projeto.strip()
-                        st.session_state.logged_in = True
+                        st.session_state.show_login = True
                         st.rerun()
                     else:
                         st.error("Usuário ou senha incorretos")
@@ -3374,7 +4236,6 @@ def main():
         st.write(f"Usuário: **{st.session_state.user}**")
         if st.button("🚪 Sair"):
             st.session_state.user = None
-            st.session_state.logged_in = False
             st.session_state.show_login = False
             st.rerun()
     
