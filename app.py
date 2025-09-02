@@ -631,8 +631,9 @@ def gerar_relatorio_word():
         JUSTIFICATIVAS TÉCNICAS:
         • Menor risco residual acumulado: {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
         • Maior eficácia de mitigação: {melhor_modalidade_dados['eficacia_percentual']:.1f}%
-        • Classificação de risco final: {melhor_modalidade_dados['classificacao']}
-        • Aplicabilidade: {melhor_modalidade_dados['riscos_aplicaveis']} de {total_riscos} riscos
+        • Classificação de Risco: {melhor_modalidade_dados['classificacao']}
+        • Redução Absoluta do Risco: {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos
+        • Riscos Aplicáveis: {melhor_modalidade_dados['riscos_aplicaveis']} de {total_riscos} riscos
         
         6.2 MODALIDADES NÃO RECOMENDADAS
         
@@ -642,7 +643,7 @@ def gerar_relatorio_word():
         RAZÕES PARA NÃO RECOMENDAÇÃO:
         • Maior risco residual acumulado: {pior_modalidade_dados['risco_residual_total']:.1f} pontos
         • Menor eficácia de mitigação: {pior_modalidade_dados['eficacia_percentual']:.1f}%
-        • Classificação de risco final: {pior_modalidade_dados['classificacao']}
+        • Classificação de Risco: {pior_modalidade_dados['classificacao']}
         
         6.3 IMPACTO DA ESCOLHA DA MODALIDADE
         
@@ -1937,27 +1938,30 @@ def dashboard_geral():
     with col1:
         # Métricas de risco residual
         if risco_residual_por_modalidade:
-            melhor_modalidade = min(risco_residual_por_modalidade.keys(), 
-                                   key=lambda x: risco_residual_por_modalidade[x]['risco_residual_total'])
-            pior_modalidade = max(risco_residual_por_modalidade.keys(), 
-                                 key=lambda x: risco_residual_por_modalidade[x]['risco_residual_total'])
+            modalidades_ordenadas = sorted(risco_residual_por_modalidade.items(), 
+                                           key=lambda x: x[1]['risco_residual_total'])
+            melhor_modalidade_dados = modalidades_ordenadas[0][1]
+            melhor_modalidade_nome = modalidades_ordenadas[0][0]
             
             st.success(f"""
             **🏆 Melhor Modalidade (Menor Risco Residual):**
-            **{melhor_modalidade}**
-            - Risco Residual Total: {risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total']:.1f}
-            - Eficácia: {risco_residual_por_modalidade[melhor_modalidade]['eficacia_percentual']:.1f}%
+            **{melhor_modalidade_nome}**
+            - Risco Residual Total: {melhor_modalidade_dados['risco_residual_total']:.1f}
+            - Eficácia: {melhor_modalidade_dados['eficacia_percentual']:.1f}%
             """)
+            
+            pior_modalidade_dados = modalidades_ordenadas[-1][1]
+            pior_modalidade_nome = modalidades_ordenadas[-1][0]
             
             st.error(f"""
             **⚠️ Modalidade de Maior Risco Residual:**
-            **{pior_modalidade}**
-            - Risco Residual Total: {risco_residual_por_modalidade[pior_modalidade]['risco_residual_total']:.1f}
-            - Eficácia: {risco_residual_por_modalidade[pior_modalidade]['eficacia_percentual']:.1f}%
+            **{pior_modalidade_nome}**
+            - Risco Residual Total: {pior_modalidade_dados['risco_residual_total']:.1f}
+            - Eficácia: {pior_modalidade_dados['eficacia_percentual']:.1f}%
             """)
             
-            diferenca_risco = (risco_residual_por_modalidade[pior_modalidade]['risco_residual_total'] - 
-                               risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total'])
+            diferenca_risco = (pior_modalidade_dados['risco_residual_total'] - 
+                               melhor_modalidade_dados['risco_residual_total'])
             st.info(f"**Diferença de Risco:** {diferenca_risco:.1f} pontos ({diferenca_risco/risco_inerente_total*100:.1f}% do risco total)")
     
     with col2:
@@ -2142,8 +2146,8 @@ def dashboard_geral():
         with col2:
             st.metric(
                 "Maior Risco Residual",
-                f"{modalidades[-1]['risco_residual_total']:.1f}",
-                delta=f"Modalidade: {modalidades[-1][0]}"
+                f"{modalidades_ordenadas[-1][1]['risco_residual_total']:.1f}",
+                delta=f"Modalidade: {modalidades_ordenadas[-1][0]}"
             )
         
         with col3:
