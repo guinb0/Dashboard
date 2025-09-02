@@ -348,7 +348,6 @@ def gerar_relatorio_word():
                 'email': 'usuario@spu.gov.br'
             }
         
-
         # Informações do relatório com identificação
         info_para = doc.add_paragraph()
         info_para.add_run("Data da Análise: ").bold = True
@@ -463,10 +462,6 @@ def gerar_relatorio_word():
         
         for i, risco in enumerate(st.session_state.riscos, 1):
             doc.add_heading(f'3.{i} {risco["risco_chave"]}', level=2)
-            
-            # Informações básicas do risco
-            risco_para = doc.add_paragraph()
-
             
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
@@ -1073,8 +1068,11 @@ def inicializar_dados():
             }
         ]
         
+        # Garante que a chave 'justificativas_modalidades' exista em todos os riscos
         for risco in riscos_iniciais:
-            risco["justificativas_modalidades"] = {modalidade: "" for modalidade in risco["modalidades"]}
+            if "justificativas_modalidades" not in risco:
+                risco["justificativas_modalidades"] = {modalidade: "" for modalidade in risco["modalidades"]}
+        
         st.session_state.riscos = riscos_iniciais
         
     if 'modalidades' not in st.session_state:
@@ -1091,8 +1089,6 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
-
-            
             risco_chave = st.text_input(
                 "Risco-Chave:",
                 placeholder="Ex: Descumprimento do Prazo de entrega"
@@ -1173,6 +1169,9 @@ def cadastro_riscos():
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
         if submitted and risco_chave:
+            # Lógica para garantir que o novo risco tenha a chave 'justificativas_modalidades'
+            justificativas = {mod: data['justificativa'] for mod, data in modalidades_avaliacao.items()}
+            
             novo_risco = {
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
@@ -1184,7 +1183,7 @@ def cadastro_riscos():
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
                 'modalidades': {mod: data['fator'] for mod, data in modalidades_avaliacao.items()},
-                'justificativas_modalidades': {mod: data['justificativa'] for mod, data in modalidades_avaliacao.items()},
+                'justificativas_modalidades': justificativas, # Adiciona a chave aqui
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1292,18 +1291,17 @@ def editar_riscos():
                     emoji = "👉" if nivel == nova_probabilidade_nivel else "•"
                     st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
 
-        st.subheader("Impacto")
+        st.subheader("Justificativas")
         col1, col2 = st.columns(2)
 
         with col1:
             nova_descricao = st.text_area(
                 "Justificativa fator de impacto:",
-                value=risco_atual['descricao'],
+                value=risco_atual.get('descricao', ''),
                 help="Descreva as características específicas do seu caso que justificam a avaliação"
             )
 
         with col2:
-            st.subheader("🗗️ Justificativa fator de probabilidade")
             contexto_especifico = st.text_area(
                 "Fatores específicos que influenciam a probabilidade deste risco:",
                 value=risco_atual.get('contexto_especifico', ''),
@@ -1346,6 +1344,7 @@ def editar_riscos():
         st.info("Ajuste os fatores de mitigação considerando as características específicas do seu caso")
         
         novas_modalidades = {}
+        novas_justificativas = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1359,13 +1358,16 @@ def editar_riscos():
                     step=0.1,
                     key=f"editar_modalidade_{indice_risco}_{i}"
                 )
-                justificativa_modalidade = risco_atual["justificativas_modalidades"].get(modalidade, "")
+                
+                # Acessa com .get() para evitar KeyError
+                justificativa_modalidade = risco_atual.get("justificativas_modalidades", {}).get(modalidade, "")
                 nova_justificativa = st.text_area(
                     "Justificativa:",
                     value=justificativa_modalidade,
                     key=f"justificativa_modalidade_{indice_risco}_{i}"
                 )
-                novas_modalidades[modalidade] = {"fator": novo_fator, "justificativa": nova_justificativa}
+                novas_modalidades[modalidade] = novo_fator
+                novas_justificativas[modalidade] = nova_justificativa
                 
                 # Mostrar comparação do risco residual
                 risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
@@ -1389,8 +1391,8 @@ def editar_riscos():
                 'classificacao': nova_classificacao,
                 'descricao': nova_descricao,
                 'contexto_especifico': contexto_especifico,
-                'modalidades': {mod: data['fator'] for mod, data in novas_modalidades.items()},
-                'justificativas_modalidades': {mod: data['justificativa'] for mod, data in novas_modalidades.items()},
+                'modalidades': novas_modalidades,
+                'justificativas_modalidades': novas_justificativas,
                 'editado': True,
                 'data_edicao': datetime.now().strftime("%d/%m/%Y %H:%M")
             })
@@ -2354,7 +2356,7 @@ def main():
             st.session_state.user = None
             st.rerun()
     
-    # Abas principais - CORREÇÃO: Adicionada a aba de logs
+    # Abas principais
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "✏️ Editar Riscos",
         "📝 Cadastro de Riscos",
@@ -2379,7 +2381,6 @@ def main():
     with tab5:
         dashboard_geral()
     
-    # CORREÇÃO: Adicionada a chamada da função visualizar_logs
     with tab6:
         visualizar_logs()
 
