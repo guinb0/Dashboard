@@ -9,6 +9,18 @@ import sqlite3
 import hashlib
 import json
 import os
+from io import BytesIO
+
+# É necessário instalar a biblioteca python-docx para gerar o relatório Word
+try:
+    from docx import Document
+    from docx.shared import Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_ALIGN_VERTICAL
+    from docx.oxml.shared import OxmlElement, qn
+except ImportError:
+    st.warning("⚠️ A biblioteca 'python-docx' não está instalada. A função de gerar relatórios em .docx estará desabilitada. Para habilitá-la, execute `pip install python-docx`.")
+    Document = None
 
 # Configuração da página
 st.set_page_config(
@@ -249,7 +261,7 @@ def init_db():
     for usuario, senha_hash in usuarios_padrao:
         try:
             c.execute("INSERT INTO usuarios (username, password_hash) VALUES (?, ?)", 
-                     (usuario, senha_hash))
+                      (usuario, senha_hash))
         except sqlite3.IntegrityError:
             pass  # Usuário já existe
     
@@ -263,7 +275,7 @@ def verificar_login(username, password):
     
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     c.execute("SELECT * FROM usuarios WHERE username = ? AND password_hash = ?", 
-             (username, password_hash))
+              (username, password_hash))
     
     resultado = c.fetchone()
     conn.close()
@@ -276,7 +288,7 @@ def registrar_acao(username, acao, detalhes=None):
     c = conn.cursor()
     
     c.execute("INSERT INTO logs (username, acao, detalhes) VALUES (?, ?, ?)",
-             (username, acao, json.dumps(detalhes) if detalhes else None))
+              (username, acao, json.dumps(detalhes) if detalhes else None))
     
     conn.commit()
     conn.close()
@@ -303,14 +315,11 @@ def classificar_risco(valor_risco):
 
 def gerar_relatorio_word():
     """Gera relatório completo e amplo em formato Word"""
-    try:
-        from docx import Document
-        from docx.shared import Inches
-        from docx.enum.text import WD_ALIGN_PARAGRAPH
-        from docx.enum.table import WD_ALIGN_VERTICAL
-        from docx.oxml.shared import OxmlElement, qn
-        from io import BytesIO
+    if Document is None:
+        st.error("📋 A biblioteca python-docx não está instalada. Não é possível gerar o relatório.")
+        return None
         
+    try:
         # Obter nome do projeto da session_state
         nome_projeto = st.session_state.get('nome_projeto', 'Projeto')
         
@@ -339,7 +348,6 @@ def gerar_relatorio_word():
                 'email': 'usuario@spu.gov.br'
             }
         
-
         # Informações do relatório com identificação
         info_para = doc.add_paragraph()
         info_para.add_run("Data da Análise: ").bold = True
@@ -455,11 +463,6 @@ def gerar_relatorio_word():
         for i, risco in enumerate(st.session_state.riscos, 1):
             doc.add_heading(f'3.{i} {risco["risco_chave"]}', level=2)
             
-            # Informações básicas do risco
-            risco_para = doc.add_paragraph()
-            risco_para.add_run("Objetivo-Chave: ").bold = True
-            risco_para.add_run(risco["objetivo_chave"])
-            
             # Avaliação quantitativa
             aval_para = doc.add_paragraph()
             aval_para.add_run("\nAVALIAÇÃO QUANTITATIVA:").bold = True
@@ -476,6 +479,8 @@ def gerar_relatorio_word():
             modal_para = doc.add_paragraph()
             modal_para.add_run("\nANÁLISE POR MODALIDADE:").bold = True
             
+            # Exibe justificativas das modalidades se existirem
+            justificativas_modalidades = risco.get("justificativas_modalidades", {})
             for modalidade, fator in risco['modalidades'].items():
                 risco_residual = risco['risco_inerente'] * fator
                 eficacia = (1 - fator) * 100
@@ -485,6 +490,8 @@ def gerar_relatorio_word():
                 modal_para.add_run(f"\n  - Fator de Mitigação: {fator:.1f}")
                 modal_para.add_run(f"\n  - Risco Residual: {risco_residual:.1f} ({classificacao_residual})")
                 modal_para.add_run(f"\n  - Eficácia: {eficacia:.1f}%")
+                if modalidade in justificativas_modalidades and justificativas_modalidades[modalidade]:
+                    modal_para.add_run(f"\n  - Justificativa: {justificativas_modalidades[modalidade]}")
         
         # 4. ANÁLISE COMPARATIVA DAS MODALIDADES
         doc.add_heading('4. ANÁLISE COMPARATIVA DAS MODALIDADES', level=1)
@@ -530,7 +537,7 @@ def gerar_relatorio_word():
         
         # Ordenar modalidades por risco residual
         modalidades_ordenadas = sorted(dados_comparativos.items(), 
-                                     key=lambda x: x[1]['risco_residual_total'])
+                                       key=lambda x: x[1]['risco_residual_total'])
         
         for i, (modalidade, dados) in enumerate(modalidades_ordenadas, 1):
             row_cells = table.add_row().cells
@@ -653,17 +660,17 @@ def gerar_relatorio_word():
         1. RISCO TOTAL DO PROJETO: {risco_inerente_total:.1f} pontos (antes da mitigação)
         
         2. ESTRATÉGIA ÓTIMA IDENTIFICADA: {melhor_modalidade}
-           - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
-           - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
-           - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
-           
+            - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
+            - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
+            - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
+            
         3. AMPLITUDE DE VARIAÇÃO: As modalidades analisadas apresentam variação de risco residual 
-           de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
-           evidenciando a relevância da escolha estratégica.
-           
+            de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
+            evidenciando a relevância da escolha estratégica.
+            
         4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
-           pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
-           fundamentação técnica para a tomada de decisão.
+            pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
+            fundamentação técnica para a tomada de decisão.
         
         CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
         
@@ -915,73 +922,13 @@ def criar_heatmap_eficacia_melhorado(riscos_comparacao):
     
     return fig
 
-
-
 def inicializar_dados():
     """Inicializa os dados padrão do sistema"""
     if 'riscos' not in st.session_state:
-        st.session_state.riscos = [
+        riscos_iniciais = [
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
                 'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.6
-                }
-            },
-            {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 1.0,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
-                    'Permuta por obra (terreno da União)': 0.9,
-                    'Build to Suit (terreno da União)': 0.9,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
+                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
                 'probabilidade_nivel': 'Alta',
@@ -989,16 +936,69 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por imóvel já construído': 0.6,
                     'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.2,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.4
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.8,
+                    'Obra pública convencional': 0.2
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
+                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
+                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Média',
+                'probabilidade_valor': 5,
+                'risco_inerente': 25,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.2,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
+                    'Permuta por obra (terreno da União)': 0.6,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 1.0
+                }
+            },
+            {
+                'risco_chave': 'Condições de mercado desfavoráveis',
+                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Média',
+                'probabilidade_valor': 5,
+                'risco_inerente': 25,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.4,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.6,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.8
+                }
+            },
+            {
+                'risco_chave': 'Abandono da obra pela empresa',
+                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
+                'impacto_nivel': 'Alto',
+                'impacto_valor': 8,
+                'probabilidade_nivel': 'Baixa',
+                'probabilidade_valor': 2,
+                'risco_inerente': 16,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.2
+                }
+            },
+            {
                 'risco_chave': 'Baixa rentabilização do estoque de imóveis',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Alto',
@@ -1017,7 +1017,6 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
                 'risco_chave': 'Dotação orçamentária insuficiente',
                 'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
                 'impacto_nivel': 'Muito alto',
@@ -1036,7 +1035,6 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
                 'risco_chave': 'Questionamento jurídico',
                 'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
                 'impacto_nivel': 'Médio',
@@ -1055,7 +1053,6 @@ def inicializar_dados():
                 }
             },
             {
-                'objetivo_chave': 'Entrega da obra no prazo, com qualidade e preço compatível aos praticados no mercado e promovendo o melhor uso racional do conjunto de imóveis da União',
                 'risco_chave': 'Baixa qualidade dos serviços entregues',
                 'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
                 'impacto_nivel': 'Médio',
@@ -1074,6 +1071,28 @@ def inicializar_dados():
                 }
             }
         ]
+        
+        # Garante que a chave 'justificativas_modalidades' exista em todos os riscos
+        # e insere texto aleatório para preencher o campo.
+        textos_exemplo = [
+            "A mitigação por esta modalidade se deve à... (ex: menor dependência de terceiros).",
+            "Esta modalidade é eficaz porque permite maior controle sobre... (ex: a qualidade dos materiais).",
+            "O fator de mitigação é baixo devido a... (ex: alta volatilidade do mercado para este tipo de ativo).",
+            "A escolha desta modalidade reduz o risco de... (ex: abandono da obra, pois o pagamento está atrelado à entrega).",
+            "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
+            "O risco residual é alto nesta modalidade, pois a Administração assume... (ex: os custos de renegociação).",
+            "Esta é a modalidade mais segura em termos de... (ex: orçamento, pois o custo é fixo e previamente estabelecido).",
+            "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
+        ]
+        
+        for risco in riscos_iniciais:
+            if "justificativas_modalidades" not in risco:
+                risco["justificativas_modalidades"] = {
+                    modalidade: np.random.choice(textos_exemplo) for modalidade in risco["modalidades"]
+                }
+        
+        st.session_state.riscos = riscos_iniciais
+        
     if 'modalidades' not in st.session_state:
         st.session_state.modalidades = MODALIDADES_PADRAO.copy()
 
@@ -1088,11 +1107,6 @@ def cadastro_riscos():
         col1, col2 = st.columns(2)
         
         with col1:
-            objetivo_chave = st.text_area(
-                "Objetivo-Chave:",
-                placeholder="Ex: Entrega da obra no prazo, com qualidade e preço compatível..."
-            )
-            
             risco_chave = st.text_input(
                 "Risco-Chave:",
                 placeholder="Ex: Descumprimento do Prazo de entrega"
@@ -1162,7 +1176,8 @@ def cadastro_riscos():
                     step=0.1,
                     key=f"modalidade_{i}"
                 )
-                modalidades_avaliacao[modalidade] = fator
+                justificativa = st.text_area("Justificativa:", key=f"justificativa_{i}")
+                modalidades_avaliacao[modalidade] = {"fator": fator, "justificativa": justificativa}
                 
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
@@ -1171,9 +1186,11 @@ def cadastro_riscos():
         
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
-        if submitted and objetivo_chave and risco_chave:
+        if submitted and risco_chave:
+            # Lógica para garantir que o novo risco tenha a chave 'justificativas_modalidades'
+            justificativas = {mod: data['justificativa'] for mod, data in modalidades_avaliacao.items()}
+            
             novo_risco = {
-                'objetivo_chave': objetivo_chave,
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
                 'contexto_especifico': contexto_especifico,
@@ -1183,7 +1200,8 @@ def cadastro_riscos():
                 'probabilidade_valor': probabilidade_valor,
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
-                'modalidades': modalidades_avaliacao.copy(),
+                'modalidades': {mod: data['fator'] for mod, data in modalidades_avaliacao.items()},
+                'justificativas_modalidades': justificativas, # Adiciona a chave aqui
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1244,23 +1262,11 @@ def editar_riscos():
     
     # Formulário de edição
     with st.form(f"editar_risco_{indice_risco}"):
-        st.subheader(f"🎯 Editando: {risco_atual['risco_chave']}")
-        
         col1, col2 = st.columns(2)
-        
+
         with col1:
-            # Edição da descrição/justificativa
-            nova_descricao = st.text_area(
-                "Justificativa fator de impacto:",
-                value=risco_atual['descricao'],
-                help="Descreva as características específicas do seu caso que justificam a avaliação"
-            )
-            
-            # Avaliação de Impacto
             st.subheader("🎯 Reavaliação de Impacto")
             st.caption("Considere as características específicas do seu projeto:")
-            
-            # Mostrar aspectos a serem considerados para IMPACTO
             risco_nome = risco_atual['risco_chave']
             if risco_nome in ASPECTOS_RISCOS:
                 with st.expander("💡 Aspectos a serem considerados para IMPACTO", expanded=True):
@@ -1268,62 +1274,58 @@ def editar_riscos():
                     for i, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome]['impacto'], 1):
                         st.write(f"• {aspecto}")
                     st.info("💡 **Dica:** Analise como cada aspecto se aplica ao seu caso específico antes de definir o nível de impacto.")
-            
-            # Encontrar o índice atual do impacto
             niveis_impacto = list(ESCALAS_IMPACTO.keys())
             indice_impacto_atual = niveis_impacto.index(risco_atual['impacto_nivel'])
-            
             novo_impacto_nivel = st.selectbox(
                 "Novo Nível de Impacto:",
                 niveis_impacto,
                 index=indice_impacto_atual,
                 help="Baseado nas características do seu caso concreto"
             )
-            
-            # Mostrar a escala para referência
             with st.expander("📖 Consultar Escala de Impacto"):
                 for nivel, dados in ESCALAS_IMPACTO.items():
                     emoji = "👉" if nivel == novo_impacto_nivel else "•"
                     st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
-        
+
         with col2:
-            # Contexto específico
-            st.subheader("🗗️ Justificativa fator de probabilidade")
-            contexto_especifico = st.text_area(
-                "Fatores específicos que influenciam a probabilidade deste risco:",
-                value=risco_atual.get('contexto_especifico', ''),
-                placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
-                help="Descreva os aspectos únicos do seu projeto"
-            )
-            
-            # Avaliação de Probabilidade
             st.subheader("📊 Reavaliação de Probabilidade")
             st.caption("Considere a realidade do seu contexto:")
-            
-            # Mostrar aspectos a serem considerados para PROBABILIDADE
             if risco_nome in ASPECTOS_RISCOS:
                 with st.expander("💡 Aspectos a serem considerados para PROBABILIDADE", expanded=True):
                     st.write("**Considere os seguintes aspectos ao avaliar a probabilidade:**")
                     for i, aspecto in enumerate(ASPECTOS_RISCOS[risco_nome]['probabilidade'], 1):
                         st.write(f"• {aspecto}")
                     st.info("💡 **Dica:** Analise como cada aspecto se aplica ao seu contexto antes de definir o nível de probabilidade.")
-            
-            # Encontrar o índice atual da probabilidade
             niveis_probabilidade = list(ESCALAS_PROBABILIDADE.keys())
             indice_probabilidade_atual = niveis_probabilidade.index(risco_atual['probabilidade_nivel'])
-            
             nova_probabilidade_nivel = st.selectbox(
                 "Novo Nível de Probabilidade:",
                 niveis_probabilidade,
                 index=indice_probabilidade_atual,
                 help="Baseado na realidade do seu contexto"
             )
-            
-            # Mostrar a escala para referência
             with st.expander("📖 Consultar Escala de Probabilidade"):
                 for nivel, dados in ESCALAS_PROBABILIDADE.items():
                     emoji = "👉" if nivel == nova_probabilidade_nivel else "•"
                     st.write(f"{emoji} **{nivel}** (Valor: {dados['valor']}): {dados['descricao']}")
+
+        st.subheader("Justificativas")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            nova_descricao = st.text_area(
+                "Justificativa fator de impacto:",
+                value=risco_atual.get('descricao', ''),
+                help="Descreva as características específicas do seu caso que justificam a avaliação"
+            )
+
+        with col2:
+            contexto_especifico = st.text_area(
+                "Fatores específicos que influenciam a probabilidade deste risco:",
+                value=risco_atual.get('contexto_especifico', ''),
+                placeholder="Ex: Localização, tipo de obra, prazo, complexidade, recursos disponíveis...",
+                help="Descreva os aspectos únicos do seu projeto"
+            )
         
         # Calcular novos valores
         novo_impacto_valor = ESCALAS_IMPACTO[novo_impacto_nivel]['valor']
@@ -1360,6 +1362,7 @@ def editar_riscos():
         st.info("Ajuste os fatores de mitigação considerando as características específicas do seu caso")
         
         novas_modalidades = {}
+        novas_justificativas = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1371,9 +1374,18 @@ def editar_riscos():
                     max_value=1.0,
                     value=valor_atual,
                     step=0.1,
-                    key=f"nova_modalidade_{i}_{indice_risco}"
+                    key=f"editar_modalidade_{indice_risco}_{i}"
+                )
+                
+                # Acessa com .get() para evitar KeyError
+                justificativa_modalidade = risco_atual.get("justificativas_modalidades", {}).get(modalidade, "")
+                nova_justificativa = st.text_area(
+                    "Justificativa:",
+                    value=justificativa_modalidade,
+                    key=f"justificativa_modalidade_{indice_risco}_{i}"
                 )
                 novas_modalidades[modalidade] = novo_fator
+                novas_justificativas[modalidade] = nova_justificativa
                 
                 # Mostrar comparação do risco residual
                 risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
@@ -1389,17 +1401,17 @@ def editar_riscos():
         if submitted:
             # Atualizar o risco
             st.session_state.riscos[indice_risco].update({
-                'descricao': nova_descricao,
-                'contexto_especifico': contexto_especifico,
                 'impacto_nivel': novo_impacto_nivel,
                 'impacto_valor': novo_impacto_valor,
                 'probabilidade_nivel': nova_probabilidade_nivel,
                 'probabilidade_valor': nova_probabilidade_valor,
                 'risco_inerente': novo_risco_inerente,
                 'classificacao': nova_classificacao,
-                'modalidades': novas_modalidades.copy(),
-                'editado': True,  # Marcar como editado
-                'editado_por': st.session_state.user,
+                'descricao': nova_descricao,
+                'contexto_especifico': contexto_especifico,
+                'modalidades': novas_modalidades,
+                'justificativas_modalidades': novas_justificativas,
+                'editado': True,
                 'data_edicao': datetime.now().strftime("%d/%m/%Y %H:%M")
             })
             
@@ -1796,7 +1808,7 @@ def comparacao_modalidades():
         
         # Diferença entre melhor e pior
         diferenca = (risco_acumulado_por_modalidade[pior_modalidade]['risco_residual_total'] - 
-                    risco_acumulado_por_modalidade[melhor_modalidade]['risco_residual_total'])
+                     risco_acumulado_por_modalidade[melhor_modalidade]['risco_residual_total'])
         
         st.info(f"""
         **📊 Análise Comparativa:**
@@ -1896,7 +1908,7 @@ def dashboard_geral():
         
         if count_riscos > 0:
             eficacia_total = ((sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) - risco_residual_total) / 
-                            sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) * 100)
+                              sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) * 100)
             
             risco_residual_por_modalidade[modalidade] = {
                 'risco_residual_total': risco_residual_total,
@@ -1931,7 +1943,7 @@ def dashboard_geral():
             """)
             
             diferenca_risco = (risco_residual_por_modalidade[pior_modalidade]['risco_residual_total'] - 
-                              risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total'])
+                               risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total'])
             st.info(f"**Diferença de Risco:** {diferenca_risco:.1f} pontos ({diferenca_risco/risco_inerente_total*100:.1f}% do risco total)")
     
     with col2:
@@ -2034,7 +2046,7 @@ def dashboard_geral():
         
         if eficacia_modalidades:
             df_eficacia = pd.DataFrame(list(eficacia_modalidades.items()), 
-                                     columns=['Modalidade', 'Eficácia (%)'])
+                                       columns=['Modalidade', 'Eficácia (%)'])
             df_eficacia = df_eficacia.sort_values('Eficácia (%)', ascending=True)
             
             fig_eficacia = px.bar(
@@ -2102,7 +2114,7 @@ def dashboard_geral():
         st.subheader("💡 Insights Executivos")
         
         modalidades_ordenadas = sorted(risco_residual_por_modalidade.items(), 
-                                     key=lambda x: x[1]['risco_residual_total'])
+                                       key=lambda x: x[1]['risco_residual_total'])
         
         col1, col2, col3 = st.columns(3)
         
@@ -2182,7 +2194,7 @@ def visualizar_logs():
     
     with col3:
         st.metric("Período Registrado", 
-                 f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
+                  f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
     
     # Gráfico de atividades por usuário
     fig = px.bar(acoes_por_usuario, 
@@ -2243,8 +2255,8 @@ def main():
         with st.expander("📋 Visualizar riscos carregados"):
             for i, risco in enumerate(st.session_state.riscos, 1):
                 st.write(f"**{i}. {risco['risco_chave']}**")
-                st.write(f"   - Risco Inerente: {risco['risco_inerente']} ({risco['classificacao']})")
-                st.write(f"   - Impacto: {risco['impacto_valor']} | Probabilidade: {risco['probabilidade_valor']}")
+                st.write(f"    - Risco Inerente: {risco['risco_inerente']} ({risco['classificacao']})")
+                st.write(f"    - Impacto: {risco['impacto_valor']} | Probabilidade: {risco['probabilidade_valor']}")
     
     # Sidebar para configurações
     with st.sidebar:
@@ -2285,6 +2297,8 @@ def main():
                     if 'modalidades' not in risco:
                         risco['modalidades'] = {}
                     risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
+                    # Garante que a nova justificativa também seja adicionada
+                    risco.setdefault('justificativas_modalidades', {})[nova_modalidade] = ""
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
@@ -2302,6 +2316,8 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' in risco and modalidade_remover in risco['modalidades']:
                         del risco['modalidades'][modalidade_remover]
+                    if 'justificativas_modalidades' in risco and modalidade_remover in risco['justificativas_modalidades']:
+                        del risco['justificativas_modalidades'][modalidade_remover]
                 st.success(f"Modalidade '{modalidade_remover}' removida!")
                 st.rerun()
         
@@ -2311,7 +2327,7 @@ def main():
         st.subheader("📄 Gerenciar Dados")
         
         # Botão para gerar relatório Word
-        if st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
+        if Document and st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
             with st.spinner("Gerando relatório..."):
                 buffer = gerar_relatorio_word()
                 if buffer:
@@ -2362,10 +2378,10 @@ def main():
             st.session_state.user = None
             st.rerun()
     
-    # Abas principais - CORREÇÃO: Adicionada a aba de logs
+    # Abas principais
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "📝 Cadastro de Riscos", 
         "✏️ Editar Riscos",
+        "📝 Cadastro de Riscos",
         "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
@@ -2373,10 +2389,10 @@ def main():
     ])
     
     with tab1:
-        cadastro_riscos()
+        editar_riscos()
     
     with tab2:
-        editar_riscos()
+        cadastro_riscos()
     
     with tab3:
         analise_riscos()
@@ -2387,7 +2403,6 @@ def main():
     with tab5:
         dashboard_geral()
     
-    # CORREÇÃO: Adicionada a chamada da função visualizar_logs
     with tab6:
         visualizar_logs()
 
