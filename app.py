@@ -479,6 +479,8 @@ def gerar_relatorio_word():
             modal_para = doc.add_paragraph()
             modal_para.add_run("\nANÁLISE POR MODALIDADE:").bold = True
             
+            # Exibe justificativas das modalidades se existirem
+            justificativas_modalidades = risco.get("justificativas_modalidades", {})
             for modalidade, fator in risco['modalidades'].items():
                 risco_residual = risco['risco_inerente'] * fator
                 eficacia = (1 - fator) * 100
@@ -488,6 +490,8 @@ def gerar_relatorio_word():
                 modal_para.add_run(f"\n  - Fator de Mitigação: {fator:.1f}")
                 modal_para.add_run(f"\n  - Risco Residual: {risco_residual:.1f} ({classificacao_residual})")
                 modal_para.add_run(f"\n  - Eficácia: {eficacia:.1f}%")
+                if modalidade in justificativas_modalidades and justificativas_modalidades[modalidade]:
+                    modal_para.add_run(f"\n  - Justificativa: {justificativas_modalidades[modalidade]}")
         
         # 4. ANÁLISE COMPARATIVA DAS MODALIDADES
         doc.add_heading('4. ANÁLISE COMPARATIVA DAS MODALIDADES', level=1)
@@ -1069,9 +1073,23 @@ def inicializar_dados():
         ]
         
         # Garante que a chave 'justificativas_modalidades' exista em todos os riscos
+        # e insere texto aleatório para preencher o campo.
+        textos_exemplo = [
+            "A mitigação por esta modalidade se deve à... (ex: menor dependência de terceiros).",
+            "Esta modalidade é eficaz porque permite maior controle sobre... (ex: a qualidade dos materiais).",
+            "O fator de mitigação é baixo devido a... (ex: alta volatilidade do mercado para este tipo de ativo).",
+            "A escolha desta modalidade reduz o risco de... (ex: abandono da obra, pois o pagamento está atrelado à entrega).",
+            "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
+            "O risco residual é alto nesta modalidade, pois a Administração assume... (ex: os custos de renegociação).",
+            "Esta é a modalidade mais segura em termos de... (ex: orçamento, pois o custo é fixo e previamente estabelecido).",
+            "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
+        ]
+        
         for risco in riscos_iniciais:
             if "justificativas_modalidades" not in risco:
-                risco["justificativas_modalidades"] = {modalidade: "" for modalidade in risco["modalidades"]}
+                risco["justificativas_modalidades"] = {
+                    modalidade: np.random.choice(textos_exemplo) for modalidade in risco["modalidades"]
+                }
         
         st.session_state.riscos = riscos_iniciais
         
@@ -1349,7 +1367,7 @@ def editar_riscos():
         
         for i, modalidade in enumerate(st.session_state.modalidades):
             with cols[i % len(cols)]:
-                valor_atual = risco_atual['modalidades'].get(modalidade, 0.0)
+                valor_atual = risco_atual['modalidades'].get(modalidade, 0.5)
                 novo_fator = st.slider(
                     f"{modalidade}:",
                     min_value=0.0,
@@ -2066,10 +2084,10 @@ def dashboard_geral():
         ))
         
         # Adicionar linhas de grade para delimitar zonas de risco
-        fig_matriz.add_hline(y=2.5, line_dash="dash", line_color="blue", opacity=0.0)
-        fig_matriz.add_hline(y=5.5, line_dash="dash", line_color="orange", opacity=0.0)
-        fig_matriz.add_vline(x=2.5, line_dash="dash", line_color="blue", opacity=0.0)
-        fig_matriz.add_vline(x=5.5, line_dash="dash", line_color="orange", opacity=0.0)
+        fig_matriz.add_hline(y=2.5, line_dash="dash", line_color="blue", opacity=0.5)
+        fig_matriz.add_hline(y=5.5, line_dash="dash", line_color="orange", opacity=0.5)
+        fig_matriz.add_vline(x=2.5, line_dash="dash", line_color="blue", opacity=0.5)
+        fig_matriz.add_vline(x=5.5, line_dash="dash", line_color="orange", opacity=0.5)
         
         # Adicionar anotações para as zonas
         fig_matriz.add_annotation(x=1.5, y=1.5, text="BAIXO", showarrow=False, 
@@ -2278,7 +2296,9 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' not in risco:
                         risco['modalidades'] = {}
-                    risco['modalidades'][nova_modalidade] = 0.0  # Valor padrão
+                    risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
+                    # Garante que a nova justificativa também seja adicionada
+                    risco.setdefault('justificativas_modalidades', {})[nova_modalidade] = ""
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
@@ -2296,6 +2316,8 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' in risco and modalidade_remover in risco['modalidades']:
                         del risco['modalidades'][modalidade_remover]
+                    if 'justificativas_modalidades' in risco and modalidade_remover in risco['justificativas_modalidades']:
+                        del risco['justificativas_modalidades'][modalidade_remover]
                 st.success(f"Modalidade '{modalidade_remover}' removida!")
                 st.rerun()
         
@@ -2305,7 +2327,7 @@ def main():
         st.subheader("📄 Gerenciar Dados")
         
         # Botão para gerar relatório Word
-        if st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
+        if Document and st.button("📄 Gerar Relatório Word", help="Gera relatório completo em formato .docx"):
             with st.spinner("Gerando relatório..."):
                 buffer = gerar_relatorio_word()
                 if buffer:
