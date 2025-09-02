@@ -9,6 +9,18 @@ import sqlite3
 import hashlib
 import json
 import os
+from io import BytesIO
+
+# É necessário instalar a biblioteca python-docx para gerar o relatório Word
+try:
+    from docx import Document
+    from docx.shared import Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.enum.table import WD_ALIGN_VERTICAL
+    from docx.oxml.shared import OxmlElement, qn
+except ImportError:
+    st.warning("⚠️ A biblioteca 'python-docx' não está instalada. A função de gerar relatórios em .docx estará desabilitada. Para habilitá-la, execute `pip install python-docx`.")
+    Document = None
 
 # Configuração da página
 st.set_page_config(
@@ -249,7 +261,7 @@ def init_db():
     for usuario, senha_hash in usuarios_padrao:
         try:
             c.execute("INSERT INTO usuarios (username, password_hash) VALUES (?, ?)", 
-                     (usuario, senha_hash))
+                      (usuario, senha_hash))
         except sqlite3.IntegrityError:
             pass  # Usuário já existe
     
@@ -263,7 +275,7 @@ def verificar_login(username, password):
     
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     c.execute("SELECT * FROM usuarios WHERE username = ? AND password_hash = ?", 
-             (username, password_hash))
+              (username, password_hash))
     
     resultado = c.fetchone()
     conn.close()
@@ -276,7 +288,7 @@ def registrar_acao(username, acao, detalhes=None):
     c = conn.cursor()
     
     c.execute("INSERT INTO logs (username, acao, detalhes) VALUES (?, ?, ?)",
-             (username, acao, json.dumps(detalhes) if detalhes else None))
+              (username, acao, json.dumps(detalhes) if detalhes else None))
     
     conn.commit()
     conn.close()
@@ -303,14 +315,11 @@ def classificar_risco(valor_risco):
 
 def gerar_relatorio_word():
     """Gera relatório completo e amplo em formato Word"""
-    try:
-        from docx import Document
-        from docx.shared import Inches
-        from docx.enum.text import WD_ALIGN_PARAGRAPH
-        from docx.enum.table import WD_ALIGN_VERTICAL
-        from docx.oxml.shared import OxmlElement, qn
-        from io import BytesIO
+    if Document is None:
+        st.error("📋 A biblioteca python-docx não está instalada. Não é possível gerar o relatório.")
+        return None
         
+    try:
         # Obter nome do projeto da session_state
         nome_projeto = st.session_state.get('nome_projeto', 'Projeto')
         
@@ -529,7 +538,7 @@ def gerar_relatorio_word():
         
         # Ordenar modalidades por risco residual
         modalidades_ordenadas = sorted(dados_comparativos.items(), 
-                                     key=lambda x: x[1]['risco_residual_total'])
+                                       key=lambda x: x[1]['risco_residual_total'])
         
         for i, (modalidade, dados) in enumerate(modalidades_ordenadas, 1):
             row_cells = table.add_row().cells
@@ -652,17 +661,17 @@ def gerar_relatorio_word():
         1. RISCO TOTAL DO PROJETO: {risco_inerente_total:.1f} pontos (antes da mitigação)
         
         2. ESTRATÉGIA ÓTIMA IDENTIFICADA: {melhor_modalidade}
-           - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
-           - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
-           - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
-           
+            - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
+            - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
+            - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
+            
         3. AMPLITUDE DE VARIAÇÃO: As modalidades analisadas apresentam variação de risco residual 
-           de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
-           evidenciando a relevância da escolha estratégica.
-           
+            de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
+            evidenciando a relevância da escolha estratégica.
+            
         4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
-           pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
-           fundamentação técnica para a tomada de decisão.
+            pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
+            fundamentação técnica para a tomada de decisão.
         
         CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
         
@@ -914,166 +923,10 @@ def criar_heatmap_eficacia_melhorado(riscos_comparacao):
     
     return fig
 
-
-
 def inicializar_dados():
     """Inicializa os dados padrão do sistema"""
     if 'riscos' not in st.session_state:
-        st.session_state.riscos = [
-            {
-
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.6
-                }
-            },
-            {
-
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 1.0,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 40,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
-                    'Permuta por obra (terreno da União)': 0.9,
-                    'Build to Suit (terreno da União)': 0.9,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.1,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.2,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.4
-                }
-            },
-            {
-
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
+        riscos_iniciais = [
             {
                 'risco_chave': 'Descumprimento do Prazo de entrega',
                 'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
@@ -1219,952 +1072,12 @@ def inicializar_dados():
                 }
             }
         ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.6,
-                    'Permuta por obra (Lote da União)': 0.4,
-                    'Build to Suit (Lote da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por imóvel a construir (Lote de terceiros)': 0.2,
-                    'Permuta por obra (Lote da União)': 0.6,
-                    'Build to Suit (Lote da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.4,
-                    'Permuta por obra (Lote da União)': 0.6,
-                    'Build to Suit (Lote da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.8,
-                    'Permuta por obra (Lote da União)': 0.4,
-                    'Build to Suit (Lote da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (Lote de terceiros)': 1.0,
-                    'Permuta por obra (Lote da União)': 0.2,
-                    'Build to Suit (Lote da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.1,
-                    'Permuta por obra (Lote da União)': 0.1,
-                    'Build to Suit (Lote da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.4,
-                    'Permuta por obra (Lote da União)': 0.4,
-                    'Build to Suit (Lote da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (Lote de terceiros)': 0.8,
-                    'Permuta por obra (Lote da União)': 0.4,
-                    'Build to Suit (Lote da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceinal)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-    riscos_iniciais = [
-            {
-                'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceinal)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8
-                }
-            },
-            {
-   'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceinal)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 16,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            },
-            {
-                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Alto',
-                'impacto_valor': 8,
-                'probabilidade_nivel': 'Alta',
-                'probabilidade_valor': 8,
-                'risco_inerente': 64,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já cruelmente construído': 1.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
-                    'Permuta por obra (terreno da União)': 0.2,
-                    'Build to Suit (terreno da União)': 0.6,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 0.8
-                }
-            },
-            {
-                'risco_chave': 'Dotação orçamentária insuficiente',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
-                'impacto_nivel': 'Muito alto',
-                'impacto_valor': 10,
-                'probabilidade_nivel': 'Muito alta',
-                'probabilidade_valor': 10,
-                'risco_inerente': 100,
-                'classificacao': 'Alto',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.0,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
-                    'Permuta por obra (terreno da União)': 0.1,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
-                }
-            },
-            {
-                'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Média',
-                'probabilidade_valor': 5,
-                'risco_inerente': 25,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.6,
-                    'Obra pública convencional': 0.1
-                }
-            },
-            {
-                'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
-                'impacto_nivel': 'Médio',
-                'impacto_valor': 5,
-                'probabilidade_nivel': 'Baixa',
-                'probabilidade_valor': 2,
-                'risco_inerente': 10,
-                'classificacao': 'Médio',
-                'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
-                }
-            }
-        ]
-        for risco in riscos_iniciais:s
+        
+        for risco in riscos_iniciais:
             risco["justificativas_modalidades"] = {modalidade: "" for modalidade in risco["modalidades"]}
-        st.session_state.riscos = riscos_iniciais'modalidades' not in st.session_state:
+        st.session_state.riscos = riscos_iniciais
+        
+    if 'modalidades' not in st.session_state:
         st.session_state.modalidades = MODALIDADES_PADRAO.copy()
 
 def cadastro_riscos():
@@ -2875,7 +1788,7 @@ def comparacao_modalidades():
         
         # Diferença entre melhor e pior
         diferenca = (risco_acumulado_por_modalidade[pior_modalidade]['risco_residual_total'] - 
-                    risco_acumulado_por_modalidade[melhor_modalidade]['risco_residual_total'])
+                     risco_acumulado_por_modalidade[melhor_modalidade]['risco_residual_total'])
         
         st.info(f"""
         **📊 Análise Comparativa:**
@@ -2975,7 +1888,7 @@ def dashboard_geral():
         
         if count_riscos > 0:
             eficacia_total = ((sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) - risco_residual_total) / 
-                            sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) * 100)
+                              sum(r['risco_inerente'] for r in st.session_state.riscos if modalidade in r['modalidades']) * 100)
             
             risco_residual_por_modalidade[modalidade] = {
                 'risco_residual_total': risco_residual_total,
@@ -3010,7 +1923,7 @@ def dashboard_geral():
             """)
             
             diferenca_risco = (risco_residual_por_modalidade[pior_modalidade]['risco_residual_total'] - 
-                              risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total'])
+                               risco_residual_por_modalidade[melhor_modalidade]['risco_residual_total'])
             st.info(f"**Diferença de Risco:** {diferenca_risco:.1f} pontos ({diferenca_risco/risco_inerente_total*100:.1f}% do risco total)")
     
     with col2:
@@ -3113,7 +2026,7 @@ def dashboard_geral():
         
         if eficacia_modalidades:
             df_eficacia = pd.DataFrame(list(eficacia_modalidades.items()), 
-                                     columns=['Modalidade', 'Eficácia (%)'])
+                                       columns=['Modalidade', 'Eficácia (%)'])
             df_eficacia = df_eficacia.sort_values('Eficácia (%)', ascending=True)
             
             fig_eficacia = px.bar(
@@ -3181,7 +2094,7 @@ def dashboard_geral():
         st.subheader("💡 Insights Executivos")
         
         modalidades_ordenadas = sorted(risco_residual_por_modalidade.items(), 
-                                     key=lambda x: x[1]['risco_residual_total'])
+                                       key=lambda x: x[1]['risco_residual_total'])
         
         col1, col2, col3 = st.columns(3)
         
@@ -3261,7 +2174,7 @@ def visualizar_logs():
     
     with col3:
         st.metric("Período Registrado", 
-                 f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
+                  f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
     
     # Gráfico de atividades por usuário
     fig = px.bar(acoes_por_usuario, 
@@ -3322,8 +2235,8 @@ def main():
         with st.expander("📋 Visualizar riscos carregados"):
             for i, risco in enumerate(st.session_state.riscos, 1):
                 st.write(f"**{i}. {risco['risco_chave']}**")
-                st.write(f"   - Risco Inerente: {risco['risco_inerente']} ({risco['classificacao']})")
-                st.write(f"   - Impacto: {risco['impacto_valor']} | Probabilidade: {risco['probabilidade_valor']}")
+                st.write(f"    - Risco Inerente: {risco['risco_inerente']} ({risco['classificacao']})")
+                st.write(f"    - Impacto: {risco['impacto_valor']} | Probabilidade: {risco['probabilidade_valor']}")
     
     # Sidebar para configurações
     with st.sidebar:
