@@ -1381,8 +1381,6 @@ def editar_riscos():
         if submitted:
             # Atualizar o risco
             st.session_state.riscos[indice_risco].update({
-                'descricao': nova_descricao,
-                  risco_atual.update({
                 'impacto_nivel': novo_impacto_nivel,
                 'impacto_valor': novo_impacto_valor,
                 'probabilidade_nivel': nova_probabilidade_nivel,
