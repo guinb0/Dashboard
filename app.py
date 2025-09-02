@@ -1073,6 +1073,10 @@ def inicializar_dados():
                 }
             }
         ]
+    for risco in riscos_iniciais:
+        risco['justificativas_modalidades'] = {modalidade: '' for modalidade in risco['modalidades']}
+    st.session_state.riscos = riscos_iniciais
+
     if 'modalidades' not in st.session_state:
         st.session_state.modalidades = MODALIDADES_PADRAO.copy()
 
@@ -1158,7 +1162,8 @@ def cadastro_riscos():
                     step=0.1,
                     key=f"modalidade_{i}"
                 )
-                modalidades_avaliacao[modalidade] = fator
+                justificativa = st.text_area("Justificativa:", key=f"justificativa_{i}")
+                modalidades_avaliacao[modalidade] = {"fator": fator, "justificativa": justificativa}
                 
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
@@ -1178,7 +1183,8 @@ def cadastro_riscos():
                 'probabilidade_valor': probabilidade_valor,
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
-                'modalidades': modalidades_avaliacao.copy(),
+                'modalidades': {mod: data['fator'] for mod, data in modalidades_avaliacao.items()},
+                'justificativas_modalidades': {mod: data['justificativa'] for mod, data in modalidades_avaliacao.items()},
                 'personalizado': True,  # Marcar como personalizado
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -1351,9 +1357,15 @@ def editar_riscos():
                     max_value=1.0,
                     value=valor_atual,
                     step=0.1,
-                    key=f"nova_modalidade_{i}_{indice_risco}"
+                    key=f"editar_modalidade_{indice_risco}_{i}"
                 )
-                novas_modalidades[modalidade] = novo_fator
+                justificativa_modalidade = risco_atual["justificativas_modalidades"].get(modalidade, "")
+                nova_justificativa = st.text_area(
+                    "Justificativa:",
+                    value=justificativa_modalidade,
+                    key=f"justificativa_modalidade_{indice_risco}_{i}"
+                )
+                novas_modalidades[modalidade] = {"fator": novo_fator, "justificativa": nova_justificativa}
                 
                 # Mostrar comparação do risco residual
                 risco_residual_antigo = risco_atual['risco_inerente'] * valor_atual
@@ -1370,16 +1382,18 @@ def editar_riscos():
             # Atualizar o risco
             st.session_state.riscos[indice_risco].update({
                 'descricao': nova_descricao,
-                'contexto_especifico': contexto_especifico,
+                  risco_atual.update({
                 'impacto_nivel': novo_impacto_nivel,
                 'impacto_valor': novo_impacto_valor,
                 'probabilidade_nivel': nova_probabilidade_nivel,
                 'probabilidade_valor': nova_probabilidade_valor,
                 'risco_inerente': novo_risco_inerente,
                 'classificacao': nova_classificacao,
-                'modalidades': novas_modalidades.copy(),
-                'editado': True,  # Marcar como editado
-                'editado_por': st.session_state.user,
+                'descricao': nova_descricao,
+                'contexto_especifico': contexto_especifico,
+                'modalidades': {mod: data['fator'] for mod, data in novas_modalidades.items()},
+                'justificativas_modalidades': {mod: data['justificativa'] for mod, data in novas_modalidades.items()},
+                'editado': True,
                 'data_edicao': datetime.now().strftime("%d/%m/%Y %H:%M")
             })
             
