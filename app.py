@@ -2278,7 +2278,7 @@ def main():
                 for risco in st.session_state.riscos:
                     if 'modalidades' not in risco:
                         risco['modalidades'] = {}
-                    risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
+                    risco['modalidades'][nova_modalidade] = 0.0  # Valor padrão
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
