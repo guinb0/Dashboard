@@ -1188,7 +1188,7 @@ def cadastro_riscos():
                     f"{modalidade}:",
                     min_value=0.0,
                     max_value=1.0,
-                    value=0.5,
+                    value=0.0,  # ALTERADO: Valor padrão agora é 0.0
                     step=0.1,
                     key=f"modalidade_{i}"
                 )
@@ -2142,8 +2142,8 @@ def dashboard_geral():
         with col2:
             st.metric(
                 "Maior Risco Residual",
-                f"{modalidades_ordenadas[-1][1]['risco_residual_total']:.1f}",
-                delta=f"Modalidade: {modalidades_ordenadas[-1][0]}"
+                f"{modalidades[-1]['risco_residual_total']:.1f}",
+                delta=f"Modalidade: {modalidades[-1][0]}"
             )
         
         with col3:
