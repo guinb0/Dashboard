@@ -1072,9 +1072,15 @@ def inicializar_dados():
             }
         ]
         
-        # Garante que a chave 'justificativas_modalidades' exista em todos os riscos
-        # e insere texto aleatório para preencher o campo.
-        textos_exemplo = [
+        # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
+        textos_exemplo_prob = [
+            "A probabilidade é alta devido à complexidade da obra e do terreno.",
+            "A probabilidade é média, pois o histórico de projetos similares na região é misto.",
+            "A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.",
+            "A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas."
+        ]
+        
+        textos_exemplo_mitigacao = [
             "A mitigação por esta modalidade se deve à... (ex: menor dependência de terceiros).",
             "Esta modalidade é eficaz porque permite maior controle sobre... (ex: a qualidade dos materiais).",
             "O fator de mitigação é baixo devido a... (ex: alta volatilidade do mercado para este tipo de ativo).",
@@ -1088,8 +1094,10 @@ def inicializar_dados():
         for risco in riscos_iniciais:
             if "justificativas_modalidades" not in risco:
                 risco["justificativas_modalidades"] = {
-                    modalidade: np.random.choice(textos_exemplo) for modalidade in risco["modalidades"]
+                    modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]
                 }
+            if "contexto_especifico" not in risco:
+                risco["contexto_especifico"] = np.random.choice(textos_exemplo_prob)
         
         st.session_state.riscos = riscos_iniciais
         
@@ -1164,6 +1172,7 @@ def cadastro_riscos():
         st.info("Para cada modalidade, defina os fatores de mitigação (0.0 = elimina totalmente o risco, 1.0 = não mitiga)")
         
         modalidades_avaliacao = {}
+        justificativas_modalidades = {}
         cols = st.columns(min(3, len(st.session_state.modalidades)))
         
         for i, modalidade in enumerate(st.session_state.modalidades):
@@ -1177,7 +1186,8 @@ def cadastro_riscos():
                     key=f"modalidade_{i}"
                 )
                 justificativa = st.text_area("Justificativa:", key=f"justificativa_{i}")
-                modalidades_avaliacao[modalidade] = {"fator": fator, "justificativa": justificativa}
+                modalidades_avaliacao[modalidade] = fator
+                justificativas_modalidades[modalidade] = justificativa
                 
                 # Calcular risco residual
                 risco_residual = risco_inerente * fator
@@ -1187,9 +1197,6 @@ def cadastro_riscos():
         submitted = st.form_submit_button("💾 Salvar Risco", type="primary")
         
         if submitted and risco_chave:
-            # Lógica para garantir que o novo risco tenha a chave 'justificativas_modalidades'
-            justificativas = {mod: data['justificativa'] for mod, data in modalidades_avaliacao.items()}
-            
             novo_risco = {
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
@@ -1200,9 +1207,9 @@ def cadastro_riscos():
                 'probabilidade_valor': probabilidade_valor,
                 'risco_inerente': risco_inerente,
                 'classificacao': classificacao,
-                'modalidades': {mod: data['fator'] for mod, data in modalidades_avaliacao.items()},
-                'justificativas_modalidades': justificativas, # Adiciona a chave aqui
-                'personalizado': True,  # Marcar como personalizado
+                'modalidades': modalidades_avaliacao,
+                'justificativas_modalidades': justificativas_modalidades,
+                'personalizado': True,
                 'criado_por': st.session_state.user,
                 'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M")
             }
