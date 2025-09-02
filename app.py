@@ -1349,7 +1349,7 @@ def editar_riscos():
         
         for i, modalidade in enumerate(st.session_state.modalidades):
             with cols[i % len(cols)]:
-                valor_atual = risco_atual['modalidades'].get(modalidade, 0.5)
+                valor_atual = risco_atual['modalidades'].get(modalidade, 0.0)
                 novo_fator = st.slider(
                     f"{modalidade}:",
                     min_value=0.0,
@@ -2066,10 +2066,10 @@ def dashboard_geral():
         ))
         
         # Adicionar linhas de grade para delimitar zonas de risco
-        fig_matriz.add_hline(y=2.5, line_dash="dash", line_color="blue", opacity=0.5)
-        fig_matriz.add_hline(y=5.5, line_dash="dash", line_color="orange", opacity=0.5)
-        fig_matriz.add_vline(x=2.5, line_dash="dash", line_color="blue", opacity=0.5)
-        fig_matriz.add_vline(x=5.5, line_dash="dash", line_color="orange", opacity=0.5)
+        fig_matriz.add_hline(y=2.5, line_dash="dash", line_color="blue", opacity=0.0)
+        fig_matriz.add_hline(y=5.5, line_dash="dash", line_color="orange", opacity=0.0)
+        fig_matriz.add_vline(x=2.5, line_dash="dash", line_color="blue", opacity=0.0)
+        fig_matriz.add_vline(x=5.5, line_dash="dash", line_color="orange", opacity=0.0)
         
         # Adicionar anotações para as zonas
         fig_matriz.add_annotation(x=1.5, y=1.5, text="BAIXO", showarrow=False, 
