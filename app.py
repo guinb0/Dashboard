@@ -972,7 +972,7 @@ def inicializar_dados():
             },
             {
                 'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.',
+                'descricao': 'ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solução definitiva seja conseguida.',
                 'impacto_nivel': 'Médio',
                 'impacto_valor': 5,
                 'probabilidade_nivel': 'Média',
