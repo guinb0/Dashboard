@@ -954,7 +954,7 @@ def inicializar_dados():
             },
             {
                 'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
-                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
+                'descricao': 'Impacto total, somente superável no caso de obtenção de dotação orçamentária.',
                 'impacto_nivel': 'Médio',
                 'impacto_valor': 5,
                 'probabilidade_nivel': 'Média',
@@ -1083,6 +1083,7 @@ def inicializar_dados():
         # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
         textos_exemplo_prob = [
             "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.",
+            "A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado."
             
         ]
         
