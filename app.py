@@ -944,12 +944,12 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.6,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
                     'Permuta por obra (terreno da União)': 0.4,
                     'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.8,
-                    'Obra pública convencional': 0.2
+                    'Contratação com dação em pagamento': 0.6,
+                    'Obra pública convencional': 0.6
                 }
             },
             {
@@ -962,17 +962,17 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.2,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
+                    'Permuta por imóvel já construído': 1.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por obra (terreno da União)': 1.0,
+                    'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.4,
-                    'Obra pública convencional': 1.0
+                    'Obra pública convencional': 0.2
                 }
             },
             {
                 'risco_chave': 'Condições de mercado desfavoráveis',
-                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
+                'descricao': ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.',
                 'impacto_nivel': 'Médio',
                 'impacto_valor': 5,
                 'probabilidade_nivel': 'Média',
@@ -980,17 +980,17 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.4,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
-                    'Permuta por obra (terreno da União)': 0.6,
-                    'Build to Suit (terreno da União)': 0.6,
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.9,
+                    'Permuta por obra (terreno da União)': 0.9,
+                    'Build to Suit (terreno da União)': 0.9,
                     'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.8
+                    'Obra pública convencional': 0.1
                 }
             },
             {
                 'risco_chave': 'Abandono da obra pela empresa',
-                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
+                'descricao': 'A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
                 'probabilidade_nivel': 'Baixa',
@@ -998,17 +998,17 @@ def inicializar_dados():
                 'risco_inerente': 16,
                 'classificacao': 'Médio',
                 'modalidades': {
-                    'Permuta por imóvel já construído': 0.8,
-                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
-                    'Permuta por obra (terreno da União)': 0.4,
-                    'Build to Suit (terreno da União)': 0.4,
-                    'Contratação com dação em pagamento': 0.2,
-                    'Obra pública convencional': 0.2
+                    'Permuta por imóvel já construído': 0.1,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
+                    'Permuta por obra (terreno da União)': 0.2,
+                    'Build to Suit (terreno da União)': 0.2,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.4
                 }
             },
             {
                 'risco_chave': 'Baixa rentabilização do estoque de imóveis',
-                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
+                'descricao': 'Caso não seja aproveitada a operação para destinação de imóveis ociosos ou sub-aproveitados, tal  situação será de difícil reversão.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
                 'probabilidade_nivel': 'Alta',
@@ -1044,7 +1044,7 @@ def inicializar_dados():
             },
             {
                 'risco_chave': 'Questionamento jurídico',
-                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
+                'descricao': 'ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.',
                 'impacto_nivel': 'Médio',
                 'impacto_valor': 5,
                 'probabilidade_nivel': 'Média',
@@ -1062,7 +1062,7 @@ def inicializar_dados():
             },
             {
                 'risco_chave': 'Baixa qualidade dos serviços entregues',
-                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
+                'descricao': 'Obra de uso administrativo, na qual é maior a possibilidade de correções durante o uso sem grandes impactos ä operação.',
                 'impacto_nivel': 'Médio',
                 'impacto_valor': 5,
                 'probabilidade_nivel': 'Baixa',
