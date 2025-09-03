@@ -89,145 +89,55 @@ MODALIDADES_PADRAO = [
 
 # Aspectos a serem considerados para cada risco (extraídos da planilha) - AMPLIADO
 ASPECTOS_RISCOS = {
-    'Descumprimento do Prazo de entrega': {
-        'impacto': [
-            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
-            "Custo de locação do imóvel utilizado pelo órgão",
-            "Taxa de ocupação do imóvel utilizado pelo órgão",
-            "Impacto na continuidade dos serviços públicos",
-            "Custos adicionais com prorrogações contratuais"
-        ],
-        'probabilidade': [
-            "Estrutura de monitoramento e mecanismos contratuais de sanção previstos",
-            "Complexidade técnica do empreendimento e riscos externos (licenças, clima, logística)",
-            "Grau de maturidade dos projetos disponibilizados",
-            "Características do local de implantação",
-            "Histórico de cumprimento de prazos da empresa contratada",
-            "Capacidade técnica e financeira do contratado"
-        ]
+    "Descumprimento do Prazo de entrega": {
+        "modalidades": {
+            "Permuta por imóvel já construído": {"fator": 0.1, "justificativa": "Imóvel pronto"},
+            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.4, "justificativa": "Administração privada em imóvel privado"},
+            "Permuta por obra (terreno da União)": {"fator": 0.4, "justificativa": "Administração privada em imóvel público"},
+            "Build to Suit (terreno da União)": {"fator": 0.4, "justificativa": "Administração privada em imóvel público"},
+            "Contratação com dação em pagamento": {"fator": 0.6, "justificativa": "Acompanhamento público/privado de contrato administrativo"},
+            "Obra pública convencional": {"fator": 0.6, "justificativa": "Acompanhamento público/privado de contrato administrativo"}
+        }
     },
-    'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta.': {
-        'impacto': [
-            "Quantidade de imóveis disponíveis e nível de desembraço desses imóveis",
-            "Impacto na viabilidade econômica da operação",
-            "Necessidade de recursos orçamentários adicionais",
-            "Comprometimento da estratégia de otimização do patrimônio público"
-        ],
-        'probabilidade': [
-            "Quantidade de imóveis disponíveis e nível de desembraço desses imóveis",
-            "Processos judiciais em andamento sobre os imóveis",
-            "Situação registral e documental dos imóveis",
-            "Interesse de outros órgãos públicos nos mesmo imóveis",
-            "Complexidade dos procedimentos de desafetação"
-        ]
+    "Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta": {
+        "modalidades": {
+            "Permuta por imóvel já construído": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
+            "Permuta por edificação a construir (terreno terceiros)": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
+            "Permuta por obra (terreno da União)": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
+            "Build to Suit (terreno da União)": {"fator": 0.4, "justificativa": "O risco é mitigado"},
+            "Contratação com dação em pagamento": {"fator": 0.4, "justificativa": "O risco é mitigado"},
+            "Obra pública convencional": {"fator": 0.2, "justificativa": "O risco é mitigado"}
+        }
     },
-    'Condições de mercado desfavoráveis. ': {
-        'impacto': [
-            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
-            "Custo de locação do imóvel utilizado pelo órgão",
-            "Taxa de ocupação do imóvel utilizado pelo órgão",
-            "Redução da competitividade no processo licitatório",
-            "Aumento dos custos da operação"
-        ],
-        'probabilidade': [
-            "Valor do investimento necessário (valor imóveis x torna x construção)",
-            "Atratividade dos lotes ofertados (valor; possibilidades de utilização; tendências do mercado)",
-            "Grau de especialização exigida do investidor",
-            "Grau de aquecimento do mercado x taxa de juros x rentabilidade esperada",
-            "Manifestações de interesse ou consultas públicas realizadas",
-            "Histórico de certames semelhantes e nível de participação",
-            "Cenário econômico nacional e setorial"
-        ]
+    "Condições de mercado desfavoráveis": {
+        "modalidades": {
+            "Permuta por imóvel já construído": {"fator": 0.8, "justificativa": "Demanda e oferta"},
+            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
+            "Permuta por obra (terreno da União)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
+            "Build to Suit (terreno da União)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
+            "Contratação com dação em pagamento": {"fator": 0.2, "justificativa": "O risco é mitigado"},
+            "Obra pública convencional": {"fator": 0.1, "justificativa": "O risco é mitigado"}
+        }
     },
-    'Abandono da obra pela empresa': {
-        'impacto': [
-            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
-            "Custo de locação do imóvel utilizado pelo órgão",
-            "Taxa de ocupação do imóvel utilizado pelo órgão",
-            "Custos de nova licitação e retomada da obra",
-            "Atraso significativo na entrega do empreendimento"
-        ],
-        'probabilidade': [
-            "Requisitos técnicos e financeiros a serem previstos no processo de seleção",
-            "Garantias contratuais e outras salvaguardas a serem previstas",
-            "Garantias contratuais e outras salvaguardas previstas na modelagem",
-            "Percentual do novo prédio a ser ocupado pela Administração",
-            "Situação financeira e histórico da empresa contratada",
-            "Robustez dos mecanismos de acompanhamento da execução"
-        ]
+    "Abandono da obra pela empresa": {
+        "modalidades": {
+            "Permuta por imóvel já construído": {"fator": 0.1, "justificativa": "Imóvel pronto"},
+            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.6, "justificativa": "Depende do cumprimento do contrato por parte da empresa"},
+            "Permuta por obra (terreno da União)": {"fator": 0.2, "justificativa": "Contrato administrativo - sanções"},
+            "Build to Suit (terreno da União)": {"fator": 0.2, "justificativa": "Contrato administrativo - sanções"},
+            "Contratação com dação em pagamento": {"fator": 0.4, "justificativa": "Contrato administrativo - sanções"},
+            "Obra pública convencional": {"fator": 0.4, "justificativa": "Contrato administrativo - sanções"}
+        }
     },
-    'Baixa rentabilização do estoque de imóveis': {
-        'impacto': [
-            "Valor dos imóveis dados em permuta na operação frente ao valor do imóvel adquirido",
-            "Amplitude do potencial de valorização dos imóveis dados em permuta",
-            "Grau de contribuição da operação para a redução de imóveis ociosos",
-            "Prejuízo patrimonial para a União",
-            "Redução da eficiência da gestão patrimonial"
-        ],
-        'probabilidade': [
-            "Grau de contribuição da operação para a redução de imóveis ociosos",
-            "Adequação do uso proposto às características do imóvel",
-            "Potencial de economia de despesas (Eficiência do plano de gestão do ativo)",
-            "Eficiência do plano de gestão do ativo pós-permuta",
-            "Demanda do mercado e probabilidade de valorização dos imóveis",
-            "Localização e características dos imóveis ofertados",
-            "Estratégia de alienação ou exploração econômica"
-        ]
-    },
-    'Dotação orçamentária insuficiente': {
-        'impacto': [
-            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
-            "Custo de locação do imóvel utilizado pelo órgão",
-            "Taxa de ocupação do imóvel utilizado pelo órgão",
-            "Percentual do valor da operação que será custeada com recursos orçamentários",
-            "Inviabilização completa do projeto",
-            "Necessidade de renegociação contratual"
-        ],
-        'probabilidade': [
-            "Peso da previsão de despesa em relação à dotação orçamentária de investimento",
-            "Informações constantes da LOA e PPA",
-            "Histórico de contingenciamento do órgão",
-            "Peso político dos órgãos beneficiários",
-            "Cenário fiscal e orçamentário da União",
-            "Priorização do projeto no planejamento governamental"
-        ]
-    },
-    'Questionamento jurídico': {
-        'impacto': [
-            "Paralisação completa ou parcial do projeto",
-            "Custos adicionais com defesa jurídica",
-            "Perda de credibilidade institucional",
-            "Necessidade de reformulação da modelagem",
-            "Impacto na continuidade dos serviços públicos"
-        ],
-        'probabilidade': [
-            "Complexidade e inovação da modelagem jurídica adotada",
-            "Precedentes jurisprudenciais sobre modalidades similares",
-            "Robustez da fundamentação legal da contratação",
-            "Histórico de questionamentos em projetos similares",
-            "Atuação de órgãos de controle externo",
-            "Transparência e aderência aos princípios da administração pública",
-            "Qualidade da documentação jurídica do processo"
-        ]
-    },
-    'Baixa qualidade dos serviços entregues': {
-        'impacto': [
-            "Custos adicionais com reparos e adequações",
-            "Insatisfação dos usuários finais",
-            "Redução da vida útil do empreendimento",
-            "Necessidade de nova contratação para correções",
-            "Comprometimento da imagem institucional",
-            "Impacto na funcionalidade operacional"
-        ],
-        'probabilidade': [
-            "Rigor dos critérios de qualificação técnica",
-            "Estrutura de fiscalização e acompanhamento técnico",
-            "Especificações técnicas e padrões de qualidade definidos",
-            "Histórico de qualidade dos serviços da empresa contratada",
-            "Mecanismos contratuais de garantia de qualidade",
-            "Complexidade técnica dos serviços demandados",
-            "Adequação entre o preço contratado e o padrão de qualidade esperado"
-        ]
+    "Baixa rentabilização do estoque de imóveis": {
+        "modalidades": {
+            "Permuta por imóvel já construído": {"fator": 0.4, "justificativa": "O risco é mitigado"},
+            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
+            "Permuta por obra (terreno da União)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
+            "Build to Suit (terreno da União)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
+            "Contratação com dação em pagamento": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
+            "Obra pública convencional": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"}
+        }
     }
 }
 
@@ -668,17 +578,17 @@ def gerar_relatorio_word():
         1. RISCO TOTAL DO PROJETO: {risco_inerente_total:.1f} pontos (antes da mitigação)
         
         2. ESTRATÉGIA ÓTIMA IDENTIFICADA: {melhor_modalidade}
-           - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
-           - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
-           - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
-           
+            - Reduz o risco total para {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
+            - Eficácia de mitigação de {melhor_modalidade_dados['eficacia_percentual']:.1f}%
+            - Redução absoluta de {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco
+            
         3. AMPLITUDE DE VARIAÇÃO: As modalidades analisadas apresentam variação de risco residual 
-           de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
-           evidenciando a relevância da escolha estratégica.
-           
+            de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos, 
+            evidenciando a relevância da escolha estratégica.
+            
         4. CONFORMIDADE METODOLÓGICA: A análise seguiu integralmente os preceitos estabelecidos 
-           pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
-           fundamentação técnica para a tomada de decisão.
+            pelo SAROI para gestão de riscos em projetos públicos, garantindo objetividade e 
+            fundamentação técnica para a tomada de decisão.
         
         CONSIDERAÇÕES PARA IMPLEMENTAÇÃO:
         
@@ -799,10 +709,10 @@ def criar_heatmap_modalidades_melhorado(riscos_comparacao):
         x=labels_modalidades,
         y=labels_riscos,
         colorscale=[
-            [0.0, '#00ff00'],   # Verde para risco zero/muito baixo
-            [0.3, '#90EE90'],   # Verde claro
-            [0.5, '#ffff00'],   # Amarelo para risco médio
-            [0.7, '#FFA500'],   # Laranja
+            [0.0, '#00ff00'],    # Verde para risco zero/muito baixo
+            [0.3, '#90EE90'],    # Verde claro
+            [0.5, '#ffff00'],    # Amarelo para risco médio
+            [0.7, '#FFA500'],    # Laranja
             [1.0, '#ff0000']     # Vermelho para risco alto
         ],
         showscale=True,
@@ -935,224 +845,180 @@ def inicializar_dados():
     if 'riscos' not in st.session_state:
         riscos_iniciais = [
             {
-                "risco_chave": "Descumprimento do Prazo de entrega",
-                "descricao": "ATRASO  -  A CGU possui contrato de locação que onera significativamente seu orçamento. Além disso, a CGU ainda precisa arcar com os custos de guarda e manutenção do Darcy Ribeiro até que uma soluçáo definitiva seja conseguida.",
-                "impacto_nivel": "Médio",
-                "impacto_valor": 5,
-                "probabilidade_nivel": "Média",
-                "probabilidade_valor": 5,
-                "risco_inerente": 25.0,
-                "classificacao": "Médio",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 2.5,
-                    "Permuta por edificação a construir (terreno terceiros)": 10.0,
-                    "Permuta por obra (terreno da União)": 10.0,
-                    "Build to Suit (terreno da União)": 10.0,
-                    "Contratação com dação em pagamento": 15.0,
-                    "Obra pública convencional": 15.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "Imóvel pronto",
-                    "Permuta por edificação a construir (terreno terceiros)": "Administração privada em imóvel privado",
-                    "Permuta por obra (terreno da União)": "Administração privada em imóvel público",
-                    "Build to Suit (terreno da União)": "Administração privada em imóvel público",
-                    "Contratação com dação em pagamento": "Acompanhamento público/privado de contrato administrativo",
-                    "Obra pública convencional": "Acompanhamento público/privado de contrato administrativo"
-                },
-                "contexto_especifico": "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência."
+                'risco_chave': 'Descumprimento do Prazo de entrega',
+                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
+                'impacto_nivel': 'Alto',
+                'impacto_valor': 8,
+                'probabilidade_nivel': 'Alta',
+                'probabilidade_valor': 8,
+                'risco_inerente': 64,
+                'classificacao': 'Alto',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.6,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.6,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.8,
+                    'Obra pública convencional': 0.2
+                }
             },
             {
-                "risco_chave": "Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta.",
-                "descricao": "Impacto total, somente superável no caso de obtenção de dotação orçamentária.",
-                "impacto_nivel": "Muito alto",
-                "impacto_valor": 10,
-                "probabilidade_nivel": "Muito baixa",
-                "probabilidade_valor": 1,
-                "risco_inerente": 10.0,
-                "classificacao": "Médio",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 10.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 10.0,
-                    "Permuta por obra (terreno da União)": 10.0,
-                    "Build to Suit (terreno da União)": 4.0,
-                    "Contratação com dação em pagamento": 4.0,
-                    "Obra pública convencional": 2.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "O risco é inerente à modalidade",
-                    "Permuta por edificação a construir (terreno terceiros)": "O risco é inerente à modalidade",
-                    "Permuta por obra (terreno da União)": "O risco é inerente à modalidade",
-                    "Build to Suit (terreno da União)": "O risco é mitigado",
-                    "Contratação com dação em pagamento": "O risco é mitigado",
-                    "Obra pública convencional": "O risco é mitigado"
-                },
-                "contexto_especifico": "A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado."
+                'risco_chave': 'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta',
+                'descricao': 'Risco de não haver imóveis públicos disponíveis ou adequados para a implantação de projetos ou para serem utilizados como dação em pagamento em operações de permuta.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Média',
+                'probabilidade_valor': 5,
+                'risco_inerente': 25,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.2,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.2,
+                    'Permuta por obra (terreno da União)': 0.6,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 1.0
+                }
             },
             {
-                "risco_chave": "Condições de mercado desfavoráveis. ",
-                "descricao": "ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.",
-                "impacto_nivel": "Muito alto",
-                "impacto_valor": 10,
-                "probabilidade_nivel": "Muito alta",
-                "probabilidade_valor": 10,
-                "risco_inerente": 100.0,
-                "classificacao": "Alto",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 80.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 90.0,
-                    "Permuta por obra (terreno da União)": 90.0,
-                    "Build to Suit (terreno da União)": 90.0,
-                    "Contratação com dação em pagamento": 20.0,
-                    "Obra pública convencional": 10.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "Demanda e oferta",
-                    "Permuta por edificação a construir (terreno terceiros)": "Demanda e oferta",
-                    "Permuta por obra (terreno da União)": "Demanda e oferta",
-                    "Build to Suit (terreno da União)": "Demanda e oferta",
-                    "Contratação com dação em pagamento": "O risco é mitigado",
-                    "Obra pública convencional": "O risco é mitigado"
-                },
-                "contexto_especifico": "O histórico de licitações desertas da Administração Pública é elevado, todavia a modalidade escolhida (permuta) aumenta o universo de licitantes."
+                'risco_chave': 'Condições de mercado desfavoráveis',
+                'descricao': 'Risco de as condições de mercado (ex: taxas de juros elevadas, baixa demanda) inviabilizarem ou encarecerem a operação de contratação ou permuta.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Média',
+                'probabilidade_valor': 5,
+                'risco_inerente': 25,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.4,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.6,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.8
+                }
             },
             {
-                "risco_chave": "Abandono da obra pela empresa",
-                "descricao": "A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.",
-                "impacto_nivel": "Médio",
-                "impacto_valor": 5,
-                "probabilidade_nivel": "Baixa",
-                "probabilidade_valor": 2,
-                "risco_inerente": 10.0,
-                "classificacao": "Médio",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 1.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 6.0,
-                    "Permuta por obra (terreno da União)": 2.0,
-                    "Build to Suit (terreno da União)": 2.0,
-                    "Contratação com dação em pagamento": 4.0,
-                    "Obra pública convencional": 4.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "Imóvel pronto",
-                    "Permuta por edificação a construir (terreno terceiros)": "Depende do cumprimento do contrato por parte da empresa",
-                    "Permuta por obra (terreno da União)": "Contrato administrativo - sanções",
-                    "Build to Suit (terreno da União)": "Contrato administrativo - sanções",
-                    "Contratação com dação em pagamento": "Contrato administrativo - sanções",
-                    "Obra pública convencional": "Contrato administrativo - sanções"
-                },
-                "contexto_especifico": "Realização de uma criteriosa análise técnica da empresa para a fase de habilitação."
+                'risco_chave': 'Abandono da obra pela empresa',
+                'descricao': 'Risco de a empresa contratada abandonar a obra ou serviço antes da conclusão, gerando a necessidade de nova licitação e atrasos significativos.',
+                'impacto_nivel': 'Alto',
+                'impacto_valor': 8,
+                'probabilidade_nivel': 'Baixa',
+                'probabilidade_valor': 2,
+                'risco_inerente': 16,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.2
+                }
             },
             {
-                "risco_chave": "Baixa rentabilização do estoque de imóveis",
-                "descricao": "Não há imóveis ociosos com potencial para permuta.",
-                "impacto_nivel": "Alto",
-                "impacto_valor": 8,
-                "probabilidade_nivel": "Alta",
-                "probabilidade_valor": 8,
-                "risco_inerente": 64.0,
-                "classificacao": "Alto",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 64.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 64.0,
-                    "Permuta por obra (terreno da União)": 12.8,
-                    "Build to Suit (terreno da União)": 38.4,
-                    "Contratação com dação em pagamento": 25.6,
-                    "Obra pública convencional": 51.2
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "O imóvel permuta é entregue pronto e sem ônus para a União - sem desfazimento de imóveis ociosos",
-                    "Permuta por edificação a construir (terreno terceiros)": "O imóvel permuta é entregue pronto e sem ônus para a União - sem desfazimento de imóveis ociosos",
-                    "Permuta por obra (terreno da União)": "Desfazimento de imóvel ocioso - porém há o acompanhamento do processo construtivo",
-                    "Build to Suit (terreno da União)": "Desfazimento de imóvel ocioso - porém há o acompanhamento do processo construtivo",
-                    "Contratação com dação em pagamento": "Desfazimento de imóvel ocioso - porém há o acompanhamento do processo construtivo",
-                    "Obra pública convencional": "Terreno próprio e padrão estabelecido pela Administração - sem desfazimento de imóveis ociosos"
-                },
-                "contexto_especifico": "O histórico de operações com soluções individuais, mas que pouco colaboram com o incremento do uso racional do imóveis da União é elevado."
+                'risco_chave': 'Baixa rentabilização do estoque de imóveis',
+                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
+                'impacto_nivel': 'Alto',
+                'impacto_valor': 8,
+                'probabilidade_nivel': 'Alta',
+                'probabilidade_valor': 8,
+                'risco_inerente': 64,
+                'classificacao': 'Alto',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 1.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 1.0,
+                    'Permuta por obra (terreno da União)': 0.2,
+                    'Build to Suit (terreno da União)': 0.6,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 0.8
+                }
             },
             {
-                "risco_chave": "Dotação orçamentária insuficiente",
-                "descricao": "Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.",
-                "impacto_nivel": "Muito alto",
-                "impacto_valor": 10,
-                "probabilidade_nivel": "Média",
-                "probabilidade_valor": 5,
-                "risco_inerente": 50.0,
-                "classificacao": "Alto",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 0.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 5.0,
-                    "Permuta por obra (terreno da União)": 5.0,
-                    "Build to Suit (terreno da União)": 20.0,
-                    "Contratação com dação em pagamento": 20.0,
-                    "Obra pública convencional": 50.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "Não precisa de orçamento",
-                    "Permuta por edificação a construir (terreno terceiros)": "Elanboração de projetos",
-                    "Permuta por obra (terreno da União)": "Elanboração de projetos",
-                    "Build to Suit (terreno da União)": "Necessidade de orçamento para locação e projetos",
-                    "Contratação com dação em pagamento": "Necessidade de orçamento para pagamento da direferença entre o valor do contrato e o valor dos imóveis repassados.",
-                    "Obra pública convencional": "Construção custeada com o OGU"
-                },
-                "contexto_especifico": "Restrição fiscal que a CGU está submetida."
+                'risco_chave': 'Dotação orçamentária insuficiente',
+                'descricao': 'Impacto total, somente superável no caso de a SPU disponibilizar diversos imóveis de alto interesse pelo mercado.',
+                'impacto_nivel': 'Muito alto',
+                'impacto_valor': 10,
+                'probabilidade_nivel': 'Muito alta',
+                'probabilidade_valor': 10,
+                'risco_inerente': 100,
+                'classificacao': 'Alto',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.0,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.1,
+                    'Permuta por obra (terreno da União)': 0.1,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.4,
+                    'Obra pública convencional': 1.0
+                }
             },
             {
-                "risco_chave": "Questionamento jurídico sobre a operação",
-                "descricao": "ATRASO  - A CGU possui contrato de locação que onera significativamente seu orámento. Além disso, a CGU ainda precisa acar com os custos de guarda e manuten;áo do Darcy Ribeiro até que uma solu;áo definitiva seja conseguida.",
-                "impacto_nivel": "Médio",
-                "impacto_valor": 5,
-                "probabilidade_nivel": "Muito alta",
-                "probabilidade_valor": 10,
-                "risco_inerente": 50.0,
-                "classificacao": "Alto",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 10.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 20.0,
-                    "Permuta por obra (terreno da União)": 20.0,
-                    "Build to Suit (terreno da União)": 20.0,
-                    "Contratação com dação em pagamento": 30.0,
-                    "Obra pública convencional": 5.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.",
-                    "Permuta por edificação a construir (terreno terceiros)": "histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.",
-                    "Permuta por obra (terreno da União)": "histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.",
-                    "Build to Suit (terreno da União)": "histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.",
-                    "Contratação com dação em pagamento": "Modelagem inovadora, mas com riscos mitigáveis (consultas ao TCU, AGU, SOF); realização de concorrência",
-                    "Obra pública convencional": "Obra pública"
-                },
-                "contexto_especifico": "Realização de consultas junto à STN, SOF e TCU antes de decidir sobre a modalidade."
+                'risco_chave': 'Questionamento jurídico',
+                'descricao': 'Possibilidade de questionamentos jurídicos quanto à legalidade da modalidade de contratação escolhida, especialmente em modalidades inovadoras ou complexas.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Média',
+                'probabilidade_valor': 5,
+                'risco_inerente': 25,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.2,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.4,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.6,
+                    'Obra pública convencional': 0.1
+                }
             },
             {
-                "risco_chave": "Baixa qualidade dos serviços entregues",
-                "descricao": "Obra de uso administrativo, na qual é maior a possibilidade de correções durante o uso sem grandes impactos ä operação.",
-                "impacto_nivel": "Médio",
-                "impacto_valor": 5,
-                "probabilidade_nivel": "Baixa",
-                "probabilidade_valor": 2,
-                "risco_inerente": 10.0,
-                "classificacao": "Médio",
-                "modalidades": {
-                    "Permuta por imóvel já construído": 8.0,
-                    "Permuta por edificação a construir (terreno terceiros)": 8.0,
-                    "Permuta por obra (terreno da União)": 4.0,
-                    "Build to Suit (terreno da União)": 4.0,
-                    "Contratação com dação em pagamento": 2.0,
-                    "Obra pública convencional": 2.0
-                },
-                "justificativas_modalidades": {
-                    "Permuta por imóvel já construído": "Não acompanhamento no processo construtivo. ",
-                    "Permuta por edificação a construir (terreno terceiros)": "Não acompanhamento no processo construtivo. ",
-                    "Permuta por obra (terreno da União)": "Acompanhamento limitado do processo construtivo",
-                    "Build to Suit (terreno da União)": "Acompanhamento limitado do processo construtivo",
-                    "Contratação com dação em pagamento": "Acompanhamento pleno (contrato de serviço).",
-                    "Obra pública convencional": "Acompanhamento pleno (contrato de serviço)."
-                },
-                "contexto_especifico": "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso."
+                'risco_chave': 'Baixa qualidade dos serviços entregues',
+                'descricao': 'Risco de que os serviços ou obras entregues não atendam aos padrões de qualidade exigidos, comprometendo a funcionalidade e durabilidade do empreendimento.',
+                'impacto_nivel': 'Médio',
+                'impacto_valor': 5,
+                'probabilidade_nivel': 'Baixa',
+                'probabilidade_valor': 2,
+                'risco_inerente': 10,
+                'classificacao': 'Médio',
+                'modalidades': {
+                    'Permuta por imóvel já construído': 0.8,
+                    'Permuta por edificação a construir (terreno terceiros)': 0.8,
+                    'Permuta por obra (terreno da União)': 0.4,
+                    'Build to Suit (terreno da União)': 0.4,
+                    'Contratação com dação em pagamento': 0.2,
+                    'Obra pública convencional': 0.2
+                }
             }
         ]
+        
+        # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
+        textos_exemplo_prob = [
+            "A probabilidade é alta devido à complexidade da obra e do terreno.",
+            "A probabilidade é média, pois o histórico de projetos similares na região é misto.",
+            "A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.",
+            "A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas."
+        ]
+        
+        textos_exemplo_mitigacao = [
+            "Administração privada em imóvel privado",
+            "Esta modalidade é eficaz porque permite maior controle sobre a qualidade dos materiais.",
+            "O fator de mitigação é baixo devido à alta volatilidade do mercado para este tipo de ativo.",
+            "A escolha desta modalidade reduz o risco de abandono da obra, pois o pagamento está atrelado à entrega.",
+            "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
+            "O risco residual é alto nesta modalidade, pois a Administração assume os custos de renegociação.",
+            "Imóvel pronto",
+            "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
+        ]
+        
+        for risco in riscos_iniciais:
+            if "justificativas_modalidades" not in risco:
+                risco["justificativas_modalidades"] = {
+                    modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]
+                }
+            if "contexto_especifico" not in risco or not risco["contexto_especifico"]:
+                risco["contexto_especifico"] = np.random.choice(textos_exemplo_prob)
+        
         st.session_state.riscos = riscos_iniciais
-    
+        
     if 'modalidades' not in st.session_state:
         st.session_state.modalidades = MODALIDADES_PADRAO.copy()
 
@@ -1570,7 +1436,7 @@ def analise_riscos():
         # Adicionar indicador de personalização
         df_scatter['Tipo'] = df_scatter.apply(
             lambda row: 'Personalizado' if row.get('editado', False)
-            else ('Adicionado' if row.get('personalizado', False) else 'Original'),
+            else ('Adicionado' if row.get('personalizado', False) else 'Original'), 
             axis=1
         )
         
@@ -1584,8 +1450,8 @@ def analise_riscos():
             title="Matriz de Riscos (Impacto x Probabilidade)",
             labels={'probabilidade_valor': 'Probabilidade', 'impacto_valor': 'Impacto'},
             color_discrete_map={
-                "Original": "#6c757d",
-                "Personalizado": "#007bff",
+                "Original": "#6c757d", 
+                "Personalizado": "#007bff", 
                 "Adicionado": "#28a745"
             }
         )
@@ -1883,8 +1749,8 @@ def comparacao_modalidades():
         
         # Criar abas para diferentes visualizações
         tab_heatmap1, tab_heatmap2, tab_composicao = st.tabs([
-            "🌡️ Risco Residual",
-            "🎯 Eficácia de Mitigação",
+            "🌡️ Risco Residual", 
+            "🎯 Eficácia de Mitigação", 
             "📊 Composição Detalhada"
         ])
         
@@ -2256,7 +2122,7 @@ def visualizar_logs():
     
     with col3:
         st.metric("Período Registrado", 
-                 f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
+                  f"{df_filtrado['Data/Hora'].min().split()[0]} a {df_filtrado['Data/Hora'].max().split()[0]}")
     
     # Gráfico de atividades por usuário
     fig = px.bar(acoes_por_usuario, 
@@ -2444,7 +2310,7 @@ def main():
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "✏️ Editar Riscos",
         "📝 Cadastro de Riscos",
-        "📊 Análise de Riscos",
+        "📊 Análise de Riscos", 
         "🔄 Comparação de Modalidades",
         "📈 Dashboard Geral",
         "📋 Log de Ações"
