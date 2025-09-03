@@ -936,7 +936,7 @@ def inicializar_dados():
         riscos_iniciais = [
             {
                 'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'Risco de a empresa contratada não cumprir o prazo de entrega da obra ou serviço, gerando atrasos e possíveis prejuízos para a Administração Pública.',
+                'descricao': 'ATRASO  -  A CGU possui contrato de locação que onera significativamente seu orçamento. Além disso, a CGU ainda precisa arcar com os custos de guarda e manutenção do Darcy Ribeiro até que uma soluçáo definitiva seja conseguida.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
                 'probabilidade_nivel': 'Alta',
@@ -1084,7 +1084,7 @@ def inicializar_dados():
         textos_exemplo_prob = [
             "A probabilidade é alta devido à complexidade da obra e do terreno.",
             "A probabilidade é média, pois o histórico de projetos similares na região é misto.",
-            "A probabilidade é baixa, já que o contrato prevê mecanismos de fiscalização rigorosos.",
+            "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.",
             "A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas."
         ]
         
