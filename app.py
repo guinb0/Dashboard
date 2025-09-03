@@ -1082,10 +1082,8 @@ def inicializar_dados():
         
         # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
         textos_exemplo_prob = [
-            "A probabilidade é alta devido à complexidade da obra e do terreno.",
-            "A probabilidade é média, pois o histórico de projetos similares na região é misto.",
             "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.",
-            "A probabilidade é muito alta, dado o cenário econômico atual e as manifestações de interesse já recebidas."
+            
         ]
         
         textos_exemplo_mitigacao = [
