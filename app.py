@@ -89,55 +89,145 @@ MODALIDADES_PADRAO = [
 
 # Aspectos a serem considerados para cada risco (extraídos da planilha) - AMPLIADO
 ASPECTOS_RISCOS = {
-    "Descumprimento do Prazo de entrega": {
-        "modalidades": {
-            "Permuta por imóvel já construído": {"fator": 0.1, "justificativa": "Imóvel pronto"},
-            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.4, "justificativa": "Administração privada em imóvel privado"},
-            "Permuta por obra (terreno da União)": {"fator": 0.4, "justificativa": "Administração privada em imóvel público"},
-            "Build to Suit (terreno da União)": {"fator": 0.4, "justificativa": "Administração privada em imóvel público"},
-            "Contratação com dação em pagamento": {"fator": 0.6, "justificativa": "Acompanhamento público/privado de contrato administrativo"},
-            "Obra pública convencional": {"fator": 0.6, "justificativa": "Acompanhamento público/privado de contrato administrativo"}
-        }
+    'Descumprimento do Prazo de entrega': {
+        'impacto': [
+            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
+            "Custo de locação do imóvel utilizado pelo órgão", 
+            "Taxa de ocupação do imóvel utilizado pelo órgão",
+            "Impacto na continuidade dos serviços públicos",
+            "Custos adicionais com prorrogações contratuais"
+        ],
+        'probabilidade': [
+            "Estrutura de monitoramento e mecanismos contratuais de sanção previstos",
+            "Complexidade técnica do empreendimento e riscos externos (licenças, clima, logística)",
+            "Grau de maturidade dos projetos disponibilizados",
+            "Características do local de implantação",
+            "Histórico de cumprimento de prazos da empresa contratada",
+            "Capacidade técnica e financeira do contratado"
+        ]
     },
-    "Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta": {
-        "modalidades": {
-            "Permuta por imóvel já construído": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
-            "Permuta por edificação a construir (terreno terceiros)": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
-            "Permuta por obra (terreno da União)": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
-            "Build to Suit (terreno da União)": {"fator": 0.4, "justificativa": "O risco é mitigado"},
-            "Contratação com dação em pagamento": {"fator": 0.4, "justificativa": "O risco é mitigado"},
-            "Obra pública convencional": {"fator": 0.2, "justificativa": "O risco é mitigado"}
-        }
+    'Indisponibilidade de imóveis públicos p/ implantação ou dação em permuta': {
+        'impacto': [
+            "Quantidade de imóveis disponíveis e nível de desembraço desses imóveis",
+            "Impacto na viabilidade econômica da operação",
+            "Necessidade de recursos orçamentários adicionais",
+            "Comprometimento da estratégia de otimização do patrimônio público"
+        ],
+        'probabilidade': [
+            "Quantidade de imóveis disponíveis e nível de desembraço desses imóveis",
+            "Processos judiciais em andamento sobre os imóveis",
+            "Situação registral e documental dos imóveis",
+            "Interesse de outros órgãos públicos nos mesmo imóveis",
+            "Complexidade dos procedimentos de desafetação"
+        ]
     },
-    "Condições de mercado desfavoráveis": {
-        "modalidades": {
-            "Permuta por imóvel já construído": {"fator": 0.8, "justificativa": "Demanda e oferta"},
-            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
-            "Permuta por obra (terreno da União)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
-            "Build to Suit (terreno da União)": {"fator": 0.9, "justificativa": "Demanda e oferta"},
-            "Contratação com dação em pagamento": {"fator": 0.2, "justificativa": "O risco é mitigado"},
-            "Obra pública convencional": {"fator": 0.1, "justificativa": "O risco é mitigado"}
-        }
+    'Condições de mercado desfavoráveis': {
+        'impacto': [
+            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
+            "Custo de locação do imóvel utilizado pelo órgão",
+            "Taxa de ocupação do imóvel utilizado pelo órgão",
+            "Redução da competitividade no processo licitatório",
+            "Aumento dos custos da operação"
+        ],
+        'probabilidade': [
+            "Valor do investimento necessário (valor imóveis x torna x construção)",
+            "Atratividade dos lotes ofertados (valor; possibilidades de utilização; tendências do mercado)",
+            "Grau de especialização exigida do investidor",
+            "Grau de aquecimento do mercado x taxa de juros x rentabilidade esperada",
+            "Manifestações de interesse ou consultas públicas realizadas",
+            "Histórico de certames semelhantes e nível de participação",
+            "Cenário econômico nacional e setorial"
+        ]
     },
-    "Abandono da obra pela empresa": {
-        "modalidades": {
-            "Permuta por imóvel já construído": {"fator": 0.1, "justificativa": "Imóvel pronto"},
-            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.6, "justificativa": "Depende do cumprimento do contrato por parte da empresa"},
-            "Permuta por obra (terreno da União)": {"fator": 0.2, "justificativa": "Contrato administrativo - sanções"},
-            "Build to Suit (terreno da União)": {"fator": 0.2, "justificativa": "Contrato administrativo - sanções"},
-            "Contratação com dação em pagamento": {"fator": 0.4, "justificativa": "Contrato administrativo - sanções"},
-            "Obra pública convencional": {"fator": 0.4, "justificativa": "Contrato administrativo - sanções"}
-        }
+    'Abandono da obra pela empresa': {
+        'impacto': [
+            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
+            "Custo de locação do imóvel utilizado pelo órgão",
+            "Taxa de ocupação do imóvel utilizado pelo órgão",
+            "Custos de nova licitação e retomada da obra",
+            "Atraso significativo na entrega do empreendimento"
+        ],
+        'probabilidade': [
+            "Requisitos técnicos e financeiros a serem previstos no processo de seleção",
+            "Garantias contratuais e outras salvaguardas a serem previstas",
+            "Garantias contratuais e outras salvaguardas previstas na modelagem",
+            "Percentual do novo prédio a ser ocupado pela Administração",
+            "Situação financeira e histórico da empresa contratada",
+            "Robustez dos mecanismos de acompanhamento da execução"
+        ]
     },
-    "Baixa rentabilização do estoque de imóveis": {
-        "modalidades": {
-            "Permuta por imóvel já construído": {"fator": 0.4, "justificativa": "O risco é mitigado"},
-            "Permuta por edificação a construir (terreno terceiros)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
-            "Permuta por obra (terreno da União)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
-            "Build to Suit (terreno da União)": {"fator": 0.2, "justificativa": "O risco é mitigado"},
-            "Contratação com dação em pagamento": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"},
-            "Obra pública convencional": {"fator": 1.0, "justificativa": "O risco é inerente à modalidade"}
-        }
+    'Baixa rentabilização do estoque de imóveis': {
+        'impacto': [
+            "Valor dos imóveis dados em permuta na operação frente ao valor do imóvel adquirido",
+            "Amplitude do potencial de valorização dos imóveis dados em permuta",
+            "Grau de contribuição da operação para a redução de imóveis ociosos",
+            "Prejuízo patrimonial para a União",
+            "Redução da eficiência da gestão patrimonial"
+        ],
+        'probabilidade': [
+            "Grau de contribuição da operação para a redução de imóveis ociosos",
+            "Adequação do uso proposto às características do imóvel",
+            "Potencial de economia de despesas (Eficiência do plano de gestão do ativo)",
+            "Eficiência do plano de gestão do ativo pós-permuta",
+            "Demanda do mercado e probabilidade de valorização dos imóveis",
+            "Localização e características dos imóveis ofertados",
+            "Estratégia de alienação ou exploração econômica"
+        ]
+    },
+    'Dotação orçamentária insuficiente': {
+        'impacto': [
+            "Condições de segurança/conservação do imóvel utilizado pelo órgão",
+            "Custo de locação do imóvel utilizado pelo órgão",
+            "Taxa de ocupação do imóvel utilizado pelo órgão",
+            "Percentual do valor da operação que será custeada com recursos orçamentários",
+            "Inviabilização completa do projeto",
+            "Necessidade de renegociação contratual"
+        ],
+        'probabilidade': [
+            "Peso da previsão de despesa em relação à dotação orçamentária de investimento",
+            "Informações constantes da LOA e PPA",
+            "Histórico de contingenciamento do órgão",
+            "Peso político dos órgãos beneficiários",
+            "Cenário fiscal e orçamentário da União",
+            "Priorização do projeto no planejamento governamental"
+        ]
+    },
+    'Questionamento jurídico': {
+        'impacto': [
+            "Paralisação completa ou parcial do projeto",
+            "Custos adicionais com defesa jurídica",
+            "Perda de credibilidade institucional",
+            "Necessidade de reformulação da modelagem",
+            "Impacto na continuidade dos serviços públicos"
+        ],
+        'probabilidade': [
+            "Complexidade e inovação da modelagem jurídica adotada",
+            "Precedentes jurisprudenciais sobre modalidades similares",
+            "Robustez da fundamentação legal da contratação",
+            "Histórico de questionamentos em projetos similares",
+            "Atuação de órgãos de controle externo",
+            "Transparência e aderência aos princípios da administração pública",
+            "Qualidade da documentação jurídica do processo"
+        ]
+    },
+    'Baixa qualidade dos serviços entregues': {
+        'impacto': [
+            "Custos adicionais com reparos e adequações",
+            "Insatisfação dos usuários finais",
+            "Redução da vida útil do empreendimento",
+            "Necessidade de nova contratação para correções",
+            "Comprometimento da imagem institucional",
+            "Impacto na funcionalidade operacional"
+        ],
+        'probabilidade': [
+            "Rigor dos critérios de qualificação técnica",
+            "Estrutura de fiscalização e acompanhamento técnico",
+            "Especificações técnicas e padrões de qualidade definidos",
+            "Histórico de qualidade dos serviços da empresa contratada",
+            "Mecanismos contratuais de garantia de qualidade",
+            "Complexidade técnica dos serviços demandados",
+            "Adequação entre o preço contratado e o padrão de qualidade esperado"
+        ]
     }
 }
 
