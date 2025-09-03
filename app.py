@@ -1128,12 +1128,12 @@ def cadastro_riscos():
             )
             
             descricao_risco = st.text_area(
-                "Descrição/Justificativa do Risco:",
+                "Descrição/Justificativa do Impacto:",
                 placeholder="Descreva os aspectos que levam a este risco..."
             )
             
             contexto_especifico = st.text_area(
-                "Justificativa de mudança de Probabilidade:",
+                "Descrição/Justificativa da Probabilidade",
                 placeholder="Ex: Localização, tipo de obra, prazo, complexidade...",
                 help="Aspectos específicos do seu projeto que influenciam este risco"
             )
