@@ -32,49 +32,19 @@ st.set_page_config(
 
 # Escalas de avaliação baseadas na metodologia SAROI
 ESCALAS_IMPACTO = {
-    "Muito baixo": {
-        "valor": 1,
-        "descricao": "Degradação de operações causando impactos mínimos nos objetivos"
-    },
-    "Baixo": {
-        "valor": 2,
-        "descricao": "Degradação de operações causando impactos pequenos nos objetivos"
-    },
-    "Médio": {
-        "valor": 5,
-        "descricao": "Interrupção de operações causando impactos significativos mas recuperáveis"
-    },
-    "Alto": {
-        "valor": 8,
-        "descricao": "Interrupção de operações causando impactos de reversão muito difícil"
-    },
-    "Muito alto": {
-        "valor": 10,
-        "descricao": "Paralisação de operações causando impactos irreversíveis/catastróficos"
-    }
+    "Muito baixo": {"valor": 1, "descricao": "Degradação mínima das operações"},
+    "Baixo": {"valor": 2, "descricao": "Degradação pequena, facilmente recuperável"},
+    "Médio": {"valor": 5, "descricao": "Interrupção significativa mas recuperável"},
+    "Alto": {"valor": 8, "descricao": "Interrupção grave, reversão muito difícil"},
+    "Muito alto": {"valor": 10, "descricao": "Paralisação com impactos irreversíveis"}
 }
 
 ESCALAS_PROBABILIDADE = {
-    "Muito baixa": {
-        "valor": 1,
-        "descricao": "Evento improvável de ocorrer. Não há elementos que indiquem essa possibilidade"
-    },
-    "Baixa": {
-        "valor": 2,
-        "descricao": "Evento raro de ocorrer. Poucos elementos indicam essa possibilidade"
-    },
-    "Média": {
-        "valor": 5,
-        "descricao": "Evento possível de ocorrer. Elementos indicam moderadamente essa possibilidade"
-    },
-    "Alta": {
-        "valor": 8,
-        "descricao": "Evento provável de ocorrer. Elementos indicam consistently essa possibilidade"
-    },
-    "Muito alta": {
-        "valor": 10,
-        "descricao": "Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade"
-    }
+    "Muito baixa": {"valor": 1, "descricao": "Evento improvável, sem elementos indicativos"},
+    "Baixa": {"valor": 2, "descricao": "Evento raro, poucos elementos indicam possibilidade"},
+    "Média": {"valor": 5, "descricao": "Evento possível, elementos moderadamente indicativos"},
+    "Alta": {"valor": 8, "descricao": "Evento provável, elementos consistentemente indicativos"},
+    "Muito alta": {"valor": 10, "descricao": "Evento praticamente certo, elementos claramente indicativos"}
 }
 
 # Modalidades de mitigação padrão (baseadas na planilha fornecida)
