@@ -424,34 +424,19 @@ def gerar_relatorio_word():
         
         2.1 ESCALAS DE AVALIAÇÃO
         
-        doc.add_heading("IMPACTO (Consequências para os objetivos):", level=3)
-        table_impacto = doc.add_table(rows=1, cols=3)
-        table_impacto.style = 'Table Grid'
-        hdr_cells_impacto = table_impacto.rows[0].cells
-        hdr_cells_impacto[0].text = 'Nível'
-        hdr_cells_impacto[1].text = 'Valor'
-        hdr_cells_impacto[2].text = 'Descrição'
-        for nivel, dados in ESCALAS_IMPACTO.items():
-            row_cells = table_impacto.add_row().cells
-            row_cells[0].text = nivel
-            row_cells[1].text = str(dados['valor'])
-            row_cells[2].text = dados['descricao']
-        doc.add_paragraph()
-
-        doc.add_heading("PROBABILIDADE (Chance de ocorrência):", level=3)
-        table_probabilidade = doc.add_table(rows=1, cols=3)
-        table_probabilidade.style = 'Table Grid'
-        hdr_cells_probabilidade = table_probabilidade.rows[0].cells
-        hdr_cells_probabilidade[0].text = 'Nível'
-        hdr_cells_probabilidade[1].text = 'Valor'
-        hdr_cells_probabilidade[2].text = 'Descrição'
-        for nivel, dados in ESCALAS_PROBABILIDADE.items():
-            row_cells = table_probabilidade.add_row().cells
-            row_cells[0].text = nivel
-            row_cells[1].text = str(dados['valor'])
-            row_cells[2].text = dados['descricao']
-        doc.add_paragraph()
-
+        IMPACTO (Consequências para os objetivos):
+        • Muito baixo (1): Degradação mínima das operações
+        • Baixo (2): Degradação pequena, facilmente recuperável
+        • Médio (5): Interrupção significativa mas recuperável
+        • Alto (8): Interrupção grave, reversão muito difícil
+        • Muito alto (10): Paralisação com impactos irreversíveis
+        
+        PROBABILIDADE (Chance de ocorrência):
+        • Muito baixa (1): Evento improvável, sem elementos indicativos
+        • Baixa (2): Evento raro, poucos elementos indicam possibilidade
+        • Média (5): Evento possível, elementos moderadamente indicativos
+        • Alta (8): Evento provável, elementos consistentemente indicativos
+        • Muito alta (10): Evento praticamente certo, elementos claramente indicativos
         
         2.2 CÁLCULO DO RISCO INERENTE
         
