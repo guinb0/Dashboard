@@ -1097,30 +1097,11 @@ def inicializar_dados():
         ]
         
         # Garante que a chave 'justificativas_modalidades' e 'contexto_especifico' exista em todos os riscos
-        textos_exemplo_prob = [
-            "Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.",
-            "A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado."
-            
-        ]
-        
-        textos_exemplo_mitigacao = [
-            "Administração privada em imóvel privado",
-            "Esta modalidade é eficaz porque permite maior controle sobre a qualidade dos materiais.",
-            "O fator de mitigação é baixo devido à alta volatilidade do mercado para este tipo de ativo.",
-            "A escolha desta modalidade reduz o risco de abandono da obra, pois o pagamento está atrelado à entrega.",
-            "Justificativa para o fator: a modalidade transfere a maior parte da responsabilidade para o parceiro privado.",
-            "O risco residual é alto nesta modalidade, pois a Administração assume os custos de renegociação.",
-            "Imóvel pronto",
-            "O fator de mitigação reflete o controle limitado da Administração sobre a execução da obra neste modelo."
-        ]
-        
         for risco in riscos_iniciais:
             if "justificativas_modalidades" not in risco:
-                risco["justificativas_modalidades"] = {
-                    modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]}
+                risco["justificativas_modalidades"] = {modalidade: "" for modalidade in risco["modalidades"]}
             if 'justificativa_fator_probabilidade' not in risco or not risco['justificativa_fator_probabilidade']:
-                risco['justificativa_fator_probabilidade'] = np.random.choice(textos_exemplo_prob)
-            # Manter 'contexto_especifico' para compatibilidade, se necessário, ou remover se for substituído
+                risco['justificativa_fator_probabilidade'] = ""
             if 'contexto_especifico' not in risco or not risco['contexto_especifico']:
                 risco['contexto_especifico'] = risco['justificativa_fator_probabilidade']
         
