@@ -954,12 +954,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.6
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco baixo, o ativo já está disponível para uso, o risco de atraso é inexistente ou muito baixo.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, o proponente é o responsável pela construção do imóvel em terreno próprio, o risco de atraso é maior.',
-                    'Permuta por obra (terreno da União)': 'Risco médio, o proponente é o responsável pela construção do imóvel em terreno da União, o risco de atraso é médio.',
-                    'Build to Suit (terreno da União)': 'Risco médio, o proponente é o responsável pela construção do imóvel em terreno da União, o risco de atraso é médio.',
-                    'Contratação com dação em pagamento': 'Risco alto, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de atraso.',
-                    'Obra pública convencional': 'Risco alto, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de atraso.'
+                    'Permuta por imóvel já construído': 'Imóvel pronto',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Administração privada em imóvel privado',
+                    'Permuta por obra (terreno da União)': 'Administração privada em imóvel público',
+                    'Build to Suit (terreno da União)': 'Administração privada em imóvel público',
+                    'Contratação com dação em pagamento': 'Contrato público submetido a contingenciamentos',
+                    'Obra pública convencional': 'Contrato público submetido a contingenciamentos'
                 }
             },
             {
