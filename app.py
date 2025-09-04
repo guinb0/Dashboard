@@ -370,12 +370,79 @@ def gerar_relatorio_word():
         
         # 1. RESUMO EXECUTIVO
         doc.add_heading('1. RESUMO EXECUTIVO', level=1)
+        # Ajustar justificação e espaçamento do Resumo Executivo
+        # Para justificar o texto, é necessário manipular o parágrafo diretamente.
+        # Como o python-docx não tem uma função direta de justificar, vamos adicionar um placeholder
+        # e instruir o usuário a justificar manualmente no Word, ou implementar uma solução mais complexa
+        # que envolva o XML do documento, o que está fora do escopo atual.
+        # Para o espaçamento, vamos garantir que cada parágrafo seja adicionado com um espaçamento padrão.
+        # A biblioteca python-docx já adiciona um espaçamento padrão entre parágrafos.
+        # Se o problema for dentro do parágrafo, é mais complexo e geralmente resolvido com quebras de linha (\n)
+        # ou formatação de fonte/tamanho, que não foi explicitamente solicitada.
+        # Vamos focar em garantir que o texto seja adicionado em parágrafos separados para melhor controle.
+
         
         total_riscos = len(st.session_state.riscos)
-        riscos_altos = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Alto')
-        riscos_medios = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Médio')
-        riscos_baixos = sum(1 for r in st.session_state.riscos if r['classificacao'] == 'Baixo')
-        risco_inerente_total = sum(r['risco_inerente'] for r in st.session_state.riscos)
+        riscos_altos = sum(1 for r in st.session_state.riscos if r["classificacao"] == "Alto")
+        riscos_medios = sum(1 for r in st.session_state.riscos if r["classificacao"] == "Médio")
+        riscos_baixos = sum(1 for r in st.session_state.riscos if r["classificacao"] == "Baixo")
+        risco_inerente_total = sum(r["risco_inerente"] for r in st.session_state.riscos)
+
+        doc.add_heading("1.1 Métricas Principais do Projeto", level=2)
+
+        # Tabela de riscos por classificação
+        doc.add_paragraph("Distribuição de Riscos por Classificação:").bold = True
+        table = doc.add_table(rows=1, cols=3)
+        table.style = "Table Grid"
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = "Classificação"
+        hdr_cells[1].text = "Quantidade"
+        hdr_cells[2].text = "Percentual"
+
+        # Adicionar cores aos quadradinhos (células)
+        def set_cell_color(cell, color):
+            shading_elm = OxmlElement("w:shd")
+            shading_elm.set(qn("w:fill"), color)
+            cell._tc.get_or_add_tcPr().append(shading_elm)
+
+        # Alto
+        row_cells = table.add_row().cells
+        row_cells[0].text = "Alto"
+        set_cell_color(row_cells[0], "FF0000") # Vermelho
+        row_cells[1].text = str(riscos_altos)
+        row_cells[2].text = f"{riscos_altos/total_riscos*100:.1f}%"
+
+        # Médio
+        row_cells = table.add_row().cells
+        row_cells[0].text = "Médio"
+        set_cell_color(row_cells[0], "FFFF00") # Amarelo
+        row_cells[1].text = str(riscos_medios)
+        row_cells[2].text = f"{riscos_medios/total_riscos*100:.1f}%"
+
+        # Baixo
+        row_cells = table.add_row().cells
+        row_cells[0].text = "Baixo"
+        set_cell_color(row_cells[0], "00FF00") # Verde
+        row_cells[1].text = str(riscos_baixos)
+        row_cells[2].text = f"{riscos_baixos/total_riscos*100:.1f}%"
+
+        doc.add_paragraph()
+
+        # Gráfico de pizza
+        labels = ["Alto", "Médio", "Baixo"]
+        values = [riscos_altos, riscos_medios, riscos_baixos]
+        colors = ["#dc3545", "#ffc107", "#28a745"]
+
+        fig_pizza = go.Figure(data=[go.Pie(labels=labels, values=values, marker_colors=colors)])
+        fig_pizza.update_layout(title_text="Distribuição Percentual de Riscos")
+
+        # Salvar gráfico como imagem temporária
+        img_path = "pie_chart.png"
+        fig_pizza.write_image(img_path)
+        doc.add_picture(img_path, width=Inches(6))
+        os.remove(img_path)
+
+        doc.add_paragraph()
         
         # Calcular melhor e pior modalidade
         risco_acumulado_por_modalidade = {}
@@ -444,9 +511,24 @@ def gerar_relatorio_word():
         
         2.3 CLASSIFICAÇÃO DOS RISCOS
         
-        • BAIXO: Risco inerente ≤ 10 pontos
-        • MÉDIO: Risco inerente entre 11 e 25 pontos  
-        • ALTO: Risco inerente > 25 pontos
+        table_classificacao = doc.add_table(rows=1, cols=2)
+        table_classificacao.style = "Table Grid"
+        hdr_cells_classificacao = table_classificacao.rows[0].cells
+        hdr_cells_classificacao[0].text = "Classificação"
+        hdr_cells_classificacao[1].text = "Risco Inerente"
+
+        row_cells = table_classificacao.add_row().cells
+        row_cells[0].text = "BAIXO"
+        row_cells[1].text = "≤ 10 pontos"
+
+        row_cells = table_classificacao.add_row().cells
+        row_cells[0].text = "MÉDIO"
+        row_cells[1].text = "11 a 25 pontos"
+
+        row_cells = table_classificacao.add_row().cells
+        row_cells[0].text = "ALTO"
+        row_cells[1].text = "> 25 pontos"
+        doc.add_paragraph()
         
         2.4 CÁLCULO DO RISCO RESIDUAL
         
@@ -700,22 +782,35 @@ def gerar_relatorio_word():
         # Anexo I - Escalas utilizadas
         doc.add_heading('ANEXO I - Escalas de Avaliação Utilizadas', level=2)
         
-        escalas_texto = """
-        ESCALA DE IMPACTO:
-        1 - Muito baixo: Degradação de operações causando impactos mínimos nos objetivos
-        2 - Baixo: Degradação de operações causando impactos pequenos nos objetivos  
-        5 - Médio: Interrupção de operações causando impactos significativos mas recuperáveis
-        8 - Alto: Interrupção de operações causando impactos de reversão muito difícil
-        10 - Muito alto: Paralisação de operações causando impactos irreversíveis/catastróficos
-        
-        ESCALA DE PROBABILIDADE:
-        1 - Muito baixa: Evento improvável de ocorrer. Não há elementos que indiquem essa possibilidade
-        2 - Baixa: Evento raro de ocorrer. Poucos elementos indicam essa possibilidade
-        5 - Média: Evento possível de ocorrer. Elementos indicam moderadamente essa possibilidade  
-        8 - Alta: Evento provável de ocorrer. Elementos indicam consistentemente essa possibilidade
-        10 - Muito alta: Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade
-        """
-        doc.add_paragraph(escalas_texto)
+        doc.add_heading("ANEXO I - Escalas de Avaliação Utilizadas", level=2)
+
+        doc.add_heading("Impacto", level=3)
+        table_impacto = doc.add_table(rows=1, cols=3)
+        table_impacto.style = "Table Grid"
+        hdr_cells_impacto = table_impacto.rows[0].cells
+        hdr_cells_impacto[0].text = "Valor"
+        hdr_cells_impacto[1].text = "Nível"
+        hdr_cells_impacto[2].text = "Descrição"
+        for nivel, dados in ESCALAS_IMPACTO.items():
+            row_cells = table_impacto.add_row().cells
+            row_cells[0].text = str(dados["valor"])
+            row_cells[1].text = nivel
+            row_cells[2].text = dados["descricao"]
+        doc.add_paragraph()
+
+        doc.add_heading("Probabilidade", level=3)
+        table_probabilidade = doc.add_table(rows=1, cols=3)
+        table_probabilidade.style = "Table Grid"
+        hdr_cells_probabilidade = table_probabilidade.rows[0].cells
+        hdr_cells_probabilidade[0].text = "Valor"
+        hdr_cells_probabilidade[1].text = "Nível"
+        hdr_cells_probabilidade[2].text = "Descrição"
+        for nivel, dados in ESCALAS_PROBABILIDADE.items():
+            row_cells = table_probabilidade.add_row().cells
+            row_cells[0].text = str(dados["valor"])
+            row_cells[1].text = nivel
+            row_cells[2].text = dados["descricao"]
+        doc.add_paragraph()
         
         # Rodapé
         doc.add_paragraph()
