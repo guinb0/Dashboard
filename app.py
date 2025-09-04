@@ -1109,12 +1109,12 @@ def inicializar_dados():
         for risco in riscos_iniciais:
             if "justificativas_modalidades" not in risco:
                 risco["justificativas_modalidades"] = {
-                    modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]
-                      if 'justificativa_fator_probabilidade' not in risco or not risco['justificativa_fator_probabilidade']:
-                        risco['justificativa_fator_probabilidade'] = np.random.choice(textos_exemplo_prob)
-                    # Manter 'contexto_especifico' para compatibilidade, se necessário, ou remover se for substituído
-                    if 'contexto_especifico' not in risco or not risco['contexto_especifico']:
-                        risco['contexto_especifico'] = risco['justificativa_fator_probabilidade']
+                    modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]}
+            if 'justificativa_fator_probabilidade' not in risco or not risco['justificativa_fator_probabilidade']:
+                risco['justificativa_fator_probabilidade'] = np.random.choice(textos_exemplo_prob)
+            # Manter 'contexto_especifico' para compatibilidade, se necessário, ou remover se for substituído
+            if 'contexto_especifico' not in risco or not risco['contexto_especifico']:
+                risco['contexto_especifico'] = risco['justificativa_fator_probabilidade']
         
         st.session_state.riscos = riscos_iniciais
         
