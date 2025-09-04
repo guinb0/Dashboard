@@ -936,7 +936,7 @@ def inicializar_dados():
         riscos_iniciais = [
             {
                 'risco_chave': 'Descumprimento do Prazo de entrega',
-                'descricao': 'ATRASO  -  A CGU possui contrato de locação que onera significativamente seu orçamento. Além disso, a CGU ainda precisa arcar com os custos de guarda e manutenção do Darcy Ribeiro até que uma soluçáo definitiva seja conseguida.',
+                'descricao': 'ATRASO  - A CGU possui contrato de locação que onera significativamente seu orçamento. Além disso, a CGU ainda precisa arcar com os custos de guarda e manutenção do Darcy Ribeiro até que uma soluçáo definitiva seja conseguida.',
                 'impacto_nivel': 'Alto',
                 'impacto_valor': 8,
                 'probabilidade_nivel': 'Alta',
@@ -944,6 +944,7 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'justificativa_fator_probabilidade': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.',
+                'contexto_especifico': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.1,
                     'Permuta por edificação a construir (terreno terceiros)': 0.4,
@@ -951,6 +952,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.6,
                     'Obra pública convencional': 0.6
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco baixo, o ativo já está disponível para uso, o risco de atraso é inexistente ou muito baixo.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, o proponente é o responsável pela construção do imóvel em terreno próprio, o risco de atraso é maior.',
+                    'Permuta por obra (terreno da União)': 'Risco médio, o proponente é o responsável pela construção do imóvel em terreno da União, o risco de atraso é médio.',
+                    'Build to Suit (terreno da União)': 'Risco médio, o proponente é o responsável pela construção do imóvel em terreno da União, o risco de atraso é médio.',
+                    'Contratação com dação em pagamento': 'Risco alto, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de atraso.',
+                    'Obra pública convencional': 'Risco alto, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de atraso.'
                 }
             },
             {
@@ -963,6 +972,7 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'justificativa_fator_probabilidade': 'A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado.',
+                'contexto_especifico': 'A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -970,6 +980,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.2
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
+                    'Permuta por obra (terreno da União)': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
+                    'Build to Suit (terreno da União)': 'Risco médio, há a necessidade de um terreno da União, mas não para permuta. O risco é menor.',
+                    'Contratação com dação em pagamento': 'Risco médio, há a necessidade de um terreno da União para dação, mas não para permuta. O risco é menor.',
+                    'Obra pública convencional': 'Risco baixo, a modalidade não depende de imóveis da União para permuta. O risco é baixo.'
                 }
             },
             {
@@ -982,6 +1000,7 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'justificativa_fator_probabilidade': 'O juros praticados no mercado estão significativamente elevados e, ainda, não há clareza sobre o nível de interesse do mercado sobre os imóveis disponíveis. ',
+                'contexto_especifico': 'O juros praticados no mercado estão significativamente elevados e, ainda, não há clareza sobre o nível de interesse do mercado sobre os imóveis disponíveis. ',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
                     'Permuta por edificação a construir (terreno terceiros)': 0.9,
@@ -989,6 +1008,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.9,
                     'Contratação com dação em pagamento': 0.2,
                     'Obra pública convencional': 0.1
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco alto, a modalidade depende do interesse do mercado em imóveis da União para permuta. A incerteza do mercado é um fator de risco.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco muito alto, a modalidade depende do interesse do mercado em permutar imóveis de terceiros. A incerteza do mercado é um fator de risco.',
+                    'Permuta por obra (terreno da União)': 'Risco muito alto, a modalidade depende do interesse do mercado em construir em terrenos da União. A incerteza do mercado é um fator de risco.',
+                    'Build to Suit (terreno da União)': 'Risco muito alto, a modalidade depende do interesse do mercado em construir em terrenos da União. A incerteza do mercado é um fator de risco.',
+                    'Contratação com dação em pagamento': 'Risco baixo, a modalidade não depende tanto do mercado para permuta, mas sim da qualidade técnica e financeira da empresa.',
+                    'Obra pública convencional': 'Risco muito baixo, a modalidade não depende do mercado para permuta, é uma contratação direta. O risco é baixo.'
                 }
             },
             {
@@ -1001,6 +1028,7 @@ def inicializar_dados():
                 'risco_inerente': 16,
                 'classificacao': 'Médio',
                 'justificativa_fator_probabilidade': 'o histórico de abandono de obras pública indica que tais eventos ocorrem, mas raros.',
+                'contexto_especifico': 'o histórico de abandono de obras pública indica que tais eventos ocorrem, mas raros.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.1,
                     'Permuta por edificação a construir (terreno terceiros)': 0.6,
@@ -1010,12 +1038,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.4
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Justificativa para Permuta por imóvel já construído.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Justificativa para Permuta por edificação a construir (terreno terceiros).',
-                    'Permuta por obra (terreno da União)': 'Justificativa para Permuta por obra (terreno da União).',
-                    'Build to Suit (terreno da União)': 'Justificativa para Build to Suit (terreno da União).',
-                    'Contratação com dação em pagamento': 'Justificativa para Contratação com dação em pagamento.',
-                    'Obra pública convencional': 'Justificativa para Obra pública convencional.'
+                    'Permuta por imóvel já construído': 'Risco muito baixo, o ativo já está construído, o risco de abandono da obra é inexistente.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade envolve a construção de um imóvel por um terceiro. O risco de abandono é maior.',
+                    'Permuta por obra (terreno da União)': 'Risco baixo, o proponente é o responsável pela construção do imóvel, mas o terreno pertence à União, o que reduz o risco de abandono.',
+                    'Build to Suit (terreno da União)': 'Risco baixo, o proponente é o responsável pela construção do imóvel, mas o terreno pertence à União, o que reduz o risco de abandono.',
+                    'Contratação com dação em pagamento': 'Risco médio, a modalidade envolve a construção por um terceiro, o que aumenta o risco de abandono.',
+                    'Obra pública convencional': 'Risco médio, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de abandono.'
                 }
             },
             {
@@ -1028,6 +1056,7 @@ def inicializar_dados():
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
                 'justificativa_fator_probabilidade': 'O histórico de operações com soluções individuais, mas que pouco colaboram com o incremento do uso racional do imóveis da União é elevado.',
+                'contexto_especifico': 'O histórico de operações com soluções individuais, mas que pouco colaboram com o incremento do uso racional do imóveis da União é elevado.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -1035,6 +1064,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.6,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.8
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.',
+                    'Permuta por obra (terreno da União)': 'Risco baixo, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
+                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
+                    'Contratação com dação em pagamento': 'Risco baixo, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
+                    'Obra pública convencional': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.'
                 }
             },
             {
@@ -1047,6 +1084,7 @@ def inicializar_dados():
                 'risco_inerente': 100,
                 'classificacao': 'Alto',
                 'justificativa_fator_probabilidade': 'Restrição fiscal que a CGU está submetida.',
+                'contexto_especifico': 'Restrição fiscal que a CGU está submetida.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.0,
                     'Permuta por edificação a construir (terreno terceiros)': 0.1,
@@ -1054,6 +1092,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 1.0
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco muito baixo, a modalidade não depende de dotação orçamentária.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco baixo, a modalidade não depende de dotação orçamentária.',
+                    'Permuta por obra (terreno da União)': 'Risco baixo, a modalidade não depende de dotação orçamentária.',
+                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade pode demandar dotação orçamentária.',
+                    'Contratação com dação em pagamento': 'Risco médio, a modalidade pode demandar dotação orçamentária.',
+                    'Obra pública convencional': 'Risco muito alto, a modalidade depende totalmente de dotação orçamentária.'
                 }
             },
             {
@@ -1066,6 +1112,7 @@ def inicializar_dados():
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
                 'justificativa_fator_probabilidade': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso.',
+                'contexto_especifico': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.2,
                     'Permuta por edificação a construir (terreno terceiros)': 0.4,
@@ -1073,6 +1120,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.6,
                     'Obra pública convencional': 0.1
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco baixo, a modalidade é pouco complexa juridicamente.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco médio, a modalidade envolve terceiros, o que aumenta a complexidade jurídica.',
+                    'Permuta por obra (terreno da União)': 'Risco médio, a modalidade é mais complexa juridicamente.',
+                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade é mais complexa juridicamente.',
+                    'Contratação com dação em pagamento': 'Risco alto, a modalidade é mais complexa juridicamente.',
+                    'Obra pública convencional': 'Risco muito baixo, a modalidade é a mais conhecida e segura juridicamente.'
                 }
             },
             {
@@ -1085,6 +1140,7 @@ def inicializar_dados():
                 'risco_inerente': 10,
                 'classificacao': 'Médio',
                 'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'contexto_especifico': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
                     'Permuta por edificação a construir (terreno terceiros)': 0.8,
@@ -1092,6 +1148,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.4,
                     'Contratação com dação em pagamento': 0.2,
                     'Obra pública convencional': 0.2
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Risco alto, o imóvel já está construído e pode ter baixa qualidade.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, o imóvel é construído por terceiros e a qualidade pode ser baixa.',
+                    'Permuta por obra (terreno da União)': 'Risco médio, a Administração Pública pode fiscalizar a obra.',
+                    'Build to Suit (terreno da União)': 'Risco médio, a Administração Pública pode fiscalizar a obra.',
+                    'Contratação com dação em pagamento': 'Risco baixo, a Administração Pública pode fiscalizar a obra.',
+                    'Obra pública convencional': 'Risco baixo, a Administração Pública pode fiscalizar a obra.'
                 }
             }
         ]
@@ -1382,6 +1446,8 @@ def editar_riscos():
         for i, modalidade in enumerate(st.session_state.modalidades):
             with cols[i % len(cols)]:
                 valor_atual = risco_atual['modalidades'].get(modalidade, 0.5)
+                justificativa_modalidade_atual = risco_atual.get("justificativas_modalidades", {}).get(modalidade, "")
+                
                 novo_fator = st.slider(
                     f"{modalidade}:",
                     min_value=0.0,
@@ -1391,11 +1457,9 @@ def editar_riscos():
                     key=f"editar_modalidade_{indice_risco}_{i}"
                 )
                 
-                # Acessa com .get() para evitar KeyError
-                justificativa_modalidade = risco_atual.get("justificativas_modalidades", {}).get(modalidade, "")
                 nova_justificativa = st.text_area(
                     "Justificativa:",
-                    value=justificativa_modalidade,
+                    value=justificativa_modalidade_atual,
                     key=f"justificativa_modalidade_{indice_risco}_{i}"
                 )
                 novas_modalidades[modalidade] = novo_fator
