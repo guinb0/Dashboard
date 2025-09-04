@@ -32,19 +32,49 @@ st.set_page_config(
 
 # Escalas de avaliação baseadas na metodologia SAROI
 ESCALAS_IMPACTO = {
-    "Muito baixo": {"valor": 1, "descricao": "Degradação mínima das operações"},
-    "Baixo": {"valor": 2, "descricao": "Degradação pequena, facilmente recuperável"},
-    "Médio": {"valor": 5, "descricao": "Interrupção significativa mas recuperável"},
-    "Alto": {"valor": 8, "descricao": "Interrupção grave, reversão muito difícil"},
-    "Muito alto": {"valor": 10, "descricao": "Paralisação com impactos irreversíveis"}
+    "Muito baixo": {
+        "valor": 1,
+        "descricao": "Degradação de operações causando impactos mínimos nos objetivos"
+    },
+    "Baixo": {
+        "valor": 2,
+        "descricao": "Degradação de operações causando impactos pequenos nos objetivos"
+    },
+    "Médio": {
+        "valor": 5,
+        "descricao": "Interrupção de operações causando impactos significativos mas recuperáveis"
+    },
+    "Alto": {
+        "valor": 8,
+        "descricao": "Interrupção de operações causando impactos de reversão muito difícil"
+    },
+    "Muito alto": {
+        "valor": 10,
+        "descricao": "Paralisação de operações causando impactos irreversíveis/catastróficos"
+    }
 }
 
 ESCALAS_PROBABILIDADE = {
-    "Muito baixa": {"valor": 1, "descricao": "Evento improvável, sem elementos indicativos"},
-    "Baixa": {"valor": 2, "descricao": "Evento raro, poucos elementos indicam possibilidade"},
-    "Média": {"valor": 5, "descricao": "Evento possível, elementos moderadamente indicativos"},
-    "Alta": {"valor": 8, "descricao": "Evento provável, elementos consistentemente indicativos"},
-    "Muito alta": {"valor": 10, "descricao": "Evento praticamente certo, elementos claramente indicativos"}
+    "Muito baixa": {
+        "valor": 1,
+        "descricao": "Evento improvável de ocorrer. Não há elementos que indiquem essa possibilidade"
+    },
+    "Baixa": {
+        "valor": 2,
+        "descricao": "Evento raro de ocorrer. Poucos elementos indicam essa possibilidade"
+    },
+    "Média": {
+        "valor": 5,
+        "descricao": "Evento possível de ocorrer. Elementos indicam moderadamente essa possibilidade"
+    },
+    "Alta": {
+        "valor": 8,
+        "descricao": "Evento provável de ocorrer. Elementos indicam consistently essa possibilidade"
+    },
+    "Muito alta": {
+        "valor": 10,
+        "descricao": "Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade"
+    }
 }
 
 # Modalidades de mitigação padrão (baseadas na planilha fornecida)
@@ -394,19 +424,34 @@ def gerar_relatorio_word():
         
         2.1 ESCALAS DE AVALIAÇÃO
         
-        IMPACTO (Consequências para os objetivos):
-        • Muito baixo (1): Degradação mínima das operações
-        • Baixo (2): Degradação pequena, facilmente recuperável
-        • Médio (5): Interrupção significativa mas recuperável
-        • Alto (8): Interrupção grave, reversão muito difícil
-        • Muito alto (10): Paralisação com impactos irreversíveis
-        
-        PROBABILIDADE (Chance de ocorrência):
-        • Muito baixa (1): Evento improvável, sem elementos indicativos
-        • Baixa (2): Evento raro, poucos elementos indicam possibilidade
-        • Média (5): Evento possível, elementos moderadamente indicativos
-        • Alta (8): Evento provável, elementos consistentemente indicativos
-        • Muito alta (10): Evento praticamente certo, elementos claramente indicativos
+        doc.add_heading("IMPACTO (Consequências para os objetivos):", level=3)
+        table_impacto = doc.add_table(rows=1, cols=3)
+        table_impacto.style = 'Table Grid'
+        hdr_cells_impacto = table_impacto.rows[0].cells
+        hdr_cells_impacto[0].text = 'Nível'
+        hdr_cells_impacto[1].text = 'Valor'
+        hdr_cells_impacto[2].text = 'Descrição'
+        for nivel, dados in ESCALAS_IMPACTO.items():
+            row_cells = table_impacto.add_row().cells
+            row_cells[0].text = nivel
+            row_cells[1].text = str(dados['valor'])
+            row_cells[2].text = dados['descricao']
+        doc.add_paragraph()
+
+        doc.add_heading("PROBABILIDADE (Chance de ocorrência):", level=3)
+        table_probabilidade = doc.add_table(rows=1, cols=3)
+        table_probabilidade.style = 'Table Grid'
+        hdr_cells_probabilidade = table_probabilidade.rows[0].cells
+        hdr_cells_probabilidade[0].text = 'Nível'
+        hdr_cells_probabilidade[1].text = 'Valor'
+        hdr_cells_probabilidade[2].text = 'Descrição'
+        for nivel, dados in ESCALAS_PROBABILIDADE.items():
+            row_cells = table_probabilidade.add_row().cells
+            row_cells[0].text = nivel
+            row_cells[1].text = str(dados['valor'])
+            row_cells[2].text = dados['descricao']
+        doc.add_paragraph()
+
         
         2.2 CÁLCULO DO RISCO INERENTE
         
