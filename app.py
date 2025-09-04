@@ -1008,6 +1008,14 @@ def inicializar_dados():
                     'Build to Suit (terreno da União)': 0.2,
                     'Contratação com dação em pagamento': 0.4,
                     'Obra pública convencional': 0.4
+                },
+                'justificativas_modalidades': {
+                    'Permuta por imóvel já construído': 'Justificativa para Permuta por imóvel já construído.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Justificativa para Permuta por edificação a construir (terreno terceiros).',
+                    'Permuta por obra (terreno da União)': 'Justificativa para Permuta por obra (terreno da União).',
+                    'Build to Suit (terreno da União)': 'Justificativa para Build to Suit (terreno da União).',
+                    'Contratação com dação em pagamento': 'Justificativa para Contratação com dação em pagamento.',
+                    'Obra pública convencional': 'Justificativa para Obra pública convencional.'
                 }
             },
             {
