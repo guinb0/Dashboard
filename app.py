@@ -962,7 +962,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'A SPU disponibilizou à CGU imóveis de relativa atratividade comercial. Todavia, cujo montante corresponde à 60% do valor do serviço de construção orçado.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -981,7 +981,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'O juros praticados no mercado estão significativamente elevados e, ainda, não há clareza sobre o nível de interesse do mercado sobre os imóveis disponíveis. ',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
                     'Permuta por edificação a construir (terreno terceiros)': 0.9,
@@ -1000,7 +1000,7 @@ def inicializar_dados():
                 'probabilidade_valor': 2,
                 'risco_inerente': 16,
                 'classificacao': 'Médio',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'o histórico de abandono de obras pública indica que tais eventos ocorrem, mas raros.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.1,
                     'Permuta por edificação a construir (terreno terceiros)': 0.6,
@@ -1019,7 +1019,7 @@ def inicializar_dados():
                 'probabilidade_valor': 8,
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'O histórico de operações com soluções individuais, mas que pouco colaboram com o incremento do uso racional do imóveis da União é elevado.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -1038,7 +1038,7 @@ def inicializar_dados():
                 'probabilidade_valor': 10,
                 'risco_inerente': 100,
                 'classificacao': 'Alto',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'Restrição fiscal que a CGU está submetida.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.0,
                     'Permuta por edificação a construir (terreno terceiros)': 0.1,
@@ -1057,7 +1057,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
-                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
+                'justificativa_fator_probabilidade': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.2,
                     'Permuta por edificação a construir (terreno terceiros)': 0.4,
