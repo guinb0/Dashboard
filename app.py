@@ -1125,7 +1125,7 @@ def inicializar_dados():
                     'Permuta por imóvel já construído': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
                     'Permuta por edificação a construir (terreno terceiros)': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
                     'Permuta por obra (terreno da União)': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
-                    'Build to Suit (terreno da União)': histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
+                    'Build to Suit (terreno da União)': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
                     'Contratação com dação em pagamento': 'Modelagem inovadora, mas com riscos mitigáveis (consultas ao TCU, AGU, SOF); realização de concorrência.',
                     'Obra pública convencional': 'Obra pública.'
                 }
