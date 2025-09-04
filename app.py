@@ -441,8 +441,6 @@ def gerar_relatorio_word():
 
         doc.add_paragraph()
         
-        # --- Trecho do código do gráfico removido para evitar a dependência do Kaleido ---
-
         resumo = f"""
         RESULTADO DA ANÁLISE COMPARATIVA:
         • MODALIDADE RECOMENDADA: {melhor_modalidade}
@@ -669,13 +667,29 @@ def gerar_relatorio_word():
         • Menor risco residual acumulado: {melhor_modalidade_dados['risco_residual_total']:.1f} pontos
         • Maior eficácia de mitigação: {melhor_modalidade_dados['eficacia_percentual']:.1f}%
         • Classificação de Risco: {melhor_modalidade_dados['classificacao']}
-        • Redução Absoluta do Risco: {melhor_modalidade_dados['risco_inerente_aplicavel'] - dados['risco_residual_total']:.1f} pontos
-        • Riscos Aplicáveis: {dados['riscos_aplicaveis']} de {total_riscos} riscos
+        • Redução Absoluta do Risco: {melhor_modalidade_dados['risco_inerente_aplicavel'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos
+        • Riscos Aplicáveis: {melhor_modalidade_dados['riscos_aplicaveis']} de {total_riscos} riscos
+        
+        6.2 MODALIDADES NÃO RECOMENDADAS
+        
+        A modalidade de maior risco identificada é:
+        "{pior_modalidade}"
+        
+        RAZÕES PARA NÃO RECOMENDAÇÃO:
+        • Maior risco residual acumulado: {pior_modalidade_dados['risco_residual_total']:.1f} pontos
+        • Menor eficácia de mitigação: {pior_modalidade_dados['eficacia_percentual']:.1f}%
+        • Classificação de Risco: {pior_modalidade_dados['classificacao']}
+        
+        6.3 IMPACTO DA ESCOLHA DA MODALIDADE
+        
+        A diferença entre a melhor e pior modalidade é de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco, 
+        representando {(pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total'])/risco_inerente_total*100:.1f}% 
+        do risco total do projeto.
+        
+        Esta diferença demonstra a importância crítica da escolha adequada da modalidade de contratação 
+        para o sucesso do empreendimento.
         """
         doc.add_paragraph(recomendacoes)
-
-        doc.add_paragraph(f"6.2 MODALIDADES NÃO RECOMENDADAS\n\n A modalidade de maior risco identificada é: \"{pior_modalidade}\"\n\nRAZÕES PARA NÃO RECOMENDAÇÃO: \n• Maior risco residual acumulado: {pior_modalidade_dados['risco_residual_total']:.1f} pontos \n• Menor eficácia de mitigação: {pior_modalidade_dados['eficacia_percentual']:.1f}% \n• Classificação de Risco: {pior_modalidade_dados['classificacao']}")
-        doc.add_paragraph(f"6.3 IMPACTO DA ESCOLHA DA MODALIDADE\n\nA diferença entre a melhor e pior modalidade é de {pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total']:.1f} pontos de risco, representando {(pior_modalidade_dados['risco_residual_total'] - melhor_modalidade_dados['risco_residual_total'])/risco_inerente_total*100:.1f}% do risco total do projeto. Esta diferença demonstra a importância crítica da escolha adequada da modalidade de contratação para o sucesso do empreendimento.")
         
         # 7. CONCLUSÕES FINAIS
         doc.add_heading('7. CONCLUSÕES E CONSIDERAÇÕES FINAIS', level=1)
@@ -1866,6 +1880,7 @@ def comparacao_modalidades():
                 styles[pos] = 'background-color: #f8d7da'
             elif row['Classificacao_Total'] == 'Médio':
                 styles[pos] = 'background-color: #fff3cd'
+                st.write(row['Modalidade'])
             elif row['Classificacao_Total'] == 'Baixo':
                 styles[pos] = 'background-color: #d4edda'
         return styles
