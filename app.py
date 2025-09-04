@@ -240,16 +240,16 @@ def init_db():
     # Tabela de usuários
     c.execute('''CREATE TABLE IF NOT EXISTS usuarios
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 username TEXT UNIQUE NOT NULL,
-                 password_hash TEXT NOT NULL)''')
+                  username TEXT UNIQUE NOT NULL,
+                  password_hash TEXT NOT NULL)''')
     
     # Tabela de logs de ações
     c.execute('''CREATE TABLE IF NOT EXISTS logs
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                 username TEXT NOT NULL,
-                 acao TEXT NOT NULL,
-                 detalhes TEXT)''')
+                  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                  username TEXT NOT NULL,
+                  acao TEXT NOT NULL,
+                  detalhes TEXT)''')
     
     # Inserir usuários padrão se não existirem
     usuarios_padrao = [
@@ -393,55 +393,20 @@ def gerar_relatorio_word():
         pior_modalidade = max(risco_acumulado_por_modalidade.keys(), 
                              key=lambda x: risco_acumulado_por_modalidade[x])
         
-        # Tabela de Métricas Principais
-        doc.add_paragraph("MÉTRICAS PRINCIPAIS DO PROJETO:")
-        
-        df_metricas = pd.DataFrame({
-            "Métrica": ["Total de Riscos Analisados", "Riscos ALTOS", "Riscos MÉDIOS", "Riscos BAIXOS", "Risco Inerente Total"],
-            "Valor": [
-                f"{total_riscos}",
-                f"{riscos_altos} ({riscos_altos/total_riscos*100:.1f}%)",
-                f"{riscos_medios} ({riscos_medios/total_riscos*100:.1f}%)",
-                f"{riscos_baixos} ({riscos_baixos/total_riscos*100:.1f}%)",
-                f"{risco_inerente_total:.1f} pontos"
-            ]
-        })
-        
-        # Create a table and add data from the DataFrame
-        table_metrics = doc.add_table(df_metricas.shape[0] + 1, df_metricas.shape[1])
-        table_metrics.style = 'Table Grid'
-        
-        # Add headers
-        for j in range(df_metricas.shape[-1]):
-            table_metrics.cell(0, j).text = df_metricas.columns[j]
-        
-        # Add rows
-        for i in range(df_metricas.shape[0]):
-            row_cells = table_metrics.rows[i + 1].cells
-            for j in range(df_metricas.shape[-1]):
-                cell = row_cells[j]
-                cell.text = str(df_metricas.values[i, j])
-                
-                # Apply cell shading based on risk classification
-                if df_metricas.values[i, 0] == "Riscos ALTOS":
-                    shading_color = 'FFDDE6' # Light Red
-                elif df_metricas.values[i, 0] == "Riscos MÉDIOS":
-                    shading_color = 'FFF2CC' # Light Yellow
-                elif df_metricas.values[i, 0] == "Riscos BAIXOS":
-                    shading_color = 'D4EDDA' # Light Green
-                else:
-                    shading_color = None
-                
-                if shading_color:
-                    tc = cell._element.tcPr
-                    tc_shd = OxmlElement('w:shd')
-                    tc_shd.set(qn('w:val'), 'clear')
-                    tc_shd.set(qn('w:fill'), shading_color)
-                    tc.append(tc_shd)
-
-        doc.add_paragraph()
-        
         resumo = f"""
+        Este relatório apresenta análise quantitativa de {total_riscos} riscos identificados para o projeto 
+        . A análise inclui avaliação detalhada 
+        de impacto e probabilidade, cálculo de riscos inerentes e residuais, e comparação sistemática entre 
+        {len(st.session_state.modalidades)} modalidades de contratação.
+        
+        MÉTRICAS PRINCIPAIS DO PROJETO:
+        • Total de Riscos Analisados: {total_riscos}
+        • Distribuição por Classificação:
+          - Riscos ALTOS: {riscos_altos} ({riscos_altos/total_riscos*100:.1f}%)
+          - Riscos MÉDIOS: {riscos_medios} ({riscos_medios/total_riscos*100:.1f}%)
+          - Riscos BAIXOS: {riscos_baixos} ({riscos_baixos/total_riscos*100:.1f}%)
+        • Risco Inerente Total: {risco_inerente_total:.1f} pontos
+        
         RESULTADO DA ANÁLISE COMPARATIVA:
         • MODALIDADE RECOMENDADA: {melhor_modalidade}
           - Risco Residual: {risco_acumulado_por_modalidade[melhor_modalidade]:.1f} pontos
@@ -471,7 +436,7 @@ def gerar_relatorio_word():
         • Baixa (2): Evento raro, poucos elementos indicam possibilidade
         • Média (5): Evento possível, elementos moderadamente indicativos
         • Alta (8): Evento provável, elementos consistentemente indicativos
-        • Muito alta (10): Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade
+        • Muito alta (10): Evento praticamente certo, elementos claramente indicativos
         
         2.2 CÁLCULO DO RISCO INERENTE
         
@@ -1045,7 +1010,7 @@ def inicializar_dados():
                     'Obra pública convencional': 0.1
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Pouco esforço financial, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
+                    'Permuta por imóvel já construído': 'Pouco esforço financeiro, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
                     'Permuta por edificação a construir (terreno terceiros)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Permuta por obra (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Build to Suit (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento somente após entrega da obra),  parte em imóvel e parte em face da locação. Operação de longa duração.',
@@ -1104,7 +1069,7 @@ def inicializar_dados():
                     'Permuta por imóvel já construído': 'Pagamento pelo terreno privado e sujeição  ao padrão de acabamento existente no mercado.',
                     'Permuta por edificação a construir (terreno terceiros)': 'Pagamento pelo terreno privado.',
                     'Permuta por obra (terreno da União)': 'Terreno próprio e padrão estabelecido pela Administração',
-                    'Build to Suit (terreno da União)': 'Pagamento de locação com custos acima do mercado (imóveis prontos) e nos casos de ocupação parcial, necessidade de adoção do padrão do mercado.',
+                    'Build to Suit (terreno da União)': 'Pagamento de locação com custos acima do mercado (imóveis prontos) e nos caso de ocupação parcial, necessidade de adoção do padrão do mercado.',
                     'Contratação com dação em pagamento': 'Terreno próprio e padrão estabelecido pela Administração - desfazimento de imóveis ociosos',
                     'Obra pública convencional': 'Terreno próprio e padrão estabelecido pela Administração - sem desfazimento de imóveis ociosos.'
                 }
@@ -1505,7 +1470,7 @@ def editar_riscos():
                 risco_residual_novo = novo_risco_inerente * novo_fator
                 delta_residual = risco_residual_novo - risco_residual_antigo
                 
-                st.caption(f"Risco Residual: {risco_residual:.1f}")
+                st.caption(f"Risco Residual: {risco_residual_novo:.1f}")
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
@@ -1880,7 +1845,6 @@ def comparacao_modalidades():
                 styles[pos] = 'background-color: #f8d7da'
             elif row['Classificacao_Total'] == 'Médio':
                 styles[pos] = 'background-color: #fff3cd'
-                st.write(row['Modalidade'])
             elif row['Classificacao_Total'] == 'Baixo':
                 styles[pos] = 'background-color: #d4edda'
         return styles
