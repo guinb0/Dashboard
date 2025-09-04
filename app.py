@@ -460,9 +460,9 @@ def gerar_relatorio_word():
         )
         fig_pie.update_layout(showlegend=False)
 
-        # Salvar o gráfico em um buffer de memória
+        # Salvar o gráfico em um buffer de memória como SVG
         img_buf = BytesIO()
-        fig_pie.write_image(img_buf, format="png")
+        fig_pie.write_image(img_buf, format="svg")
         img_buf.seek(0)
         
         # Adicionar a imagem ao documento
@@ -1535,7 +1535,7 @@ def editar_riscos():
                 risco_residual_novo = novo_risco_inerente * novo_fator
                 delta_residual = risco_residual_novo - risco_residual_antigo
                 
-                st.caption(f"Risco Residual: {risco_residual_novo:.1f}")
+                st.caption(f"Risco Residual: {risco_residual:.1f}")
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
