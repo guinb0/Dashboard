@@ -427,22 +427,6 @@ def gerar_relatorio_word():
         row_cells[2].text = f"{riscos_baixos/total_riscos*100:.1f}%"
 
         doc.add_paragraph()
-
-        # Gráfico de pizza
-        labels = ["Alto", "Médio", "Baixo"]
-        values = [riscos_altos, riscos_medios, riscos_baixos]
-        colors = ["#dc3545", "#ffc107", "#28a745"]
-
-        fig_pizza = go.Figure(data=[go.Pie(labels=labels, values=values, marker_colors=colors)])
-        fig_pizza.update_layout(title_text="Distribuição Percentual de Riscos")
-
-        # Salvar gráfico como imagem temporária
-        img_path = "pie_chart.png"
-        fig_pizza.write_image(img_path)
-        doc.add_picture(img_path, width=Inches(6))
-        os.remove(img_path)
-
-        doc.add_paragraph()
         
         # Calcular melhor e pior modalidade
         risco_acumulado_por_modalidade = {}
