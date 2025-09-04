@@ -943,6 +943,7 @@ def inicializar_dados():
                 'probabilidade_valor': 8,
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
+                'justificativa_fator_probabilidade': 'Possibilidade de uma boa estrutura de ficalização; Obra de tipologia recorrente no mercado; contratação de projeto executivo; local plano com infra e de fácil acesso. Todavia o histórico de obras pública indica ser possível tal ocorrência.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.1,
                     'Permuta por edificação a construir (terreno terceiros)': 0.4,
@@ -961,6 +962,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -979,6 +981,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
                     'Permuta por edificação a construir (terreno terceiros)': 0.9,
@@ -997,6 +1000,7 @@ def inicializar_dados():
                 'probabilidade_valor': 2,
                 'risco_inerente': 16,
                 'classificacao': 'Médio',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.1,
                     'Permuta por edificação a construir (terreno terceiros)': 0.6,
@@ -1015,6 +1019,7 @@ def inicializar_dados():
                 'probabilidade_valor': 8,
                 'risco_inerente': 64,
                 'classificacao': 'Alto',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 1.0,
                     'Permuta por edificação a construir (terreno terceiros)': 1.0,
@@ -1033,6 +1038,7 @@ def inicializar_dados():
                 'probabilidade_valor': 10,
                 'risco_inerente': 100,
                 'classificacao': 'Alto',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.0,
                     'Permuta por edificação a construir (terreno terceiros)': 0.1,
@@ -1051,6 +1057,7 @@ def inicializar_dados():
                 'probabilidade_valor': 5,
                 'risco_inerente': 25,
                 'classificacao': 'Médio',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.2,
                     'Permuta por edificação a construir (terreno terceiros)': 0.4,
@@ -1069,6 +1076,7 @@ def inicializar_dados():
                 'probabilidade_valor': 2,
                 'risco_inerente': 10,
                 'classificacao': 'Médio',
+                'justificativa_fator_probabilidade': 'Justificativa padrão para o fator de probabilidade.',
                 'modalidades': {
                     'Permuta por imóvel já construído': 0.8,
                     'Permuta por edificação a construir (terreno terceiros)': 0.8,
@@ -1102,9 +1110,11 @@ def inicializar_dados():
             if "justificativas_modalidades" not in risco:
                 risco["justificativas_modalidades"] = {
                     modalidade: np.random.choice(textos_exemplo_mitigacao) for modalidade in risco["modalidades"]
-                }
-            if "contexto_especifico" not in risco or not risco["contexto_especifico"]:
-                risco["contexto_especifico"] = np.random.choice(textos_exemplo_prob)
+                      if 'justificativa_fator_probabilidade' not in risco or not risco['justificativa_fator_probabilidade']:
+                        risco['justificativa_fator_probabilidade'] = np.random.choice(textos_exemplo_prob)
+                    # Manter 'contexto_especifico' para compatibilidade, se necessário, ou remover se for substituído
+                    if 'contexto_especifico' not in risco or not risco['contexto_especifico']:
+                        risco['contexto_especifico'] = risco['justificativa_fator_probabilidade']
         
         st.session_state.riscos = riscos_iniciais
         
@@ -1207,6 +1217,7 @@ def cadastro_riscos():
             novo_risco = {
                 'risco_chave': risco_chave,
                 'descricao': descricao_risco,
+                'justificativa_fator_probabilidade': contexto_especifico,
                 'contexto_especifico': contexto_especifico,
                 'impacto_nivel': impacto_nivel,
                 'impacto_valor': impacto_valor,
@@ -1422,7 +1433,7 @@ def editar_riscos():
                 'risco_inerente': novo_risco_inerente,
                 'classificacao': nova_classificacao,
                 'descricao': nova_descricao,
-                'contexto_especifico': contexto_especifico,
+                'justificativa_fator_probabilidade': contexto_especifico,
                 'modalidades': novas_modalidades,
                 'justificativas_modalidades': novas_justificativas,
                 'editado': True,
@@ -1590,8 +1601,8 @@ def analise_riscos():
         with st.expander(f"🔍 Detalhes dos {len(riscos_editados_detalhes)} riscos personalizados"):
             for risco in riscos_editados_detalhes:
                 st.write(f"**{risco['risco_chave']}**")
-                if 'contexto_especifico' in risco and risco['contexto_especifico']:
-                    st.write(f"*Contexto específico:* {risco['contexto_especifico']}")
+                if 'justificativa_fator_probabilidade' in risco and risco['justificativa_fator_probabilidade']:
+                    st.write(f"*Justificativa fator de probabilidade:* {risco['justificativa_fator_probabilidade']}")
                 if 'data_edicao' in risco:
                     st.write(f"*Última edição:* {risco['data_edicao']}")
                 if 'descricao' in risco and risco['descricao']:
@@ -2315,7 +2326,8 @@ def main():
                         risco['modalidades'] = {}
                     risco['modalidades'][nova_modalidade] = 0.5  # Valor padrão
                     # Garante que a nova justificativa também seja adicionada
-                    risco.setdefault('justificativas_modalidades', {})[nova_modalidade] = ""
+                    risco.setdefault("justificativas_modalidades", {})[nova_modalidade] = ""
+                    risco.setdefault("justificativa_fator_probabilidade", "")
                 st.success(f"Modalidade '{nova_modalidade}' adicionada!")
                 st.rerun()
             else:
