@@ -982,12 +982,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.2
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
-                    'Permuta por obra (terreno da União)': 'Risco alto, a modalidade depende da permuta de imóveis públicos, que podem não ser atrativos ou ter pendências.',
-                    'Build to Suit (terreno da União)': 'Risco médio, há a necessidade de um terreno da União, mas não para permuta. O risco é menor.',
-                    'Contratação com dação em pagamento': 'Risco médio, há a necessidade de um terreno da União para dação, mas não para permuta. O risco é menor.',
-                    'Obra pública convencional': 'Risco baixo, a modalidade não depende de imóveis da União para permuta. O risco é baixo.'
+                    'Permuta por imóvel já construído': 'Necessidade de imóveis com valor compatível a do imóvel de interesse.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Necessidade de imóveis com valor compatível a do imóvel de interesse.',
+                    'Permuta por obra (terreno da União)': 'Necessidade de imóveis com valor compatível a do imóvel de interesse.',
+                    'Build to Suit (terreno da União)': 'Parte do investimento pode ser pago via custeio (locação) de modo que a necessidade de imóveis seja menor',
+                    'Contratação com dação em pagamento': 'Parte do investimento pode ser pago via custeio (locação) de modo que a necessidade de imóveis seja menor',
+                    'Obra pública convencional': 'somente é necessário imóvel para implantação da obra'
                 }
             },
             {
@@ -1010,12 +1010,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.1
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco alto, a modalidade depende do interesse do mercado em imóveis da União para permuta. A incerteza do mercado é um fator de risco.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco muito alto, a modalidade depende do interesse do mercado em permutar imóveis de terceiros. A incerteza do mercado é um fator de risco.',
-                    'Permuta por obra (terreno da União)': 'Risco muito alto, a modalidade depende do interesse do mercado em construir em terrenos da União. A incerteza do mercado é um fator de risco.',
-                    'Build to Suit (terreno da União)': 'Risco muito alto, a modalidade depende do interesse do mercado em construir em terrenos da União. A incerteza do mercado é um fator de risco.',
-                    'Contratação com dação em pagamento': 'Risco baixo, a modalidade não depende tanto do mercado para permuta, mas sim da qualidade técnica e financeira da empresa.',
-                    'Obra pública convencional': 'Risco muito baixo, a modalidade não depende do mercado para permuta, é uma contratação direta. O risco é baixo.'
+                    'Permuta por imóvel já construído': 'Pouco esforço financeiro, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
+                    'Permuta por obra (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
+                    'Build to Suit (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento somente após entrega da obra),  parte em imóvel e parte em face da locação. Operação de longa duração.',
+                    'Contratação com dação em pagamento': 'Pagamentos e repasse de imóveis durante a execução da obra; mercado amplo (construtoras, incorporadores, fundos)',
+                    'Obra pública convencional': 'Pagamentos e repasse de imóveis durante a execução da obra; mercado amplo (construtoras, incorporadores, fundos)'
                 }
             },
             {
@@ -1038,12 +1038,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.4
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco muito baixo, o ativo já está construído, o risco de abandono da obra é inexistente.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade envolve a construção de um imóvel por um terceiro. O risco de abandono é maior.',
-                    'Permuta por obra (terreno da União)': 'Risco baixo, o proponente é o responsável pela construção do imóvel, mas o terreno pertence à União, o que reduz o risco de abandono.',
-                    'Build to Suit (terreno da União)': 'Risco baixo, o proponente é o responsável pela construção do imóvel, mas o terreno pertence à União, o que reduz o risco de abandono.',
-                    'Contratação com dação em pagamento': 'Risco médio, a modalidade envolve a construção por um terceiro, o que aumenta o risco de abandono.',
-                    'Obra pública convencional': 'Risco médio, a Administração Pública é a responsável pela contratação da obra, o que aumenta o risco de abandono.'
+                    'Permuta por imóvel já construído': 'Imóvel pronto (operação muito rápida)',
+                    'Permuta por edificação a construir (terreno terceiros)': 'A empresa pode pagar multa e romper o contrato caso o mercado esteja mais vantajoso',
+                    'Permuta por obra (terreno da União)': 'Perda do investimento realizado',
+                    'Build to Suit (terreno da União)': 'Perda do investimento realizado',
+                    'Contratação com dação em pagamento': 'Perda do investimento realizado (investimento menor pelo pagamento dos serviços realizado)',
+                    'Obra pública convencional': 'Perda do investimento realizado (investimento menor pelo pagamento dos serviços realizado)'
                 }
             },
             {
@@ -1066,12 +1066,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.8
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.',
-                    'Permuta por obra (terreno da União)': 'Risco baixo, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
-                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
-                    'Contratação com dação em pagamento': 'Risco baixo, a modalidade contribui para a rentabilização do estoque de imóveis da União.',
-                    'Obra pública convencional': 'Risco alto, a modalidade pode não rentabilizar o estoque de imóveis da União.'
+                    'Permuta por imóvel já construído': 'Pagamento pelo terreno privado e sujeição  ao padrão de acabamento existente no mercado.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Pagamento pelo terreno privado.',
+                    'Permuta por obra (terreno da União)': 'Terreno próprio e padrão estabelecido pela Administração',
+                    'Build to Suit (terreno da União)': 'Pagamento de locação com custos acima do mercado (imóveis prontos) e nos caso de ocupação parcial, necessidade de adoção do padrão do mercado.',
+                    'Contratação com dação em pagamento': 'Terreno próprio e padrão estabelecido pela Administração - desfazimento de imóveis ociosos',
+                    'Obra pública convencional': 'Terreno próprio e padrão estabelecido pela Administração - sem desfazimento de imóveis ociosos.'
                 }
             },
             {
@@ -1094,12 +1094,12 @@ def inicializar_dados():
                     'Obra pública convencional': 1.0
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco muito baixo, a modalidade não depende de dotação orçamentária.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco baixo, a modalidade não depende de dotação orçamentária.',
-                    'Permuta por obra (terreno da União)': 'Risco baixo, a modalidade não depende de dotação orçamentária.',
-                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade pode demandar dotação orçamentária.',
-                    'Contratação com dação em pagamento': 'Risco médio, a modalidade pode demandar dotação orçamentária.',
-                    'Obra pública convencional': 'Risco muito alto, a modalidade depende totalmente de dotação orçamentária.'
+                    'Permuta por imóvel já construído': 'Não precisa de orçamento.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Elaboração de projetos.',
+                    'Permuta por obra (terreno da União)': 'Elaboração de projetos.',
+                    'Build to Suit (terreno da União)': 'Necessidade de orçamento para locação e projetos.',
+                    'Contratação com dação em pagamento': 'Necessidade de orçamento para pagamento da direferença entre o valor do contrato e o valor dos imóveis repassados.',
+                    'Obra pública convencional': 'Construção custeada com o OGU.'
                 }
             },
             {
@@ -1122,12 +1122,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.1
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco baixo, a modalidade é pouco complexa juridicamente.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco médio, a modalidade envolve terceiros, o que aumenta a complexidade jurídica.',
-                    'Permuta por obra (terreno da União)': 'Risco médio, a modalidade é mais complexa juridicamente.',
-                    'Build to Suit (terreno da União)': 'Risco médio, a modalidade é mais complexa juridicamente.',
-                    'Contratação com dação em pagamento': 'Risco alto, a modalidade é mais complexa juridicamente.',
-                    'Obra pública convencional': 'Risco muito baixo, a modalidade é a mais conhecida e segura juridicamente.'
+                    'Permuta por imóvel já construído': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
+                    'Permuta por obra (terreno da União)': 'histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
+                    'Build to Suit (terreno da União)': histórico de recomendações realizadas - justificação no caso de inexibilidade de licitação e vantajosidade da operação.',
+                    'Contratação com dação em pagamento': 'Modelagem inovadora, mas com riscos mitigáveis (consultas ao TCU, AGU, SOF); realização de concorrência.',
+                    'Obra pública convencional': 'Obra pública.'
                 }
             },
             {
@@ -1150,12 +1150,12 @@ def inicializar_dados():
                     'Obra pública convencional': 0.2
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Risco alto, o imóvel já está construído e pode ter baixa qualidade.',
-                    'Permuta por edificação a construir (terreno terceiros)': 'Risco alto, o imóvel é construído por terceiros e a qualidade pode ser baixa.',
-                    'Permuta por obra (terreno da União)': 'Risco médio, a Administração Pública pode fiscalizar a obra.',
-                    'Build to Suit (terreno da União)': 'Risco médio, a Administração Pública pode fiscalizar a obra.',
-                    'Contratação com dação em pagamento': 'Risco baixo, a Administração Pública pode fiscalizar a obra.',
-                    'Obra pública convencional': 'Risco baixo, a Administração Pública pode fiscalizar a obra.'
+                    'Permuta por imóvel já construído': 'Não acompanhamento no processo construtivo.',
+                    'Permuta por edificação a construir (terreno terceiros)': 'Não acompanhamento no processo construtivo. ',
+                    'Permuta por obra (terreno da União)': 'Acompanhamento limitado do processo construtivo.',
+                    'Build to Suit (terreno da União)': 'Acompanhamento limitado do processo construtivo.',
+                    'Contratação com dação em pagamento': 'Acompanhamento pleno (contrato de serviço).',
+                    'Obra pública convencional': 'Acompanhamento pleno (contrato de serviço).'
                 }
             }
         ]
