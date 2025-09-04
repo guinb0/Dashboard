@@ -394,7 +394,7 @@ def gerar_relatorio_word():
                              key=lambda x: risco_acumulado_por_modalidade[x])
         
         # Tabela de Métricas Principais
-        doc.add_heading("1.1 Métricas Principais do Projeto", level=2)
+        doc.add_paragraph("MÉTRICAS PRINCIPAIS DO PROJETO:")
         
         df_metricas = pd.DataFrame({
             "Métrica": ["Total de Riscos Analisados", "Riscos ALTOS", "Riscos MÉDIOS", "Riscos BAIXOS", "Risco Inerente Total"],
@@ -407,18 +407,22 @@ def gerar_relatorio_word():
             ]
         })
         
+        # Create a table and add data from the DataFrame
         table_metrics = doc.add_table(df_metricas.shape[0] + 1, df_metricas.shape[1])
         table_metrics.style = 'Table Grid'
         
+        # Add headers
         for j in range(df_metricas.shape[-1]):
             table_metrics.cell(0, j).text = df_metricas.columns[j]
         
+        # Add rows
         for i in range(df_metricas.shape[0]):
             row_cells = table_metrics.rows[i + 1].cells
             for j in range(df_metricas.shape[-1]):
                 cell = row_cells[j]
                 cell.text = str(df_metricas.values[i, j])
                 
+                # Apply cell shading based on risk classification
                 if df_metricas.values[i, 0] == "Riscos ALTOS":
                     shading_color = 'FFDDE6' # Light Red
                 elif df_metricas.values[i, 0] == "Riscos MÉDIOS":
@@ -435,41 +439,18 @@ def gerar_relatorio_word():
                     tc_shd.set(qn('w:fill'), shading_color)
                     tc.append(tc_shd)
 
+        # Space before next paragraph
         doc.add_paragraph()
-
-        # Tabela de Resultados da Análise Comparativa
-        doc.add_heading("1.2 Resultado da Análise Comparativa", level=2)
         
-        df_comparativo = pd.DataFrame({
-            "Métrica": [
-                "Modalidade Recomendada",
-                "Risco Residual da Recomendada",
-                "Modalidade de Maior Risco",
-                "Risco Residual da de Maior Risco",
-                "Diferença de Risco"
-            ],
-            "Valor": [
-                melhor_modalidade,
-                f"{risco_acumulado_por_modalidade[melhor_modalidade]:.1f} pontos",
-                pior_modalidade,
-                f"{risco_acumulado_por_modalidade[pior_modalidade]:.1f} pontos",
-                f"{risco_acumulado_por_modalidade[pior_modalidade] - risco_acumulado_por_modalidade[melhor_modalidade]:.1f} pontos"
-            ]
-        })
-
-        table_comparativo = doc.add_table(df_comparativo.shape[0] + 1, df_comparativo.shape[1])
-        table_comparativo.style = 'Table Grid'
-        
-        for j in range(df_comparativo.shape[-1]):
-            table_comparativo.cell(0, j).text = df_comparativo.columns[j]
-        
-        for i in range(df_comparativo.shape[0]):
-            row_cells = table_comparativo.rows[i + 1].cells
-            for j in range(df_comparativo.shape[-1]):
-                cell = row_cells[j]
-                cell.text = str(df_comparativo.values[i, j])
-
-        doc.add_paragraph()
+        resumo = f"""
+        RESULTADO DA ANÁLISE COMPARATIVA:
+        • MODALIDADE RECOMENDADA: {melhor_modalidade}
+          - Risco Residual: {risco_acumulado_por_modalidade[melhor_modalidade]:.1f} pontos
+        • MODALIDADE DE MAIOR RISCO: {pior_modalidade}
+          - Risco Residual: {risco_acumulado_por_modalidade[pior_modalidade]:.1f} pontos
+        • DIFERENÇA DE RISCO: {risco_acumulado_por_modalidade[pior_modalidade] - risco_acumulado_por_modalidade[melhor_modalidade]:.1f} pontos
+        """
+        doc.add_paragraph(resumo)
         
         # 2. METODOLOGIA DETALHADA
         doc.add_heading('2. METODOLOGIA E CRITÉRIOS DE AVALIAÇÃO', level=1)
@@ -478,44 +459,21 @@ def gerar_relatorio_word():
         Gestão de Riscos", aplicando escalas quantitativas padronizadas e critérios objetivos.
         
         2.1 ESCALAS DE AVALIAÇÃO
-        """
-        doc.add_paragraph(metodologia)
-
-        # Tabela de Escala de Impacto
-        doc.add_heading('Escala de Impacto', level=3)
-        df_impacto = pd.DataFrame([
-            {"Nível": f"{k} ({v['valor']})", "Descrição": v['descricao']} for k, v in ESCALAS_IMPACTO.items()
-        ])
-        table_impacto = doc.add_table(df_impacto.shape[0] + 1, df_impacto.shape[1])
-        table_impacto.style = 'Table Grid'
         
-        for j in range(df_impacto.shape[-1]):
-            table_impacto.cell(0, j).text = df_impacto.columns[j]
+        IMPACTO (Consequências para os objetivos):
+        • Muito baixo (1): Degradação mínima das operações
+        • Baixo (2): Degradação pequena, facilmente recuperável
+        • Médio (5): Interrupção significativa mas recuperável
+        • Alto (8): Interrupção grave, reversão muito difícil
+        • Muito alto (10): Paralisação com impactos irreversíveis
         
-        for i in range(df_impacto.shape[0]):
-            row_cells = table_impacto.rows[i + 1].cells
-            for j in range(df_impacto.shape[-1]):
-                row_cells[j].text = str(df_impacto.values[i, j])
-
-        doc.add_paragraph()
-
-        # Tabela de Escala de Probabilidade
-        doc.add_heading('Escala de Probabilidade', level=3)
-        df_probabilidade = pd.DataFrame([
-            {"Nível": f"{k} ({v['valor']})", "Descrição": v['descricao']} for k, v in ESCALAS_PROBABILIDADE.items()
-        ])
-        table_probabilidade = doc.add_table(df_probabilidade.shape[0] + 1, df_probabilidade.shape[1])
-        table_probabilidade.style = 'Table Grid'
+        PROBABILIDADE (Chance de ocorrência):
+        • Muito baixa (1): Evento improvável, sem elementos indicativos
+        • Baixa (2): Evento raro, poucos elementos indicam possibilidade
+        • Média (5): Evento possível, elementos moderadamente indicativos
+        • Alta (8): Evento provável, elementos consistentemente indicativos
+        • Muito alta (10): Evento praticamente certo, elementos claramente indicativos
         
-        for j in range(df_probabilidade.shape[-1]):
-            table_probabilidade.cell(0, j).text = df_probabilidade.columns[j]
-        
-        for i in range(df_probabilidade.shape[0]):
-            row_cells = table_probabilidade.rows[i + 1].cells
-            for j in range(df_probabilidade.shape[-1]):
-                row_cells[j].text = str(df_probabilidade.values[i, j])
-
-        doc.add_paragraph("""
         2.2 CÁLCULO DO RISCO INERENTE
         
         O risco inerente é calculado pela multiplicação: IMPACTO × PROBABILIDADE
@@ -532,7 +490,8 @@ def gerar_relatorio_word():
         RISCO RESIDUAL = RISCO INERENTE × FATOR DE MITIGAÇÃO
         
         Onde o fator de mitigação varia de 0,0 (elimina totalmente o risco) a 1,0 (não mitiga o risco).
-        """)
+        """
+        doc.add_paragraph(metodologia)
         
         # 3. ANÁLISE DETALHADA DOS RISCOS
         doc.add_heading('3. ANÁLISE DETALHADA DOS RISCOS IDENTIFICADOS', level=1)
@@ -777,41 +736,22 @@ def gerar_relatorio_word():
         # Anexo I - Escalas utilizadas
         doc.add_heading('ANEXO I - Escalas de Avaliação Utilizadas', level=2)
         
-        # Tabela de Escala de Impacto
-        doc.add_heading('Escala de Impacto', level=3)
-        df_impacto = pd.DataFrame([
-            {"Nível": f"{k} ({v['valor']})", "Descrição": v['descricao']} for k, v in ESCALAS_IMPACTO.items()
-        ])
-        table_impacto = doc.add_table(df_impacto.shape[0] + 1, df_impacto.shape[1])
-        table_impacto.style = 'Table Grid'
+        escalas_texto = """
+        ESCALA DE IMPACTO:
+        1 - Muito baixo: Degradação de operações causando impactos mínimos nos objetivos
+        2 - Baixo: Degradação de operações causando impactos pequenos nos objetivos  
+        5 - Médio: Interrupção de operações causando impactos significativos mas recuperáveis
+        8 - Alto: Interrupção de operações causando impactos de reversão muito difícil
+        10 - Muito alto: Paralisação de operações causando impactos irreversíveis/catastróficos
         
-        for j in range(df_impacto.shape[-1]):
-            table_impacto.cell(0, j).text = df_impacto.columns[j]
-        
-        for i in range(df_impacto.shape[0]):
-            row_cells = table_impacto.rows[i + 1].cells
-            for j in range(df_impacto.shape[-1]):
-                row_cells[j].text = str(df_impacto.values[i, j])
-
-        doc.add_paragraph()
-
-        # Tabela de Escala de Probabilidade
-        doc.add_heading('Escala de Probabilidade', level=3)
-        df_probabilidade = pd.DataFrame([
-            {"Nível": f"{k} ({v['valor']})", "Descrição": v['descricao']} for k, v in ESCALAS_PROBABILIDADE.items()
-        ])
-        table_probabilidade = doc.add_table(df_probabilidade.shape[0] + 1, df_probabilidade.shape[1])
-        table_probabilidade.style = 'Table Grid'
-        
-        for j in range(df_probabilidade.shape[-1]):
-            table_probabilidade.cell(0, j).text = df_probabilidade.columns[j]
-        
-        for i in range(df_probabilidade.shape[0]):
-            row_cells = table_probabilidade.rows[i + 1].cells
-            for j in range(df_probabilidade.shape[-1]):
-                row_cells[j].text = str(df_probabilidade.values[i, j])
-
-        doc.add_paragraph()
+        ESCALA DE PROBABILIDADE:
+        1 - Muito baixa: Evento improvável de ocorrer. Não há elementos que indiquem essa possibilidade
+        2 - Baixa: Evento raro de ocorrer. Poucos elementos indicam essa possibilidade
+        5 - Média: Evento possível de ocorrer. Elementos indicam moderadamente essa possibilidade  
+        8 - Alta: Evento provável de ocorrer. Elementos indicam consistentemente essa possibilidade
+        10 - Muito alta: Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade
+        """
+        doc.add_paragraph(escalas_texto)
         
         # Rodapé
         doc.add_paragraph()
@@ -1106,7 +1046,7 @@ def inicializar_dados():
                     'Obra pública convencional': 0.1
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Pouco esforço financial, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
+                    'Permuta por imóvel já construído': 'Pouco esforço financeiro, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
                     'Permuta por edificação a construir (terreno terceiros)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Permuta por obra (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Build to Suit (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento somente após entrega da obra),  parte em imóvel e parte em face da locação. Operação de longa duração.',
@@ -1566,7 +1506,7 @@ def editar_riscos():
                 risco_residual_novo = novo_risco_inerente * novo_fator
                 delta_residual = risco_residual_novo - risco_residual_antigo
                 
-                st.caption(f"Risco Residual: {risco_residual:.1f}")
+                st.caption(f"Risco Residual: {risco_residual_novo:.1f}")
                 if delta_residual != 0:
                     st.caption(f"Δ: {delta_residual:+.1f}")
         
