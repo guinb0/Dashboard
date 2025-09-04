@@ -442,6 +442,35 @@ def gerar_relatorio_word():
         # Space before next paragraph
         doc.add_paragraph()
         
+        # NOVO: Adicionar gráfico de pizza
+        doc.add_heading('Distribuição de Riscos por Classificação', level=2)
+
+        # Dados para o gráfico
+        labels = ['Altos', 'Médios', 'Baixos']
+        values = [riscos_altos, riscos_medios, riscos_baixos]
+        colors = ['#dc3545', '#ffc107', '#28a745'] # vermelho, amarelo, verde
+
+        # Criar o gráfico de pizza usando Plotly
+        fig_pie = go.Figure(data=[go.Pie(labels=labels, values=values, marker_colors=colors)])
+        fig_pie.update_traces(
+            hoverinfo='label+percent', 
+            textinfo='value', 
+            textfont_size=16,
+            marker=dict(line=dict(color='#000000', width=2))
+        )
+        fig_pie.update_layout(showlegend=False)
+
+        # Salvar o gráfico em um buffer de memória
+        img_buf = BytesIO()
+        fig_pie.write_image(img_buf, format="png")
+        img_buf.seek(0)
+        
+        # Adicionar a imagem ao documento
+        doc.add_picture(img_buf, width=Inches(5))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        doc.add_paragraph()
+        
         resumo = f"""
         RESULTADO DA ANÁLISE COMPARATIVA:
         • MODALIDADE RECOMENDADA: {melhor_modalidade}
@@ -472,7 +501,7 @@ def gerar_relatorio_word():
         • Baixa (2): Evento raro, poucos elementos indicam possibilidade
         • Média (5): Evento possível, elementos moderadamente indicativos
         • Alta (8): Evento provável, elementos consistentemente indicativos
-        • Muito alta (10): Evento praticamente certo, elementos claramente indicativos
+        • Muito alta (10): Evento praticamente certo de ocorrer. Elementos indicam claramente essa possibilidade
         
         2.2 CÁLCULO DO RISCO INERENTE
         
@@ -1046,7 +1075,7 @@ def inicializar_dados():
                     'Obra pública convencional': 0.1
                 },
                 'justificativas_modalidades': {
-                    'Permuta por imóvel já construído': 'Pouco esforço financeiro, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
+                    'Permuta por imóvel já construído': 'Pouco esforço financial, mas o mercado é restrito p/ esse tipo de operação; divergência na avaliação dos bens',
                     'Permuta por edificação a construir (terreno terceiros)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Permuta por obra (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento (imóvel) somente após entrega da obra)',
                     'Build to Suit (terreno da União)': 'Exigência de muita capacidade financeira (recebimento do pagamento somente após entrega da obra),  parte em imóvel e parte em face da locação. Operação de longa duração.',
