@@ -2360,9 +2360,9 @@ def main():
     
     # Se está logado, mostrar a aplicação normal
     nome_projeto_titulo = st.session_state.get('nome_projeto', 'Projeto')
-    st.title(f"🛡️ SAROI – Sistema de Análise de Riscos em Operações Mobiliárias - {nome_projeto_titulo}")
+    st.title(f"🛡️Dashboard de Avaliação de Riscos   - {nome_projeto_titulo}")
     st.markdown(f"*Usuário: {st.session_state.user}*")
-    st.markdown("*Dashboard de Avaliação de Riscos  *")
+    st.markdown("*   SAROI – Sistema de Análise de Riscos em Operações Mobiliárias  *")
     
     inicializar_dados()
     
