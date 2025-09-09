@@ -360,7 +360,7 @@ def gerar_relatorio_word():
         # Adicionar informações do responsável
         info_para.add_run("\n\nRESPONSÁVEL PELA ANÁLISE:").bold = True
         info_para.add_run(f"\nNome: {st.session_state.identificacao_relatorio['nome']}")
-        info_para.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
+        info_para.add_run(f"\nUnidade: {st.session_state.identificacao_relatorio['unidade']}")
         if st.session_state.identificacao_relatorio['orgao']:
             info_para.add_run(f"\nÓrgão: {st.session_state.identificacao_relatorio['orgao']}")
         if st.session_state.identificacao_relatorio['email']:
@@ -761,7 +761,7 @@ def gerar_relatorio_word():
         rodape.add_run(f"\nData e hora: {datetime.now().strftime('%d/%m/%Y às %H:%M')}")
         rodape.add_run(f"\nResponsável: {st.session_state.identificacao_relatorio['nome']} - {st.session_state.identificacao_relatorio['unidade']}")
         if st.session_state.identificacao_relatorio['orgao']:
-            rodape.add_run(f"\nDivisão: {st.session_state.identificacao_relatorio['unidade']}")
+            rodape.add_run(f"\nUnidade: {st.session_state.identificacao_relatorio['unidade']}")
         rodape.add_run(f"\nTotal de páginas estimadas: {len(doc.paragraphs) // 20 + 1}")
         
         # Salvar em buffer
